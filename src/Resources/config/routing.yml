@@ -1,0 +1,4 @@
+loevgaard_sylius_feed_plugin_shop_feed_render:
+    path: /feed/{uuid}
+    defaults:
+        _controller: LoevgaardSyliusFeedPlugin:FeedRender:renderFeed
