@@ -1,9 +1,4 @@
-<p align="center">
-    <a href="http://sylius.org" target="_blank">
-        <img src="http://demo.sylius.org/assets/shop/img/logo.png" />
-    </a>
-</p>
-<h1 align="center">Plugin Skeleton</h1>
+# Sylius Feed Plugin
 <p align="center">
     <a href="https://packagist.org/packages/sylius/plugin-skeleton" title="License">
         <img src="https://img.shields.io/packagist/l/sylius/plugin-skeleton.svg" />
@@ -21,7 +16,7 @@
 
 ## Installation
 
-1. Run `composer create-project sylius/plugin-skeleton ProjectName`.
+1. Run `composer create-project loevgaard/sylius-feed-plugin SyliusFeedPlugin`.
 
 2. From the plugin skeleton root directory, run the following commands:
 

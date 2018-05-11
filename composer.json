@@ -1,11 +1,10 @@
 {
-    "name": "sylius/plugin-skeleton",
+    "name": "loevgaard/sylius-feed-plugin",
     "type": "sylius-plugin",
-    "description": "Acme example plugin for Sylius.",
+    "description": "Plugin to generate feeds within the Sylius ecommerce platform",
     "license": "MIT",
     "require": {
         "php": "^7.1",
-
         "sylius/sylius": "^1.1"
     },
     "require-dev": {
@@ -30,8 +29,8 @@
     "prefer-stable": true,
     "autoload": {
         "psr-4": {
-            "Acme\\SyliusExamplePlugin\\": "src/",
-            "Tests\\Acme\\SyliusExamplePlugin\\": "tests/"
+            "Loevgaard\\SyliusFeedPlugin\\": "src/",
+            "Tests\\Loevgaard\\SyliusFeedPlugin\\": "tests/"
         }
     },
     "autoload-dev": {
