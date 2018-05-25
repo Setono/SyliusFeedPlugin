@@ -1,0 +1,7 @@
+loevgaard_sylius_feed:
+    ui:
+        name: Name
+        slug: Slug
+        feed: Feed
+        feeds: Feeds
+        edit_feed: Edit feed

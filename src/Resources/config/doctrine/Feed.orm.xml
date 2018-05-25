@@ -9,9 +9,8 @@
         <id name="id" column="id" type="integer">
             <generator strategy="AUTO" />
         </id>
-        <field name="uuid" type="uuid" length="191" unique="true" nullable="false" />
+        <field name="slug" type="string" length="191" unique="true" nullable="false" />
         <field name="name" type="string" length="191" nullable="false" />
-
     </mapped-superclass>
 
 </doctrine-mapping>

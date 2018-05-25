@@ -1,0 +1,3 @@
+imports:
+    - { resource: "@LoevgaardSyliusFeedPlugin/Resources/config/resources.yml" }
+    - { resource: "@LoevgaardSyliusFeedPlugin/Resources/config/grids/grids.yml" }

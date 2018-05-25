@@ -1,0 +1,13 @@
+loevgaard_sylius_feed_admin_feed:
+    resource: |
+        alias: loevgaard_sylius_feed.feed
+        section: admin
+        templates: SyliusAdminBundle:Crud
+        redirect: update
+        grid: loevgaard_sylius_feed_admin_feed
+        vars:
+            all:
+                subheader: loevgaard_sylius_feed.ui.feed
+            index:
+                icon: 'file image outline'
+    type: sylius.resource
