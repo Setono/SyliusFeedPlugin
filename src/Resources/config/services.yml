@@ -1,4 +1,14 @@
 services:
+    loevgaard_sylius_feed.command.admin.generate_feeds:
+        class: Loevgaard\SyliusFeedPlugin\Command\GenerateFeedsCommand
+        arguments:
+            - "@loevgaard_sylius_feed.repository.feed"
+            - "@sylius.repository.channel"
+            - "@sylius.repository.product"
+            - "@sylius.manager.product"
+            - "@filesystem"
+        tags: [console.command]
+
     loevgaard_sylius_feed.listener.admin.menu_builder:
         class: Loevgaard\SyliusFeedPlugin\Menu\AdminMenuListener
         tags:

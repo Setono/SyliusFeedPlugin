@@ -9,5 +9,5 @@ use Sylius\Component\Resource\Repository\RepositoryInterface;
 
 interface FeedRepositoryInterface extends RepositoryInterface
 {
-    public function findByUuid(string $uuid): ?FeedInterface;
+    public function findOneBySlug(string $slug): ?FeedInterface;
 }

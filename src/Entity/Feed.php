@@ -27,14 +27,8 @@ class Feed implements FeedInterface
      */
     protected $name;
 
-    /**
-     * @var Collection|ChannelInterface[]
-     */
-    protected $channels;
-
     public function __construct()
     {
-        $this->channels = new ArrayCollection();
         $this->slug = Uuid::uuid4()->toString();
     }
 
@@ -90,42 +84,5 @@ class Feed implements FeedInterface
     {
         $this->name = $name;
         return $this;
-    }
-
-    /**
-     * @return Collection|ChannelInterface[]
-     */
-    public function getChannels(): Collection
-    {
-        return $this->channels;
-    }
-
-    /**
-     * @param BaseChannelInterface $channel
-     */
-    public function addChannel(BaseChannelInterface $channel): void
-    {
-        if (!$this->hasChannel($channel)) {
-            $this->channels->add($channel);
-        }
-    }
-
-    /**
-     * @param BaseChannelInterface $channel
-     */
-    public function removeChannel(BaseChannelInterface $channel): void
-    {
-        if ($this->hasChannel($channel)) {
-            $this->channels->removeElement($channel);
-        }
-    }
-
-    /**
-     * @param BaseChannelInterface $channel
-     * @return bool
-     */
-    public function hasChannel(BaseChannelInterface $channel): bool
-    {
-        return $this->channels->contains($channel);
     }
 }

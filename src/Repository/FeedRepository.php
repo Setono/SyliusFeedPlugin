@@ -10,15 +10,15 @@ use Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository;
 class FeedRepository extends EntityRepository implements FeedRepositoryInterface
 {
     /**
-     * @param string $uuid
+     * @param string $slug
      * @return FeedInterface|null
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function findByUuid(string $uuid): ?FeedInterface
+    public function findOneBySlug(string $slug): ?FeedInterface
     {
         return $this->createQueryBuilder('o')
-            ->where('o.uuid = :uuid')
-            ->setParameter('uuid', $uuid)
+            ->where('o.slug = :slug')
+            ->setParameter('slug', $slug)
             ->getQuery()
             ->getOneOrNullResult()
         ;

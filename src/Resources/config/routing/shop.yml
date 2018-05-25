@@ -1,13 +1,10 @@
 loevgaard_sylius_feed_shop_feed_render:
-    path: /feed/{uuid}
+    path: /feed/{slug}
     methods: [GET]
     defaults:
-        _controller: LoevgaardSyliusFeedPlugin:FeedRender:renderFeed
+        _controller: loevgaard_sylius_feed.controller.feed:showAction
         _sylius:
-            template: "@SyliusShop/Product/show.html.twig"
             repository:
-                method: findOneByChannelAndSlug
+                method: findOneBySlug
                 arguments:
-                    - "expr:service('sylius.context.channel').getChannel()"
-                    - "expr:service('sylius.context.locale').getLocaleCode()"
                     - $slug

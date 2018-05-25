@@ -6,3 +6,4 @@ sylius_resource:
                 model: Loevgaard\SyliusFeedPlugin\Entity\Feed
                 interface: Loevgaard\SyliusFeedPlugin\Entity\FeedInterface
                 repository: Loevgaard\SyliusFeedPlugin\Repository\FeedRepository
+                controller: Loevgaard\SyliusFeedPlugin\Controller\FeedController
