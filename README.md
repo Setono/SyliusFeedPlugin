@@ -76,11 +76,11 @@ or use [Doctrine Migrations](https://symfony.com/doc/master/bundles/DoctrineMigr
 
 [ico-version]: https://img.shields.io/packagist/v/loevgaard/sylius-feed-plugin.svg?style=flat-square
 [ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
-[ico-travis]: https://img.shields.io/travis/loevgaard/sylius-feed-plugin/master.svg?style=flat-square
-[ico-scrutinizer]: https://img.shields.io/scrutinizer/coverage/g/loevgaard/sylius-feed-plugin.svg?style=flat-square
-[ico-code-quality]: https://img.shields.io/scrutinizer/g/loevgaard/sylius-feed-plugin.svg?style=flat-square
+[ico-travis]: https://img.shields.io/travis/loevgaard/SyliusFeedPlugin/master.svg?style=flat-square
+[ico-scrutinizer]: https://img.shields.io/scrutinizer/coverage/g/loevgaard/SyliusFeedPlugin.svg?style=flat-square
+[ico-code-quality]: https://img.shields.io/scrutinizer/g/loevgaard/SyliusFeedPlugin.svg?style=flat-square
 
 [link-packagist]: https://packagist.org/packages/loevgaard/sylius-feed-plugin
-[link-travis]: https://travis-ci.org/loevgaard/sylius-feed-plugin
-[link-scrutinizer]: https://scrutinizer-ci.com/g/loevgaard/sylius-feed-plugin/code-structure
-[link-code-quality]: https://scrutinizer-ci.com/g/loevgaard/sylius-feed-plugin
+[link-travis]: https://travis-ci.org/loevgaard/SyliusFeedPlugin
+[link-scrutinizer]: https://scrutinizer-ci.com/g/loevgaard/SyliusFeedPlugin/code-structure
+[link-code-quality]: https://scrutinizer-ci.com/g/loevgaard/SyliusFeedPlugin
