@@ -50,6 +50,10 @@ final class AppKernel extends Kernel
 ```yaml
 # app/config/config.yml
 
+imports:
+    # ...
+    - { resource: "@LoevgaardSyliusFeedPlugin/Resources/config/config.yml" }
+
 loevgaard_sylius_feed:
     dir: "%kernel.root_dir%/../web/feeds"
 ```
