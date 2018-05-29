@@ -16,6 +16,8 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * TODO
@@ -50,12 +52,18 @@ final class GenerateFeedsCommand extends ContainerAwareCommand
      */
     private $filesystem;
 
+    /**
+     * @var RouterInterface
+     */
+    private $router;
+
     public function __construct(
         FeedRepositoryInterface $feedRepository,
         ChannelRepositoryInterface $channelRepository,
         ProductRepositoryInterface $productRepository,
         EntityManagerInterface $entityManager,
-        Filesystem $filesystem
+        Filesystem $filesystem,
+        RouterInterface $router
     ) {
         parent::__construct();
 
@@ -64,6 +72,7 @@ final class GenerateFeedsCommand extends ContainerAwareCommand
         $this->productRepository = $productRepository;
         $this->productManager = $entityManager;
         $this->filesystem = $filesystem;
+        $this->router = $router;
     }
 
     protected function configure(): void
@@ -93,36 +102,52 @@ final class GenerateFeedsCommand extends ContainerAwareCommand
 
     private function generateFeed(FeedInterface $feed, ChannelInterface $channel, LocaleInterface $locale) : void
     {
+        // configure router context
+        $context = $this->router->getContext();
+        $context->setHost($channel->getHostname());
+
         $feedDir = $this->getContainer()->getParameter('loevgaard_sylius_feed.dir');
 
         $tmpFile = $this->getTmpFile();
 
-        $tmpFile->fwrite(<<<START
-<?xml version="1.0" encoding="UTF-8"?>
-<products>
-START
-);
-
         $products = $this->getProducts();
 
+        $xmlWriter = new \XMLWriter();
+        $xmlWriter->openURI($tmpFile->getPathname());
+        $xmlWriter->setIndent(true);
+        $xmlWriter->setIndentString('  ');
+        $xmlWriter->startDocument();
+        $xmlWriter->startElement('products');
+
         foreach ($products as $product) {
-            $tmpFile->fwrite('<product>');
-            $tmpFile->fwrite('<id>'.$product->getId().'</id>');
-            $tmpFile->fwrite('<code>'.$product->getCode().'</code>');
-            $tmpFile->fwrite('<name>'.$product->getName().'</name>');
-            $tmpFile->fwrite('<short_description>'.$product->getShortDescription().'</short_description>');
-            $tmpFile->fwrite('<description>'.$product->getDescription().'</description>');
-            $tmpFile->fwrite('<created_at>'.$product->getCreatedAt()->format(DATE_ATOM).'</created_at>');
-            $tmpFile->fwrite('<updated_at>'.$product->getUpdatedAt()->format(DATE_ATOM).'</updated_at>');
-            $tmpFile->fwrite('<main_taxon>'.($product->getMainTaxon() ? $product->getMainTaxon()->getName() : '').'</main_taxon>');
-            $tmpFile->fwrite('</product>');
+            $link = $this->router->generate('sylius_shop_product_show', ['_locale' => $locale->getCode(), 'slug' => $product->getSlug()], UrlGeneratorInterface::ABSOLUTE_URL);
+
+            // outer product tag begin
+            $xmlWriter->startElement('product');
+
+            // add data tags
+            $xmlWriter->writeElement('id', (string)$product->getId());
+            $xmlWriter->writeElement('code', $product->getCode());
+            $xmlWriter->writeElement('link', $link);
+            $xmlWriter->writeElement('name', $product->getName());
+            $xmlWriter->writeElement('short_description', $product->getShortDescription());
+            $xmlWriter->writeElement('description', $product->getDescription());
+            $xmlWriter->writeElement('main_taxon', $product->getMainTaxon() ? $product->getMainTaxon()->getName() : '');
+            $xmlWriter->writeElement('created_at', $product->getCreatedAt()->format(DATE_ATOM));
+            $xmlWriter->writeElement('updated_at', $product->getUpdatedAt()->format(DATE_ATOM));
+
+            // outer product tag end
+            $xmlWriter->endElement();
+
+            echo (memory_get_usage(true) / 1024 / 1024)." MB\n";
+
+            // todo flush when we've reached a certain threshold of PHP's max memory limit
+            //$xmlWriter->flush();
         }
 
-        $tmpFile->fwrite(<<<END
-</products>
-END
-        );
-        $tmpFile->fflush();
+        $xmlWriter->endElement();
+        $xmlWriter->endDocument();
+        $xmlWriter->flush();
 
         // create the directory structure
         $dir = $feedDir.'/'.$channel->getCode().'/'.$locale->getCode();
@@ -131,13 +156,15 @@ END
         $this->filesystem->rename($tmpFile->getPathname(), $dir.'/'.$feed->getSlug().'.xml', true);
     }
 
-    private function getTmpFile() : \SplFileObject
+    private function getTmpFile() : \SplFileInfo
     {
         do {
             $filename = sys_get_temp_dir().'/'.uniqid('feed-', true).'.xml';
         } while ($this->filesystem->exists($filename));
 
-        return new \SplFileObject($filename, 'w+');
+        $this->filesystem->touch($filename);
+
+        return new \SplFileInfo($filename);
     }
 
     /**
