@@ -8,6 +8,8 @@ services:
             - "@sylius.manager.product"
             - "@filesystem"
             - "@router"
+            - "@liip_imagine.cache.manager"
+            - "@translator"
         tags: [console.command]
 
     loevgaard_sylius_feed.listener.admin.menu_builder:
