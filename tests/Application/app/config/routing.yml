@@ -3,5 +3,5 @@ sylius:
 
 # Put your own routes here
 
-acme_sylius_example_shop:
+loevgaard_sylius_brand:
     resource: "@LoevgaardSyliusFeedPlugin/Resources/config/routing.yml"
