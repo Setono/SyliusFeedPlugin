@@ -1,7 +1,5 @@
 sylius:
     resource: "../../../../vendor/sylius/sylius/app/config/routing.yml"
 
-# Put your own routes here
-
-loevgaard_sylius_brand:
+loevgaard_sylius_feed_plugin:
     resource: "@LoevgaardSyliusFeedPlugin/Resources/config/routing.yml"
