@@ -7,7 +7,7 @@ loevgaard_sylius_feed_admin_feed:
         grid: loevgaard_sylius_feed_admin_feed
         vars:
             all:
-                subheader: loevgaard_sylius_feed.ui.feed
+                subheader: loevgaard_sylius_feed.ui.manage_feeds
             index:
                 icon: 'file image outline'
     type: sylius.resource

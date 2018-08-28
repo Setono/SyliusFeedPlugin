@@ -3,7 +3,6 @@
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Software License][ico-license]](LICENSE)
 [![Build Status][ico-travis]][link-travis]
-[![Coverage Status][ico-scrutinizer]][link-scrutinizer]
 [![Quality Score][ico-code-quality]][link-code-quality]
 
 ## Installation
@@ -58,6 +57,16 @@ loevgaard_sylius_feed:
     dir: "%kernel.root_dir%/../web/feeds"
 ```
 
+```yaml
+# app/config/routing.yml
+
+# ...
+
+loevgaard_sylius_feed:
+    resource: "@LoevgaardSyliusFeedPlugin/Resources/config/routing.yml"
+```
+
+
 It doesn't matter whether this directory is public or not.
 
 ### Step 4: Update your database schema
@@ -86,5 +95,4 @@ or use [Doctrine Migrations](https://symfony.com/doc/master/bundles/DoctrineMigr
 
 [link-packagist]: https://packagist.org/packages/loevgaard/sylius-feed-plugin
 [link-travis]: https://travis-ci.org/loevgaard/SyliusFeedPlugin
-[link-scrutinizer]: https://scrutinizer-ci.com/g/loevgaard/SyliusFeedPlugin/code-structure
 [link-code-quality]: https://scrutinizer-ci.com/g/loevgaard/SyliusFeedPlugin

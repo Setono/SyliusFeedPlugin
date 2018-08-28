@@ -1,5 +1,5 @@
 sylius:
     resource: "../../../../vendor/sylius/sylius/app/config/routing.yml"
 
-loevgaard_sylius_feed_plugin:
+loevgaard_sylius_feed:
     resource: "@LoevgaardSyliusFeedPlugin/Resources/config/routing.yml"

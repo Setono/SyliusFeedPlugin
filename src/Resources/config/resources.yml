@@ -1,9 +1,0 @@
-sylius_resource:
-    resources:
-        loevgaard_sylius_feed.feed:
-            driver: doctrine/orm
-            classes:
-                model: Loevgaard\SyliusFeedPlugin\Entity\Feed
-                interface: Loevgaard\SyliusFeedPlugin\Entity\FeedInterface
-                repository: Loevgaard\SyliusFeedPlugin\Repository\FeedRepository
-                controller: Loevgaard\SyliusFeedPlugin\Controller\FeedController

@@ -5,3 +5,5 @@ loevgaard_sylius_feed:
         feed: Feed
         feeds: Feeds
         edit_feed: Edit feed
+        new_feed: New feed
+        manage_feeds: Manage feeds
