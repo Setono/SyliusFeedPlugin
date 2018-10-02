@@ -12,9 +12,10 @@ interface FeedInterface extends ResourceInterface
 
     /**
      * @param int $id
+     *
      * @return Feed
      */
-    public function setId(int $id) : FeedInterface;
+    public function setId(int $id): self;
 
     /**
      * @return string
@@ -23,9 +24,10 @@ interface FeedInterface extends ResourceInterface
 
     /**
      * @param string $slug
+     *
      * @return Feed
      */
-    public function setSlug(string $slug) : FeedInterface;
+    public function setSlug(string $slug): self;
 
     /**
      * @return string
@@ -34,7 +36,8 @@ interface FeedInterface extends ResourceInterface
 
     /**
      * @param string $name
+     *
      * @return Feed
      */
-    public function setName(string $name) : FeedInterface;
+    public function setName(string $name): self;
 }

@@ -11,7 +11,9 @@ class FeedRepository extends EntityRepository implements FeedRepositoryInterface
 {
     /**
      * @param string $slug
+     *
      * @return FeedInterface|null
+     *
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function findOneBySlug(string $slug): ?FeedInterface

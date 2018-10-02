@@ -119,7 +119,7 @@ final class GenerateFeedsCommand extends ContainerAwareCommand
         }
     }
 
-    private function generateFeed(FeedInterface $feed, ChannelInterface $channel, LocaleInterface $locale) : void
+    private function generateFeed(FeedInterface $feed, ChannelInterface $channel, LocaleInterface $locale): void
     {
         $propertyAccessor = PropertyAccess::createPropertyAccessor();
         $this->translator->setLocale($locale->getCode());
@@ -142,7 +142,7 @@ final class GenerateFeedsCommand extends ContainerAwareCommand
         $xmlWriter->startElement('products');
 
         foreach ($products as $product) {
-            if(!$product->isEnabled()) {
+            if (!$product->isEnabled()) {
                 continue;
             }
 
@@ -160,12 +160,11 @@ final class GenerateFeedsCommand extends ContainerAwareCommand
                 $prices = $variant->getChannelPricings();
                 foreach ($prices as $price) {
                     /** @var ChannelPricingInterface $price */
-
-                    if($price->getPrice() < $lowestPrice) {
+                    if ($price->getPrice() < $lowestPrice) {
                         $lowestPrice = $price->getPrice();
                     }
 
-                    if($price->getPrice() > $highestPrice) {
+                    if ($price->getPrice() > $highestPrice) {
                         $highestPrice = $price->getPrice();
                     }
                 }
@@ -193,15 +192,15 @@ final class GenerateFeedsCommand extends ContainerAwareCommand
 
             $mainTaxonPath = null;
 
-            if($product->getMainTaxon()) {
+            if ($product->getMainTaxon()) {
                 $data['main_taxon'] = $product->getMainTaxon()->getName();
                 $mainTaxonPath = $product->getMainTaxon()->getName();
 
                 foreach ($product->getMainTaxon()->getAncestors() as $ancestor) {
-                    $mainTaxonPath = $ancestor->getName().' > '.$mainTaxonPath;
+                    $mainTaxonPath = $ancestor->getName() . ' > ' . $mainTaxonPath;
                 }
 
-                $data['main_taxon_path'] = $this->translator->trans('sylius.ui.home').' > '.$mainTaxonPath;
+                $data['main_taxon_path'] = $this->translator->trans('sylius.ui.home') . ' > ' . $mainTaxonPath;
             }
 
             $image = null;
@@ -209,22 +208,26 @@ final class GenerateFeedsCommand extends ContainerAwareCommand
                 $image = $this->imagineCacheManager->getBrowserPath($image->getPath(), 'sylius_shop_product_original');
             }
 
-            if($image) {
+            if ($image) {
                 $data['image'] = $image;
             }
 
             $gtin = null;
+
             try {
                 $gtin = $propertyAccessor->getValue($product, 'gtin');
-            } catch (NoSuchPropertyException $e) {}
+            } catch (NoSuchPropertyException $e) {
+            }
             if ($gtin) {
                 $data['gtin'] = $gtin;
             }
 
             $brand = null;
+
             try {
                 $brand = $propertyAccessor->getValue($product, 'brand');
-            } catch (NoSuchPropertyException $e) {}
+            } catch (NoSuchPropertyException $e) {
+            }
             if ($brand) {
                 $data['brand'] = $brand;
             }
@@ -233,7 +236,6 @@ final class GenerateFeedsCommand extends ContainerAwareCommand
 
             foreach ($product->getVariants() as $variant) {
                 /** @var ProductVariant $variant */
-
                 $data = [
                     'id' => $variant->getId(),
                     'code' => $variant->getCode(),
@@ -252,15 +254,15 @@ final class GenerateFeedsCommand extends ContainerAwareCommand
                     'updated_at' => $variant->getUpdatedAt()->format(DATE_ATOM),
                 ];
 
-                if($product->getMainTaxon()) {
+                if ($product->getMainTaxon()) {
                     $data['main_taxon'] = $product->getMainTaxon()->getName();
                 }
 
-                if($mainTaxonPath) {
+                if ($mainTaxonPath) {
                     $data['main_taxon_path'] = $mainTaxonPath;
                 }
 
-                if($image) {
+                if ($image) {
                     $data['image'] = $image;
                 }
 
@@ -270,7 +272,6 @@ final class GenerateFeedsCommand extends ContainerAwareCommand
                         $data['gtin'] = $gtin;
                     }
                 } catch (NoSuchPropertyException $e) {
-
                 }
 
                 if ($brand) {
@@ -281,11 +282,10 @@ final class GenerateFeedsCommand extends ContainerAwareCommand
                 $basePrice = null;
                 foreach ($prices as $price) {
                     /** @var ChannelPricingInterface $price */
-
                     $basePrice = $price->getPrice();
                 }
 
-                if($basePrice) {
+                if ($basePrice) {
                     $data['price'] = $basePrice;
                 }
 
@@ -298,35 +298,36 @@ final class GenerateFeedsCommand extends ContainerAwareCommand
         $xmlWriter->flush();
 
         // create the directory structure
-        $dir = $feedDir.'/'.$channel->getCode().'/'.$locale->getCode();
+        $dir = $feedDir . '/' . $channel->getCode() . '/' . $locale->getCode();
         $this->filesystem->mkdir($dir);
 
-        $this->filesystem->rename($tmpFile->getPathname(), $dir.'/'.$feed->getSlug().'.xml', true);
+        $this->filesystem->rename($tmpFile->getPathname(), $dir . '/' . $feed->getSlug() . '.xml', true);
     }
 
-    private function writeProduct(\XMLWriter $xmlWriter, array $data) : void
+    private function writeProduct(\XMLWriter $xmlWriter, array $data): void
     {
         $xmlWriter->startElement('product');
 
         foreach ($data as $key => $val) {
-            if(is_bool($val)) {
+            if (is_bool($val)) {
                 $val = $this->boolToString($val);
             }
 
-            $xmlWriter->writeElement($key, (string)$val);
+            $xmlWriter->writeElement($key, (string) $val);
         }
 
         $xmlWriter->endElement();
     }
 
-    private function boolToString(bool $val) : string {
+    private function boolToString(bool $val): string
+    {
         return $val ? 'true' : 'false';
     }
 
-    private function getTmpFile() : \SplFileInfo
+    private function getTmpFile(): \SplFileInfo
     {
         do {
-            $filename = sys_get_temp_dir().'/'.uniqid('feed-', true).'.xml';
+            $filename = sys_get_temp_dir() . '/' . uniqid('feed-', true) . '.xml';
         } while ($this->filesystem->exists($filename));
 
         $this->filesystem->touch($filename);

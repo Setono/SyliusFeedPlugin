@@ -1,0 +1,5 @@
+imports:
+- { resource: "@LoevgaardSyliusFeedPlugin/Resources/config/config.yml" }
+
+loevgaard_sylius_feed:
+    dir: "%kernel.project_dir%/var/feeds"

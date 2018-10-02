@@ -27,7 +27,7 @@ class FeedController extends ResourceController
 
         $feedFile = new \SplFileInfo($this->getFeedPath($resource));
 
-        if(!$feedFile->isFile()) {
+        if (!$feedFile->isFile()) {
             throw $this->createNotFoundException('The feed does not exist or has not been generated yet');
         }
 
@@ -36,12 +36,12 @@ class FeedController extends ResourceController
         return $response;
     }
 
-    protected function getFeedPath(FeedInterface $feed) : string
+    protected function getFeedPath(FeedInterface $feed): string
     {
         /** @var ChannelInterface $channel */
         $channel = $this->get('sylius.context.channel')->getChannel();
         $locale = $this->get('sylius.context.locale')->getLocaleCode();
 
-        return $this->getParameter('loevgaard_sylius_feed.dir').'/'.$channel->getCode().'/'.$locale.'/'.$feed->getSlug().'.xml';
+        return $this->getParameter('loevgaard_sylius_feed.dir') . '/' . $channel->getCode() . '/' . $locale . '/' . $feed->getSlug() . '.xml';
     }
 }

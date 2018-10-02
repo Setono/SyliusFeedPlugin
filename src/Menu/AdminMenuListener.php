@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Loevgaard\SyliusFeedPlugin\Menu;
 
 use Sylius\Bundle\UiBundle\Menu\Event\MenuBuilderEvent;
@@ -16,7 +18,7 @@ final class AdminMenuListener
         $menu
             ->getChild('catalog')
             ->addChild('feeds', [
-                'route' => 'loevgaard_sylius_feed_admin_feed_index'
+                'route' => 'loevgaard_sylius_feed_admin_feed_index',
             ])
             ->setLabel('Feeds')
             ->setLabelAttribute('icon', 'table')

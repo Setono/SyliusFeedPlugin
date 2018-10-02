@@ -1,0 +1,9 @@
+loevgaard_sylius_feed_shop:
+    resource: "@LoevgaardSyliusFeedPlugin/Resources/config/shop_routing.yml"
+    prefix: /{_locale}
+    requirements:
+        _locale: ^[a-z]{2}(?:_[A-Z]{2})?$
+
+loevgaard_sylius_feed_admin:
+    resource: "@LoevgaardSyliusFeedPlugin/Resources/config/admin_routing.yml"
+    prefix: /admin
