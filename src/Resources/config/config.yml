@@ -1,27 +1,27 @@
 sylius_resource:
     resources:
-        loevgaard_sylius_feed.feed:
+        setono_sylius_feed.feed:
             driver: doctrine/orm
             classes:
-                model: Loevgaard\SyliusFeedPlugin\Entity\Feed
-                interface: Loevgaard\SyliusFeedPlugin\Entity\FeedInterface
-                repository: Loevgaard\SyliusFeedPlugin\Repository\FeedRepository
-                controller: Loevgaard\SyliusFeedPlugin\Controller\FeedController
+                model: Setono\SyliusFeedPlugin\Entity\Feed
+                interface: Setono\SyliusFeedPlugin\Entity\FeedInterface
+                repository: Setono\SyliusFeedPlugin\Repository\FeedRepository
+                controller: Setono\SyliusFeedPlugin\Controller\FeedController
 
 sylius_grid:
     grids:
-        loevgaard_sylius_feed_admin_feed:
+        setono_sylius_feed_admin_feed:
             driver:
                 name: doctrine/orm
                 options:
-                    class: Loevgaard\SyliusFeedPlugin\Entity\Feed
+                    class: Setono\SyliusFeedPlugin\Entity\Feed
             fields:
                 name:
                     type: string
-                    label: loevgaard_sylius_feed.ui.name
+                    label: setono_sylius_feed.ui.name
                 slug:
                     type: string
-                    label: loevgaard_sylius_feed.ui.slug
+                    label: setono_sylius_feed.ui.slug
             actions:
                 main:
                     create:

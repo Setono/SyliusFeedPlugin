@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Loevgaard\SyliusFeedPlugin\Controller;
+namespace Setono\SyliusFeedPlugin\Controller;
 
-use Loevgaard\SyliusFeedPlugin\Entity\FeedInterface;
+use Setono\SyliusFeedPlugin\Entity\FeedInterface;
 use Sylius\Bundle\ResourceBundle\Controller\ResourceController;
 use Sylius\Component\Channel\Model\ChannelInterface;
 use Sylius\Component\Resource\ResourceActions;
@@ -42,6 +42,6 @@ class FeedController extends ResourceController
         $channel = $this->get('sylius.context.channel')->getChannel();
         $locale = $this->get('sylius.context.locale')->getLocaleCode();
 
-        return $this->getParameter('loevgaard_sylius_feed.dir') . '/' . $channel->getCode() . '/' . $locale . '/' . $feed->getSlug() . '.xml';
+        return $this->getParameter('setono_sylius_feed.dir') . '/' . $channel->getCode() . '/' . $locale . '/' . $feed->getSlug() . '.xml';
     }
 }

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Loevgaard\SyliusFeedPlugin\Repository;
+namespace Setono\SyliusFeedPlugin\Repository;
 
-use Loevgaard\SyliusFeedPlugin\Entity\FeedInterface;
+use Setono\SyliusFeedPlugin\Entity\FeedInterface;
 use Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository;
 
 class FeedRepository extends EntityRepository implements FeedRepositoryInterface

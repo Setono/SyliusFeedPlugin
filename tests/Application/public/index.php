@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Symfony\Component\Debug\Debug;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\HttpFoundation\Request;
-use Tests\Loevgaard\SyliusFeedPlugin\Application\Kernel;
+use Tests\Setono\SyliusFeedPlugin\Application\Kernel;
 
 require __DIR__.'/../../../vendor/autoload.php';
 

@@ -1,8 +1,8 @@
-loevgaard_sylius_feed_shop_feed_render:
+setono_sylius_feed_shop_feed_render:
     path: /feed/{slug}
     methods: [GET]
     defaults:
-        _controller: loevgaard_sylius_feed.controller.feed:showAction
+        _controller: setono_sylius_feed.controller.feed:showAction
         _sylius:
             repository:
                 method: findOneBySlug

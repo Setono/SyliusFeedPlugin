@@ -14,7 +14,7 @@ default:
             kernel:
                 env: test
                 debug: true
-                class: Tests\Loevgaard\SyliusFeedPlugin\Application\Kernel
+                class: Tests\Setono\SyliusFeedPlugin\Application\Kernel
                 path: tests/Application/Kernel.php
                 bootstrap: ~
 

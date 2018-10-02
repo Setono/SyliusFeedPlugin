@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Loevgaard\SyliusFeedPlugin\Entity;
+namespace Setono\SyliusFeedPlugin\Entity;
 
 use Sylius\Component\Resource\Model\ResourceInterface;
 

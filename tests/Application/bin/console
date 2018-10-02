@@ -7,7 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Debug\Debug;
 use Symfony\Component\Dotenv\Dotenv;
-use Tests\Loevgaard\SyliusFeedPlugin\Application\Kernel;
+use Tests\Setono\SyliusFeedPlugin\Application\Kernel;
 
 set_time_limit(0);
 

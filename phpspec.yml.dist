@@ -1,4 +1,4 @@
 suites:
     main:
-        namespace: Loevgaard\SyliusFeedPlugin
-        psr4_prefix: Loevgaard\SyliusFeedPlugin
+        namespace: Setono\SyliusFeedPlugin
+        psr4_prefix: Setono\SyliusFeedPlugin

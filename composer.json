@@ -1,5 +1,5 @@
 {
-    "name": "loevgaard/sylius-feed-plugin",
+    "name": "setono/sylius-feed-plugin",
     "type": "sylius-plugin",
     "description": "Plugin to generate feeds within the Sylius ecommerce platform",
     "license": "MIT",
@@ -40,8 +40,8 @@
     "prefer-stable": true,
     "autoload": {
         "psr-4": {
-            "Loevgaard\\SyliusFeedPlugin\\": "src/",
-            "Tests\\Loevgaard\\SyliusFeedPlugin\\": "tests/"
+            "Setono\\SyliusFeedPlugin\\": "src/",
+            "Tests\\Setono\\SyliusFeedPlugin\\": "tests/"
         }
     },
     "extra": {

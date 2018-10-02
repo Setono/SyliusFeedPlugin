@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Loevgaard\SyliusFeedPlugin\Command;
+namespace Setono\SyliusFeedPlugin\Command;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
-use Loevgaard\SyliusFeedPlugin\Entity\FeedInterface;
-use Loevgaard\SyliusFeedPlugin\Repository\FeedRepositoryInterface;
+use Setono\SyliusFeedPlugin\Entity\FeedInterface;
+use Setono\SyliusFeedPlugin\Repository\FeedRepositoryInterface;
 use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ChannelPricingInterface;
@@ -97,7 +97,7 @@ final class GenerateFeedsCommand extends ContainerAwareCommand
     protected function configure(): void
     {
         $this
-            ->setName('loevgaard:feed:generate')
+            ->setName('setono:feed:generate')
             ->setDescription('Generates feeds')
         ;
     }
@@ -128,7 +128,7 @@ final class GenerateFeedsCommand extends ContainerAwareCommand
         $context = $this->router->getContext();
         $context->setHost($channel->getHostname());
 
-        $feedDir = $this->getContainer()->getParameter('loevgaard_sylius_feed.dir');
+        $feedDir = $this->getContainer()->getParameter('setono_sylius_feed.dir');
 
         $tmpFile = $this->getTmpFile();
 

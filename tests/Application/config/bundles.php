@@ -53,7 +53,7 @@ return [
     Sylius\Bundle\ShopBundle\SyliusShopBundle::class => ['all' => true],
     FOS\OAuthServerBundle\FOSOAuthServerBundle::class => ['all' => true],
     Sylius\Bundle\AdminApiBundle\SyliusAdminApiBundle::class => ['all' => true],
-    Loevgaard\SyliusFeedPlugin\LoevgaardSyliusFeedPlugin::class => ['all' => true],
+    Setono\SyliusFeedPlugin\SetonoSyliusFeedPlugin::class => ['all' => true],
     Symfony\Bundle\DebugBundle\DebugBundle::class => ['dev' => true, 'test' => true, 'test_cached' => true],
     Symfony\Bundle\WebProfilerBundle\WebProfilerBundle::class => ['dev' => true, 'test' => true, 'test_cached' => true],
 ];

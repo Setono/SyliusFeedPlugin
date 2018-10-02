@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Loevgaard\SyliusFeedPlugin\Application;
+namespace Tests\Setono\SyliusFeedPlugin\Application;
 
 use ProxyManager\Proxy\VirtualProxyInterface;
 use PSS\SymfonyMockerContainer\DependencyInjection\MockerContainer;
