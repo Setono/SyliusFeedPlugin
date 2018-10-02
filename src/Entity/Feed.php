@@ -31,29 +31,17 @@ class Feed implements FeedInterface
     /**
      * @return int
      */
-    public function getId(): int
+    public function getId(): ?int
     {
-        return (int) ($this->id);
-    }
-
-    /**
-     * @param int $id
-     *
-     * @return Feed
-     */
-    public function setId(int $id): FeedInterface
-    {
-        $this->id = $id;
-
-        return $this;
+        return $this->id;
     }
 
     /**
      * @return string
      */
-    public function getSlug(): string
+    public function getSlug(): ?string
     {
-        return (string) $this->slug;
+        return $this->slug;
     }
 
     /**
@@ -71,9 +59,9 @@ class Feed implements FeedInterface
     /**
      * @return string
      */
-    public function getName(): string
+    public function getName(): ?string
     {
-        return (string) $this->name;
+        return $this->name;
     }
 
     /**

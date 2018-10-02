@@ -14,14 +14,14 @@ final class AdminMenuListener
     public function addAdminMenuItems(MenuBuilderEvent $event): void
     {
         $menu = $event->getMenu();
-
-        $menu
-            ->getChild('catalog')
-            ->addChild('feeds', [
+        $catalog = $menu->getChild('catalog');
+        if ($catalog) {
+            $catalog->addChild('feeds', [
                 'route' => 'loevgaard_sylius_feed_admin_feed_index',
             ])
-            ->setLabel('Feeds')
-            ->setLabelAttribute('icon', 'table')
-        ;
+                ->setLabel('Feeds')
+                ->setLabelAttribute('icon', 'table')
+            ;
+        }
     }
 }

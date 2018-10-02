@@ -8,19 +8,15 @@ use Sylius\Component\Resource\Model\ResourceInterface;
 
 interface FeedInterface extends ResourceInterface
 {
-    public function getId(): int;
+    /**
+     * @return int|null
+     */
+    public function getId(): ?int;
 
     /**
-     * @param int $id
-     *
-     * @return Feed
+     * @return string|null
      */
-    public function setId(int $id): self;
-
-    /**
-     * @return string
-     */
-    public function getSlug(): string;
+    public function getSlug(): ?string;
 
     /**
      * @param string $slug
@@ -30,9 +26,9 @@ interface FeedInterface extends ResourceInterface
     public function setSlug(string $slug): self;
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getName(): string;
+    public function getName(): ?string;
 
     /**
      * @param string $name

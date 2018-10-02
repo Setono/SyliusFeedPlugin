@@ -12,7 +12,7 @@ use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ChannelPricingInterface;
 use Sylius\Component\Core\Model\ProductInterface;
-use Sylius\Component\Core\Model\ProductVariant;
+use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Core\Repository\ProductRepositoryInterface;
 use Sylius\Component\Locale\Model\LocaleInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -153,8 +153,10 @@ final class GenerateFeedsCommand extends ContainerAwareCommand
             $lowestPrice = PHP_INT_MAX;
             $highestPrice = 0;
 
-            foreach ($product->getVariants() as $variant) {
-                /** @var ProductVariant $variant */
+            /** @var ProductVariantInterface[] $variants */
+            $variants = $product->getVariants();
+
+            foreach ($variants as $variant) {
                 $stock += $variant->getOnHand();
 
                 $prices = $variant->getChannelPricings();
@@ -182,17 +184,17 @@ final class GenerateFeedsCommand extends ContainerAwareCommand
                 'in_stock' => $stock > 0,
                 'lowest_price' => $lowestPrice,
                 'highest_price' => $highestPrice,
-                'currency' => $channel->getBaseCurrency()->getCode(),
+                'currency' => $channel->getBaseCurrency() !== null ? $channel->getBaseCurrency()->getCode() : '',
                 'is_master' => true,
                 'is_variant' => false,
                 'variant_group_id' => $product->getCode(),
-                'created_at' => $product->getCreatedAt()->format(DATE_ATOM),
-                'updated_at' => $product->getUpdatedAt()->format(DATE_ATOM),
+                'created_at' => $product->getCreatedAt() !== null ? $product->getCreatedAt()->format(DATE_ATOM) : '',
+                'updated_at' => $product->getUpdatedAt() !== null ? $product->getUpdatedAt()->format(DATE_ATOM) : '',
             ];
 
             $mainTaxonPath = null;
 
-            if ($product->getMainTaxon()) {
+            if ($product->getMainTaxon() !== null) {
                 $data['main_taxon'] = $product->getMainTaxon()->getName();
                 $mainTaxonPath = $product->getMainTaxon()->getName();
 
@@ -234,8 +236,10 @@ final class GenerateFeedsCommand extends ContainerAwareCommand
 
             $this->writeProduct($xmlWriter, $data);
 
-            foreach ($product->getVariants() as $variant) {
-                /** @var ProductVariant $variant */
+            /** @var ProductVariantInterface[] $variants */
+            $variants = $product->getVariants();
+
+            foreach ($variants as $variant) {
                 $data = [
                     'id' => $variant->getId(),
                     'code' => $variant->getCode(),
@@ -246,15 +250,15 @@ final class GenerateFeedsCommand extends ContainerAwareCommand
                     'condition' => 'new',
                     'stock' => $stock,
                     'in_stock' => $stock > 0,
-                    'currency' => $channel->getBaseCurrency()->getCode(),
+                    'currency' => $channel->getBaseCurrency() !== null ? $channel->getBaseCurrency()->getCode() : '',
                     'is_master' => false,
                     'is_variant' => true,
                     'variant_group_id' => $product->getCode(),
-                    'created_at' => $variant->getCreatedAt()->format(DATE_ATOM),
-                    'updated_at' => $variant->getUpdatedAt()->format(DATE_ATOM),
+                    'created_at' => $variant->getCreatedAt() !== null ? $variant->getCreatedAt()->format(DATE_ATOM) : '',
+                    'updated_at' => $variant->getUpdatedAt() !== null ? $variant->getUpdatedAt()->format(DATE_ATOM) : '',
                 ];
 
-                if ($product->getMainTaxon()) {
+                if ($product->getMainTaxon() !== null) {
                     $data['main_taxon'] = $product->getMainTaxon()->getName();
                 }
 
@@ -278,10 +282,10 @@ final class GenerateFeedsCommand extends ContainerAwareCommand
                     $data['brand'] = $brand;
                 }
 
+                /** @var ChannelPricingInterface[] $prices */
                 $prices = $variant->getChannelPricings();
                 $basePrice = null;
                 foreach ($prices as $price) {
-                    /** @var ChannelPricingInterface $price */
                     $basePrice = $price->getPrice();
                 }
 
@@ -340,6 +344,9 @@ final class GenerateFeedsCommand extends ContainerAwareCommand
      */
     private function getProducts()
     {
-        return $this->productRepository->findAll();
+        /** @var ProductInterface[] $products */
+        $products = $this->productRepository->findAll();
+
+        return $products;
     }
 }
