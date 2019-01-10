@@ -1,20 +1,10 @@
-sylius_resource:
-    resources:
-        setono_sylius_feed.feed:
-            driver: doctrine/orm
-            classes:
-                model: Setono\SyliusFeedPlugin\Entity\Feed
-                interface: Setono\SyliusFeedPlugin\Entity\FeedInterface
-                repository: Setono\SyliusFeedPlugin\Repository\FeedRepository
-                controller: Setono\SyliusFeedPlugin\Controller\FeedController
-
 sylius_grid:
     grids:
         setono_sylius_feed_admin_feed:
             driver:
                 name: doctrine/orm
                 options:
-                    class: Setono\SyliusFeedPlugin\Entity\Feed
+                    class: Setono\SyliusFeedPlugin\Model\Feed
             fields:
                 name:
                     type: string

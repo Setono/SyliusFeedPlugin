@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Setono\SyliusFeedPlugin\Entity;
+namespace Setono\SyliusFeedPlugin\Model;
 
 use Sylius\Component\Resource\Model\ResourceInterface;
 
@@ -14,16 +14,14 @@ interface FeedInterface extends ResourceInterface
     public function getId(): ?int;
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getSlug(): ?string;
+    public function getSlug(): string;
 
     /**
      * @param string $slug
-     *
-     * @return Feed
      */
-    public function setSlug(string $slug): self;
+    public function setSlug(string $slug): void;
 
     /**
      * @return string|null
@@ -32,8 +30,6 @@ interface FeedInterface extends ResourceInterface
 
     /**
      * @param string $name
-     *
-     * @return Feed
      */
-    public function setName(string $name): self;
+    public function setName(string $name): void;
 }

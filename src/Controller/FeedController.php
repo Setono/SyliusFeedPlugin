@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Controller;
 
-use Setono\SyliusFeedPlugin\Entity\FeedInterface;
+use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Sylius\Bundle\ResourceBundle\Controller\ResourceController;
 use Sylius\Component\Channel\Model\ChannelInterface;
 use Sylius\Component\Resource\ResourceActions;

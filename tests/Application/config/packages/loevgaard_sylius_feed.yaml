@@ -1,5 +1,0 @@
-imports:
-- { resource: "@SetonoSyliusFeedPlugin/Resources/config/config.yml" }
-
-setono_sylius_feed:
-    dir: "%kernel.project_dir%/var/feeds"

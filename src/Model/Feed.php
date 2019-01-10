@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Setono\SyliusFeedPlugin\Entity;
+namespace Setono\SyliusFeedPlugin\Model;
 
 use Ramsey\Uuid\Uuid;
 
@@ -23,13 +23,16 @@ class Feed implements FeedInterface
      */
     protected $name;
 
+    /**
+     * @throws \Exception
+     */
     public function __construct()
     {
         $this->slug = Uuid::uuid4()->toString();
     }
 
     /**
-     * @return int
+     * {@inheritdoc}
      */
     public function getId(): ?int
     {
@@ -37,27 +40,23 @@ class Feed implements FeedInterface
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
-    public function getSlug(): ?string
+    public function getSlug(): string
     {
         return $this->slug;
     }
 
     /**
-     * @param string $slug
-     *
-     * @return Feed
+     * {@inheritdoc}
      */
-    public function setSlug(string $slug): FeedInterface
+    public function setSlug(string $slug): void
     {
         $this->slug = $slug;
-
-        return $this;
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getName(): ?string
     {
@@ -65,14 +64,10 @@ class Feed implements FeedInterface
     }
 
     /**
-     * @param string $name
-     *
-     * @return Feed
+     * {@inheritdoc}
      */
-    public function setName(string $name): FeedInterface
+    public function setName(string $name): void
     {
         $this->name = $name;
-
-        return $this;
     }
 }

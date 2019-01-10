@@ -4,6 +4,8 @@ imports:
     - { resource: "@SyliusAdminBundle/Resources/config/app/config.yml" }
     - { resource: "@SyliusAdminApiBundle/Resources/config/app/config.yml" }
 
+    - { resource: "@SetonoSyliusFeedPlugin/Resources/config/config.yml" }
+
     - { resource: "@SyliusShopBundle/Resources/config/app/config.yml" }
 
 parameters:

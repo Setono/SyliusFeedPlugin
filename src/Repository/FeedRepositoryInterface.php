@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Repository;
 
-use Setono\SyliusFeedPlugin\Entity\FeedInterface;
+use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 
 interface FeedRepositoryInterface extends RepositoryInterface
