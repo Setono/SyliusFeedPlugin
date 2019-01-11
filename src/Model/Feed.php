@@ -8,6 +8,10 @@ use Ramsey\Uuid\Uuid;
 
 class Feed implements FeedInterface
 {
+    use ChannelsAwareTrait {
+        ChannelsAwareTrait::__construct as private __channelsTraitConstruct;
+    }
+
     /**
      * @var int
      */
@@ -29,6 +33,8 @@ class Feed implements FeedInterface
     public function __construct()
     {
         $this->slug = Uuid::uuid4()->toString();
+
+        $this->__channelsTraitConstruct();
     }
 
     /**

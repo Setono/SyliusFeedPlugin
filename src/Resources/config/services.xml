@@ -15,6 +15,12 @@
             <tag name="console.command" />
         </service>
 
+        <service id="Setono\SyliusFeedPlugin\Command\TestCommand">
+            <argument type="service" id="twig" />
+
+            <tag name="console.command" />
+        </service>
+
         <service id="Setono\SyliusFeedPlugin\Menu\AdminMenuListener">
             <tag name="kernel.event_listener" event="sylius.menu.admin.main" method="addAdminMenuItems" />
         </service>

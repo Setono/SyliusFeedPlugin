@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Model;
 
+use Sylius\Component\Channel\Model\ChannelsAwareInterface;
 use Sylius\Component\Resource\Model\ResourceInterface;
 
-interface FeedInterface extends ResourceInterface
+interface FeedInterface extends ResourceInterface, ChannelsAwareInterface
 {
     /**
      * @return int|null
