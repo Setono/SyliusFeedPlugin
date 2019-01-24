@@ -31,7 +31,7 @@ class FeedController extends ResourceController
             throw $this->createNotFoundException('The feed does not exist or has not been generated yet');
         }
 
-        $response = new BinaryFileResponse($feedFile->getPathname(), 200, ['Content-Type' => 'xml']);
+        $response = new BinaryFileResponse($feedFile->getPathname(), 200, ['Content-Type' => 'text/xml']);
 
         return $response;
     }
