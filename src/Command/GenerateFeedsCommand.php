@@ -142,7 +142,7 @@ final class GenerateFeedsCommand extends ContainerAwareCommand
         $xmlWriter->startElement('products');
 
         foreach ($products as $product) {
-            if (!$product->isEnabled()) {
+            if (!$product->isEnabled() || $product->getSlug() === null || $product->getSlug() === '') {
                 continue;
             }
 
