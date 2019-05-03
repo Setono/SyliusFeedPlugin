@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Setono\SyliusFeedPlugin\Repository;
+namespace Setono\SyliusFeedPlugin\Doctrine\ORM;
 
+use Doctrine\ORM\NonUniqueResultException;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
+use Setono\SyliusFeedPlugin\Repository\FeedRepositoryInterface;
 use Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository;
 
 class FeedRepository extends EntityRepository implements FeedRepositoryInterface
 {
     /**
-     * @param string $slug
+     * {@inheritdoc}
      *
-     * @return FeedInterface|null
-     *
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NonUniqueResultException
      */
     public function findOneBySlug(string $slug): ?FeedInterface
     {
@@ -24,5 +24,11 @@ class FeedRepository extends EntityRepository implements FeedRepositoryInterface
             ->getQuery()
             ->getOneOrNullResult()
         ;
+    }
+
+    public function findEnabled(): array
+    {
+        // todo only return enabled
+        return $this->findAll();
     }
 }

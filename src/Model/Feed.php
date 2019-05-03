@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Model;
 
+use Exception;
 use Ramsey\Uuid\Uuid;
 
 class Feed implements FeedInterface
@@ -28,7 +29,12 @@ class Feed implements FeedInterface
     protected $name;
 
     /**
-     * @throws \Exception
+     * @var string
+     */
+    protected $template;
+
+    /**
+     * @throws Exception
      */
     public function __construct()
     {
@@ -37,43 +43,38 @@ class Feed implements FeedInterface
         $this->__channelsTraitConstruct();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getSlug(): string
     {
         return $this->slug;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setSlug(string $slug): void
+    public function setSlug(?string $slug): void
     {
         $this->slug = $slug;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getName(): ?string
     {
         return $this->name;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function setName(string $name): void
     {
         $this->name = $name;
+    }
+
+    public function getTemplate(): string
+    {
+        return $this->template;
+    }
+
+    public function setTemplate(string $template): void
+    {
+        $this->template = $template;
     }
 }

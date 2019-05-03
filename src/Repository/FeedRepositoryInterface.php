@@ -10,4 +10,11 @@ use Sylius\Component\Resource\Repository\RepositoryInterface;
 interface FeedRepositoryInterface extends RepositoryInterface
 {
     public function findOneBySlug(string $slug): ?FeedInterface;
+
+    /**
+     * Returns all enabled feeds
+     *
+     * @return FeedInterface[]
+     */
+    public function findEnabled(): array;
 }

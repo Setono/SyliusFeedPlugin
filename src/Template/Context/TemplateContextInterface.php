@@ -8,10 +8,12 @@ use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Locale\Model\LocaleInterface;
 
-interface ContextInterface
+interface TemplateContextInterface
 {
     public function setFeed(FeedInterface $feed): void;
+
     public function setChannel(ChannelInterface $channel): void;
+
     public function setLocale(LocaleInterface $locale): void;
 
     /**

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\DependencyInjection;
 
+use Setono\SyliusFeedPlugin\Doctrine\ORM\FeedRepository;
 use Setono\SyliusFeedPlugin\Model\Feed;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
-use Setono\SyliusFeedPlugin\Repository\FeedRepository;
 use Sylius\Bundle\ResourceBundle\Controller\ResourceController;
 use Sylius\Bundle\ResourceBundle\Form\Type\DefaultResourceType;
 use Sylius\Bundle\ResourceBundle\SyliusResourceBundle;
@@ -17,9 +17,6 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 final class Configuration implements ConfigurationInterface
 {
-    /**
-     * {@inheritdoc}
-     */
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder();

@@ -8,7 +8,8 @@
         "ext-xmlwriter": "*",
 
         "ramsey/uuid": "^3.7",
-        "sylius/sylius": "~1.3.0@dev"
+        "sylius/sylius": "~1.3.0@dev",
+        "symfony/messenger": "^4.2"
     },
     "require-dev": {
         "behat/behat": "^3.4",
