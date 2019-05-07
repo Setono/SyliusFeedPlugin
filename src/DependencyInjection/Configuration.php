@@ -7,6 +7,7 @@ namespace Setono\SyliusFeedPlugin\DependencyInjection;
 use Setono\SyliusFeedPlugin\Doctrine\ORM\FeedRepository;
 use Setono\SyliusFeedPlugin\Model\Feed;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
+use Setono\SyliusFeedPlugin\Template\Context\TemplateContextInterface;
 use Sylius\Bundle\ResourceBundle\Controller\ResourceController;
 use Sylius\Bundle\ResourceBundle\Form\Type\DefaultResourceType;
 use Sylius\Bundle\ResourceBundle\SyliusResourceBundle;
@@ -19,8 +20,14 @@ final class Configuration implements ConfigurationInterface
 {
     public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('setono_sylius_feed');
+        if (method_exists(TreeBuilder::class, 'getRootNode')) {
+            $treeBuilder = new TreeBuilder('setono_sylius_feed');
+            $rootNode = $treeBuilder->getRootNode();
+        } else {
+            // BC layer for symfony/config 4.1 and older
+            $treeBuilder = new TreeBuilder();
+            $rootNode = $treeBuilder->root('setono_sylius_feed');
+        }
 
         $rootNode
             ->children()
@@ -29,6 +36,51 @@ final class Configuration implements ConfigurationInterface
                     ->info('The directory where feeds should be saved')
                     ->defaultValue('%kernel.project_dir%/var/feed')
                     ->cannotBeEmpty()
+                ->end()
+                ->arrayNode('messenger')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->scalarNode('transport')
+                            ->cannotBeEmpty()
+                            ->defaultNull()
+                            ->example('amqp')
+                            ->info('The Messenger transport to use')
+                        ->end()
+                        ->scalarNode('command_bus')
+                            ->cannotBeEmpty()
+                            ->defaultValue('message_bus')
+                            ->example('message_bus')
+                            ->info('The service id for your command bus')
+                        ->end()
+                    ->end()
+                ->end()
+                ->arrayNode('templates')
+                    ->arrayPrototype()
+                        ->children()
+                            ->scalarNode('type')
+                                ->isRequired()
+                                ->cannotBeEmpty()
+                                ->info('A unique string representing this template')
+                                ->example('setono_sylius_feed_google_shopping')
+                            ->end()
+                            ->scalarNode('context')
+                                ->isRequired()
+                                ->cannotBeEmpty()
+                                ->info('The context class for this template. Must implement ' . TemplateContextInterface::class)
+                            ->end()
+                            ->scalarNode('path')
+                                ->isRequired()
+                                ->cannotBeEmpty()
+                                ->info('The path to the twig template')
+                            ->end()
+                            ->scalarNode('label')
+                                ->isRequired()
+                                ->cannotBeEmpty()
+                                ->info('The label to use in user interfaces')
+                                ->example('setono_sylius_feed.template.google_shopping')
+                            ->end()
+                        ->end()
+                    ->end()
                 ->end()
             ->end();
 

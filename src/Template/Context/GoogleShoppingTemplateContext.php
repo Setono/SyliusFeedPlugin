@@ -14,11 +14,11 @@ final class GoogleShoppingTemplateContext extends TemplateContext
             'title' => 'Google Shopping feed',
             'url' => 'https://example.com',
             'description' => 'Description of the Google Shopping feed',
-            'items' => static function(): Generator {
-                for($i = 0; $i < 10; $i++) {
+            'items' => static function (): Generator {
+                for ($i = 0; $i < 10; ++$i) {
                     yield $i;
                 }
-            }
+            },
         ];
     }
 }

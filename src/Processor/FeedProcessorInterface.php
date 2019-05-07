@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Processor;
 
-interface FeedProcessorInterface
+use Psr\Log\LoggerAwareInterface;
+
+interface FeedProcessorInterface extends LoggerAwareInterface
 {
     /**
      * Processes all enabled feeds

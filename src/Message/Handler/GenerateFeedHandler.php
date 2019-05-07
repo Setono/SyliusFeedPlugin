@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Message\Handler;
 
+use InvalidArgumentException;
 use Setono\SyliusFeedPlugin\Generator\FeedGeneratorInterface;
 use Setono\SyliusFeedPlugin\Message\Command\GenerateFeed;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
@@ -32,7 +33,7 @@ final class GenerateFeedHandler
         $feed = $this->feedRepository->find($message->getFeedId());
 
         if (null === $feed) {
-            throw new \InvalidArgumentException('Feed does not exist'); // todo better exception
+            throw new InvalidArgumentException('Feed does not exist'); // todo better exception
         }
 
         $this->feedGenerator->generate($feed);

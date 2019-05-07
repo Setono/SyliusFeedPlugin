@@ -7,10 +7,11 @@ namespace Setono\SyliusFeedPlugin\Generator;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Template\Context\Factory\TemplateContextFactoryInterface;
 use Setono\SyliusFeedPlugin\Template\Context\TemplateContextInterface;
-use Setono\SyliusFeedPlugin\Template\TemplateInterface;
+use Setono\SyliusFeedPlugin\Template\Registry\TemplateRegistryInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Symfony\Bundle\TwigBundle\TwigEngine;
 use Symfony\Component\Filesystem\Filesystem;
+use Twig\Error\Error;
 
 final class FeedGenerator implements FeedGeneratorInterface
 {
@@ -29,23 +30,37 @@ final class FeedGenerator implements FeedGeneratorInterface
      */
     private $templateContextFactory;
 
-    public function __construct(TwigEngine $engine, Filesystem $filesystem, TemplateContextFactoryInterface $templateContextFactory)
-    {
+    /**
+     * @var TemplateRegistryInterface
+     */
+    private $templateRegistry;
+
+    public function __construct(
+        TwigEngine $engine,
+        Filesystem $filesystem,
+        TemplateContextFactoryInterface $templateContextFactory,
+        TemplateRegistryInterface $templateRegistry
+    ) {
         $this->engine = $engine;
         $this->filesystem = $filesystem;
         $this->templateContextFactory = $templateContextFactory;
+        $this->templateRegistry = $templateRegistry;
     }
 
+    /**
+     * @param FeedInterface $feed
+     *
+     * @throws Error
+     */
     public function generate(FeedInterface $feed): void
     {
-        /** @var TemplateInterface $template */
         $template = $this->templateRegistry->get($feed->getTemplate());
 
         /** @var ChannelInterface $channel */
         foreach ($feed->getChannels() as $channel) {
             foreach ($channel->getLocales() as $locale) {
-                $path = $this->pathProvider->provide($channel, $locale, $feed->getSlug());
-                $tempPath = $this->pathProvider->provideTemp($channel, $locale, $feed->getSlug());
+                $path = $this->pathProvider->provide($channel, $locale, $feed);
+                $tempPath = $this->pathProvider->provideTemp($channel, $locale, $feed);
 
                 /** @var TemplateContextInterface $context */
                 $context = $this->templateContextFactory->create($template->getContext(), $feed, $channel, $locale);
