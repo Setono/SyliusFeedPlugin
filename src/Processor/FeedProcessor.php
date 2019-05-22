@@ -41,7 +41,7 @@ final class FeedProcessor implements FeedProcessorInterface
         $feeds = $this->feedRepository->findEnabled();
 
         foreach ($feeds as $feed) {
-            $this->logger->info(sprintf('Dispatching generate feed command for feed %s (%s)', $feed->getName(), $feed->getId()));
+            $this->logger->info(sprintf('Dispatching generate feed command for feed %s (id: %s)', $feed->getName(), $feed->getId()));
             $this->messageBus->dispatch(new GenerateFeed($feed->getId()));
         }
     }

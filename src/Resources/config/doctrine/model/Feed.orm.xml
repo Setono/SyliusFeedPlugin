@@ -12,6 +12,8 @@
 
         <field name="slug" type="string" unique="true" />
         <field name="name" type="string" />
+        <field name="template" type="string" />
+        <field name="enabled" column="enabled" type="boolean"/>
 
         <many-to-many field="channels" target-entity="Sylius\Component\Channel\Model\ChannelInterface">
             <join-table name="setono_sylius_feed__feed_channels">

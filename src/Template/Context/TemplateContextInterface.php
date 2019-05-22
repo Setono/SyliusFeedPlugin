@@ -21,5 +21,5 @@ interface TemplateContextInterface
      *
      * @return array
      */
-    public function asArray(): array;
+    public function asArray(): array ;
 }

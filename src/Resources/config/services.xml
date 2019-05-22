@@ -3,8 +3,13 @@
 <container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <imports>
         <import resource="services/command.xml"/>
+        <import resource="services/data_source.xml"/>
 <!--        <import resource="services/controller_action.xml"/>-->
+        <import resource="services/form.xml"/>
+        <import resource="services/generator.xml"/>
+        <import resource="services/iterator.xml"/>
         <import resource="services/menu.xml"/>
+        <import resource="services/message_handler.xml"/>
         <import resource="services/processor.xml"/>
         <import resource="services/template.xml"/>
     </imports>

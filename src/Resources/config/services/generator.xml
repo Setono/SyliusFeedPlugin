@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <service id="setono_sylius_feed.generator.feed" class="Setono\SyliusFeedPlugin\Generator\FeedGenerator">
+            <argument type="service" id="twig" />
+            <argument type="service" id="filesystem" />
+            <argument type="service" id="setono_sylius_feed.factory.template_context" />
+            <argument type="service" id="setono_sylius_feed.registry.template" />
+            <argument type="service" id="setono_sylius_feed.template_context.google_shopping" />
+        </service>
+    </services>
+</container>

@@ -6,21 +6,7 @@
         <description>{{ description }}</description>
         {% for item in items  %}
             <item>
-                <g:availability>out of stock</g:availability>
-                <g:brand>Moves by Minimum</g:brand>
-                <g:condition>new</g:condition>
-                <description>Smuk kjole fra Moves By Minimum i grøn farve. Denne kjole er designet i den skønneste kvalitet, der falder smukt og skinner i lyset. Kjolen går langt op i halsen foran og spændes med en lille knap i samme farve i nakken. Ved brystet foran er kjolen plisseret i stoffet, der fint kommer til sin ret, når bindebåndet i taljen spændes. I bunden er der en lille slids i begge sider. Kjolen er designet med skulderpudder, der skaber en cool, romantisk look - de kan dog tages ud, hvis man er til et mere klassisk kjolelook. Kjolen 3/4 ærmer gør den perfekt til efterårets og vinteres festlige begivenheder, idet du ikke behøver have en trøje eller lignende over kjolen. Kjolen er designet i det fineste materiale med en smule crepeeffekt Vask gerne kjolen i hånden eller på et skåneprogram Længde: ca. midt på skinnebenet Model: Ca. 170 cm. og bruger normalt str. S. Bruger dette produkt i str. 36 Style eventuelt denne Moves by Minimum kjole med et par cool ankelstøvler for et råt outfit. Kjolen er normal i størrelsen, så vi anbefaler, at du vælger din normale størrelse. Kvalitet: 100% Polyester, For: 100% Bomuld</description>
-                <g:gtin>5713712044303</g:gtin>
-                <g:id>1503664174-42</g:id>
-                <g:identifier_exists>FALSE</g:identifier_exists>
-                <g:image_link>https://www.lykkebylykke.dk/images/movesbyminimum-kjole-vanna-kjole-green-army-front.jpg</g:image_link>
-                <link>https://www.lykkebylykke.dk/shop/moves-by-minimum-24380p.html</link>
-                <g:price>600,00 DKK</g:price>
-                <g:sale_price>300,00 DKK</g:sale_price>
-                <g:sale_price_effective_date>2010-01-01T00:01+0100/2025-01-01T00:01+0100</g:sale_price_effective_date>
-                <g:size>42</g:size>
-                <title>Moves By Minimum - Kjole - Vanna - Green Army</title>
-                <g:google_product_category>1604</g:google_product_category>
+                <g:availability>{{ loop.index }}</g:availability>
             </item>
         {% endfor %}
     </channel>

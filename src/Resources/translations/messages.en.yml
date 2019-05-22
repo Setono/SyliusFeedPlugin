@@ -1,4 +1,12 @@
 setono_sylius_feed:
+    form:
+        feed:
+            name: Name
+            template: Template
+            template_placeholder: Choose template...
+            slug: Slug
+    template:
+        google_shopping: Google shopping
     ui:
         name: Name
         slug: Slug

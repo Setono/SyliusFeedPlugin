@@ -34,6 +34,11 @@ final class Template
         $this->label = $label;
     }
 
+    public function __toString(): string
+    {
+        return $this->getType();
+    }
+
     public function getType(): string
     {
         return $this->type;

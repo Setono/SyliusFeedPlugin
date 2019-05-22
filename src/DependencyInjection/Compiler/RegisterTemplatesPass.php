@@ -18,12 +18,12 @@ final class RegisterTemplatesPass implements CompilerPassInterface
             return;
         }
 
-        if (!$container->has('setono_sylius_feed.template_registry')) {
+        if (!$container->has('setono_sylius_feed.registry.template')) {
             return;
         }
 
         $templates = $container->getParameter('setono_sylius_feed.templates');
-        $templateRegistry = $container->getDefinition('setono_sylius_feed.template_registry');
+        $templateRegistry = $container->getDefinition('setono_sylius_feed.registry.template');
 
         foreach ($templates as $template) {
             $templateServiceId = 'setono_sylius_feed.template.' . $template['type'];

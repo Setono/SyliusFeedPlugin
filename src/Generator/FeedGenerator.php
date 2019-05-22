@@ -6,19 +6,20 @@ namespace Setono\SyliusFeedPlugin\Generator;
 
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Template\Context\Factory\TemplateContextFactoryInterface;
+use Setono\SyliusFeedPlugin\Template\Context\GoogleShoppingTemplateContext;
 use Setono\SyliusFeedPlugin\Template\Context\TemplateContextInterface;
 use Setono\SyliusFeedPlugin\Template\Registry\TemplateRegistryInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
-use Symfony\Bundle\TwigBundle\TwigEngine;
 use Symfony\Component\Filesystem\Filesystem;
+use Twig\Environment;
 use Twig\Error\Error;
 
 final class FeedGenerator implements FeedGeneratorInterface
 {
     /**
-     * @var TwigEngine
+     * @var Environment
      */
-    private $engine;
+    private $twig;
 
     /**
      * @var Filesystem
@@ -34,17 +35,23 @@ final class FeedGenerator implements FeedGeneratorInterface
      * @var TemplateRegistryInterface
      */
     private $templateRegistry;
+    /**
+     * @var GoogleShoppingTemplateContext
+     */
+    private $templateContext;
 
     public function __construct(
-        TwigEngine $engine,
+        Environment $twig,
         Filesystem $filesystem,
         TemplateContextFactoryInterface $templateContextFactory,
-        TemplateRegistryInterface $templateRegistry
+        TemplateRegistryInterface $templateRegistry,
+        GoogleShoppingTemplateContext $templateContext // todo remove this
     ) {
-        $this->engine = $engine;
+        $this->twig = $twig;
         $this->filesystem = $filesystem;
         $this->templateContextFactory = $templateContextFactory;
         $this->templateRegistry = $templateRegistry;
+        $this->templateContext = $templateContext;
     }
 
     /**
@@ -56,14 +63,18 @@ final class FeedGenerator implements FeedGeneratorInterface
     {
         $template = $this->templateRegistry->get($feed->getTemplate());
 
+
         /** @var ChannelInterface $channel */
         foreach ($feed->getChannels() as $channel) {
             foreach ($channel->getLocales() as $locale) {
-                $path = $this->pathProvider->provide($channel, $locale, $feed);
-                $tempPath = $this->pathProvider->provideTemp($channel, $locale, $feed);
+                $path = 'path.xml';
+                $tempPath = 'path.temp.xml';
+//                $path = $this->pathProvider->provide($channel, $locale, $feed);
+//                $tempPath = $this->pathProvider->provideTemp($channel, $locale, $feed);
 
                 /** @var TemplateContextInterface $context */
-                $context = $this->templateContextFactory->create($template->getContext(), $feed, $channel, $locale);
+                //$context = $this->templateContextFactory->create($template->getContext(), $feed, $channel, $locale);
+                $context = $this->templateContext;
 
                 $fp = fopen($tempPath, 'wb');
 
@@ -71,7 +82,7 @@ final class FeedGenerator implements FeedGeneratorInterface
                     fwrite($fp, $buffer);
                 }, 1024);
 
-                $this->engine->stream($template->getPath(), $context->asArray());
+                $this->twig->display($template->getPath(), $context->asArray());
 
                 ob_end_clean();
 

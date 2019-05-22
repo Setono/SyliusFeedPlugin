@@ -16,9 +16,15 @@ final class TemplateRegistry implements TemplateRegistryInterface
      */
     private $templates = [];
 
+    /**
+     * @param Template ...$templates
+     * @throws StringsException
+     */
     public function __construct(Template ...$templates)
     {
-        $this->templates = $templates;
+        foreach ($templates as $template) {
+            $this->register($template);
+        }
     }
 
     public function all(): array
