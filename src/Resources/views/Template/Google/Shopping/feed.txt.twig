@@ -1,0 +1,12 @@
+{% block extension %}xml{% endblock %}
+<?xml version="1.0"?>
+<rss xmlns:g="http://base.google.com/ns/1.0" version="2.0">
+    <channel>
+        <title>{{ title }}</title>
+        <link>{{ url }}</link>
+        <description>{{ description }}</description>
+        {% block item %}
+            {% include '@SetonoSyliusFeedPlugin/Template/Google/Shopping/_item.txt.twig' %}
+        {% endblock %}
+    </channel>
+</rss>

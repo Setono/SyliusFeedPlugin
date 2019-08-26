@@ -9,7 +9,7 @@ use Sylius\Component\Resource\Repository\RepositoryInterface;
 
 interface FeedRepositoryInterface extends RepositoryInterface
 {
-    public function findOneBySlug(string $slug): ?FeedInterface;
+    public function findOneByUuid(string $uuid): ?FeedInterface;
 
     /**
      * Returns all enabled feeds
@@ -17,4 +17,9 @@ interface FeedRepositoryInterface extends RepositoryInterface
      * @return FeedInterface[]
      */
     public function findEnabled(): array;
+
+    /**
+     * Increments the finished batches count by 1
+     */
+    public function incrementFinishedBatches(FeedInterface $feed): void;
 }

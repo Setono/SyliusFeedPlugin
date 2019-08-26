@@ -12,9 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 final class ProcessFeedsCommand extends Command
 {
-    /**
-     * @var FeedProcessorInterface
-     */
+    /** @var FeedProcessorInterface */
     private $feedProcessor;
 
     public function __construct(FeedProcessorInterface $feedProcessor)
@@ -32,9 +30,11 @@ final class ProcessFeedsCommand extends Command
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->feedProcessor->setLogger(new ConsoleLogger($output));
         $this->feedProcessor->process();
+
+        return 0;
     }
 }

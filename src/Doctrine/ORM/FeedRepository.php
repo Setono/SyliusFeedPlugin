@@ -12,15 +12,13 @@ use Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository;
 class FeedRepository extends EntityRepository implements FeedRepositoryInterface
 {
     /**
-     * {@inheritdoc}
-     *
      * @throws NonUniqueResultException
      */
-    public function findOneBySlug(string $slug): ?FeedInterface
+    public function findOneByUuid(string $uuid): ?FeedInterface
     {
         return $this->createQueryBuilder('o')
-            ->where('o.slug = :slug')
-            ->setParameter('slug', $slug)
+            ->where('o.uuid = :uuid')
+            ->setParameter('uuid', $uuid)
             ->getQuery()
             ->getOneOrNullResult()
         ;
@@ -28,7 +26,22 @@ class FeedRepository extends EntityRepository implements FeedRepositoryInterface
 
     public function findEnabled(): array
     {
-        // todo only return enabled
-        return $this->findAll();
+        return $this->createQueryBuilder('o')
+            ->where('o.enabled = true')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    public function incrementFinishedBatches(FeedInterface $feed): void
+    {
+        $this->createQueryBuilder('o')
+            ->update()
+            ->set('o.finishedBatches', 'o.finishedBatches + 1')
+            ->where('o.id = :id')
+            ->setParameter('id', $feed->getId())
+            ->getQuery()
+            ->execute()
+        ;
     }
 }

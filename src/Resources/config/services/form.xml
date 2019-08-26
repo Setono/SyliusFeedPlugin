@@ -9,7 +9,7 @@
     <services>
         <service id="setono_sylius_feed.form.type.feed" class="Setono\SyliusFeedPlugin\Form\Type\FeedType">
             <argument>%setono_sylius_feed.model.feed.class%</argument>
-            <argument type="service" id="setono_sylius_feed.registry.template"/>
+            <argument type="service" id="setono_sylius_feed.registry.feed_type"/>
             <argument>%setono_sylius_feed.form.type.feed.validation_groups%</argument>
             <tag name="form.type"/>
         </service>

@@ -2,9 +2,23 @@
 
 <container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <service id="Setono\SyliusFeedPlugin\Message\Handler\GenerateFeedHandler">
+        <service id="Setono\SyliusFeedPlugin\Message\Handler\GenerateFeedChunkHandler">
             <argument type="service" id="setono_sylius_feed.repository.feed" />
-            <argument type="service" id="setono_sylius_feed.generator.feed" />
+            <argument type="service" id="setono_sylius_feed.registry.feed_type" />
+            <argument type="service" id="twig" />
+            <argument type="service" id="setono_sylius_feed.storage.local.feed_tmp" /><!-- TODO create alias setono_sylius_feed.storage.feed_tmp -->
+
+            <tag name="messenger.message_handler" />
+        </service>
+
+        <service id="Setono\SyliusFeedPlugin\Message\Handler\ProcessFeedHandler">
+            <argument type="service" id="setono_sylius_feed.repository.feed" />
+            <argument type="service" id="setono_sylius_feed.manager.feed" />
+            <argument type="service" id="setono_sylius_feed.registry.feed_type" />
+            <argument type="service" id="setono_sylius_feed.command_bus" />
+            <argument type="service" id="workflow.registry" />
+            <argument type="service" id="setono_sylius_feed.storage.local.feed_tmp" /> <!-- TODO create alias setono_sylius_feed.storage.feed_tmp -->
+            <argument type="service" id="twig" />
 
             <tag name="messenger.message_handler" />
         </service>

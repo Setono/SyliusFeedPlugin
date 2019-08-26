@@ -10,9 +10,17 @@
             <generator strategy="AUTO" />
         </id>
 
-        <field name="slug" type="string" unique="true" />
+        <indexes>
+            <index columns="state"/>
+            <index columns="enabled"/>
+        </indexes>
+
+        <field name="uuid" type="string" unique="true" />
+        <field name="state" type="string" />
         <field name="name" type="string" />
-        <field name="template" type="string" />
+        <field name="feedType" type="string" />
+        <field name="batches" type="integer" nullable="true"/>
+        <field name="finishedBatches" type="integer"/>
         <field name="enabled" column="enabled" type="boolean"/>
 
         <many-to-many field="channels" target-entity="Sylius\Component\Channel\Model\ChannelInterface">

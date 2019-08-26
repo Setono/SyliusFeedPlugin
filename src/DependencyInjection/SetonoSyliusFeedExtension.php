@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\DependencyInjection;
 
-use Setono\SyliusFeedPlugin\Template\Context\GoogleShoppingTemplateContext;
+use Exception;
+use Setono\SyliusFeedPlugin\Model\FeedInterface;
+use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
 use Sylius\Bundle\ResourceBundle\DependencyInjection\Extension\AbstractResourceExtension;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -14,19 +16,12 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 final class SetonoSyliusFeedExtension extends AbstractResourceExtension implements PrependExtensionInterface
 {
     /**
-     * {@inheritdoc}
-     *
-     * @throws \Exception
+     * @throws Exception
      */
     public function load(array $config, ContainerBuilder $container): void
     {
         $config = $this->processConfiguration($this->getConfiguration([], $container), $config);
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
-
-        $container->setParameter('setono_sylius_feed.dir', $config['dir']);
-        $container->setParameter('setono_sylius_feed.messenger.transport', $config['messenger']['transport']);
-        $container->setParameter('setono_sylius_feed.messenger.command_bus', $config['messenger']['command_bus']);
-        $container->setParameter('setono_sylius_feed.templates', $config['templates']);
 
         $loader->load('services.xml');
 
@@ -35,20 +30,36 @@ final class SetonoSyliusFeedExtension extends AbstractResourceExtension implemen
 
     public function prepend(ContainerBuilder $container): void
     {
-        if (!$container->hasExtension('setono_sylius_feed')) {
+        if (!$container->hasExtension('framework')) {
             return;
         }
 
-        $templates = [];
-        $templates[] = [
-            'type' => 'setono_sylius_feed_google_shopping',
-            'context' => GoogleShoppingTemplateContext::class,
-            'path' => '@SetonoSyliusFeedPlugin/Template/google_shopping.xml.twig',
-            'label' => 'setono_sylius_feed.template.google_shopping',
-        ];
-
-        $container->prependExtensionConfig('setono_sylius_feed', [
-           'templates' => $templates,
+        $container->prependExtensionConfig('framework', [
+            'workflows' => [
+                FeedGraph::GRAPH => [
+                    'type' => 'state_machine',
+                    'marking_store' => [
+                        'type' => 'method',
+                        'property' => 'state',
+                    ],
+                    'supports' => [FeedInterface::class],
+                    'places' => FeedGraph::getStates(),
+                    'transitions' => [
+                        FeedGraph::TRANSITION_PROCESS => [
+                            'from' => [FeedGraph::STATE_UNPROCESSED, FeedGraph::STATE_READY, FeedGraph::STATE_ERROR],
+                            'to' => FeedGraph::STATE_PROCESSING,
+                        ],
+                        FeedGraph::TRANSITION_ERRORED => [
+                            'from' => FeedGraph::STATE_PROCESSING,
+                            'to' => FeedGraph::STATE_ERROR,
+                        ],
+                        FeedGraph::TRANSITION_PROCESSED => [
+                            'from' => FeedGraph::STATE_PROCESSING,
+                            'to' => FeedGraph::STATE_READY,
+                        ],
+                    ],
+                ],
+            ],
         ]);
     }
 }

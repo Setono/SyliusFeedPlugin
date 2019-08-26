@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Exception;
 use Ramsey\Uuid\Uuid;
+use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
 use Sylius\Component\Channel\Model\ChannelInterface as BaseChannelInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Resource\Model\ToggleableTrait;
@@ -16,29 +17,28 @@ class Feed implements FeedInterface
 {
     use ToggleableTrait;
 
-    /**
-     * @var int
-     */
+    /** @var int */
     protected $id;
 
-    /**
-     * @var string
-     */
-    protected $slug;
+    /** @var string */
+    protected $uuid;
 
-    /**
-     * @var string
-     */
+    /** @var string */
+    protected $state = FeedGraph::STATE_UNPROCESSED;
+
+    /** @var string */
     protected $name;
 
-    /**
-     * @var string
-     */
-    protected $template;
+    /** @var string */
+    protected $feedType;
 
-    /**
-     * @var Collection|ChannelInterface[]
-     */
+    /** @var int|null */
+    protected $batches;
+
+    /** @var int */
+    protected $finishedBatches = 0;
+
+    /** @var Collection|ChannelInterface[] */
     protected $channels;
 
     /**
@@ -46,7 +46,7 @@ class Feed implements FeedInterface
      */
     public function __construct()
     {
-        $this->slug = Uuid::uuid4()->toString();
+        $this->uuid = Uuid::uuid4()->toString();
         $this->channels = new ArrayCollection();
     }
 
@@ -55,14 +55,19 @@ class Feed implements FeedInterface
         return $this->id;
     }
 
-    public function getSlug(): string
+    public function getUuid(): string
     {
-        return $this->slug;
+        return $this->uuid;
     }
 
-    public function setSlug(?string $slug): void
+    public function getState(): string
     {
-        $this->slug = $slug;
+        return $this->state;
+    }
+
+    public function setState(string $state): void
+    {
+        $this->state = $state;
     }
 
     public function getName(): ?string
@@ -75,14 +80,29 @@ class Feed implements FeedInterface
         $this->name = $name;
     }
 
-    public function getTemplate(): ?string
+    public function getFeedType(): ?string
     {
-        return $this->template;
+        return $this->feedType;
     }
 
-    public function setTemplate(string $template): void
+    public function setFeedType(string $feedType): void
     {
-        $this->template = $template;
+        $this->feedType = $feedType;
+    }
+
+    public function getBatches(): ?int
+    {
+        return $this->batches;
+    }
+
+    public function setBatches(?int $batches): void
+    {
+        $this->batches = $batches;
+    }
+
+    public function getFinishedBatches(): int
+    {
+        return $this->finishedBatches;
     }
 
     public function getChannels(): Collection

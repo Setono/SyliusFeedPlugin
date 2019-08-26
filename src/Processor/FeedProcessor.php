@@ -8,7 +8,7 @@ use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 use Safe\Exceptions\StringsException;
 use function Safe\sprintf;
-use Setono\SyliusFeedPlugin\Message\Command\GenerateFeed;
+use Setono\SyliusFeedPlugin\Message\Command\ProcessFeed;
 use Setono\SyliusFeedPlugin\Repository\FeedRepositoryInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
@@ -16,14 +16,10 @@ final class FeedProcessor implements FeedProcessorInterface
 {
     use LoggerAwareTrait;
 
-    /**
-     * @var FeedRepositoryInterface
-     */
+    /** @var FeedRepositoryInterface */
     private $feedRepository;
 
-    /**
-     * @var MessageBusInterface
-     */
+    /** @var MessageBusInterface */
     private $messageBus;
 
     public function __construct(FeedRepositoryInterface $feedRepository, MessageBusInterface $messageBus)
@@ -41,8 +37,8 @@ final class FeedProcessor implements FeedProcessorInterface
         $feeds = $this->feedRepository->findEnabled();
 
         foreach ($feeds as $feed) {
-            $this->logger->info(sprintf('Dispatching generate feed command for feed %s (id: %s)', $feed->getName(), $feed->getId()));
-            $this->messageBus->dispatch(new GenerateFeed($feed->getId()));
+            $this->logger->info(sprintf('Triggering processing for feed "%s" (id: %s)', $feed->getName(), $feed->getId()));
+            $this->messageBus->dispatch(new ProcessFeed($feed->getId()));
         }
     }
 }

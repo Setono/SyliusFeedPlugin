@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+<container xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://symfony.com/schema/dic/services"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <imports>
         <import resource="services/command.xml"/>
-        <import resource="services/data_source.xml"/>
-<!--        <import resource="services/controller_action.xml"/>-->
+        <import resource="services/data_provider.xml"/>
+        <import resource="services/feed_context.xml"/>
+        <import resource="services/feed_type.xml"/>
         <import resource="services/form.xml"/>
-        <import resource="services/generator.xml"/>
-        <import resource="services/iterator.xml"/>
         <import resource="services/menu.xml"/>
         <import resource="services/message_handler.xml"/>
+        <import resource="services/normalizer.xml"/>
         <import resource="services/processor.xml"/>
-        <import resource="services/template.xml"/>
+        <import resource="services/registry.xml"/>
     </imports>
 </container>

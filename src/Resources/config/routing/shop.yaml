@@ -1,10 +1,5 @@
 setono_sylius_feed_shop_feed_show:
-    path: /feed/{slug}
+    path: /feed/{uuid}
     methods: [GET]
     defaults:
         _controller: setono_sylius_feed.controller.action.show_feed
-        _sylius:
-            repository:
-                method: findOneBySlug
-                arguments:
-                    - $slug
