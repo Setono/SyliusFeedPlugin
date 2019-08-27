@@ -12,6 +12,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 final class ProcessFeedsCommand extends Command
 {
+    protected static $defaultName = 'setono:sylius-feed:process';
+
     /** @var FeedProcessorInterface */
     private $feedProcessor;
 
@@ -25,7 +27,6 @@ final class ProcessFeedsCommand extends Command
     protected function configure(): void
     {
         $this
-            ->setName('setono:sylius-feed:process')
             ->setDescription('Processes all enabled feeds')
         ;
     }

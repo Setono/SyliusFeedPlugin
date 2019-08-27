@@ -105,6 +105,12 @@ class Feed implements FeedInterface
         return $this->finishedBatches;
     }
 
+    public function resetBatches(): void
+    {
+        $this->batches = null;
+        $this->finishedBatches = 0;
+    }
+
     public function getChannels(): Collection
     {
         return $this->channels;

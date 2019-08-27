@@ -4,7 +4,8 @@ imports:
 flysystem:
     storages:
         # Temporary storage where feeds are created
-        # It is best that this storage is local because we stream to this storage when creating feeds
+        # It is best that this storage is local (or some shared fast storage)
+        # because we stream to this storage when creating feeds
         setono_sylius_feed.storage.local.feed_tmp:
             adapter: 'local'
             options:

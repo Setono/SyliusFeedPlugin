@@ -5,9 +5,15 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\Normalizer\Google\Shopping;
 
 use InvalidArgumentException;
+use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Safe\Exceptions\StringsException;
 use function Safe\sprintf;
+use Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Product;
+use Setono\SyliusFeedPlugin\Model\BrandAwareInterface;
+use Setono\SyliusFeedPlugin\Model\ConditionAwareInterface;
+use Setono\SyliusFeedPlugin\Model\GtinAwareInterface;
 use Setono\SyliusFeedPlugin\Normalizer\NormalizerInterface;
+use Sylius\Component\Core\Model\ImagesAwareInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -17,12 +23,17 @@ class ProductNormalizer implements NormalizerInterface
     /** @var RouterInterface */
     private $router;
 
+    /**
+     * @var CacheManager
+     */
+    private $cacheManager;
     /** @var NormalizerInterface */
     private $variantNormalizer;
 
-    public function __construct(RouterInterface $router, NormalizerInterface $variantNormalizer)
+    public function __construct(RouterInterface $router, CacheManager $cacheManager, NormalizerInterface $variantNormalizer)
     {
         $this->router = $router;
+        $this->cacheManager = $cacheManager;
         $this->variantNormalizer = $variantNormalizer;
     }
 
@@ -37,32 +48,58 @@ class ProductNormalizer implements NormalizerInterface
 
         $translation = $product->getTranslation($locale);
 
-        $data = [];
+        $data = new Product();
+        $data->id = $product->getCode();
+        $data->title = $translation->getName();
+        $data->description = $translation->getDescription();
+        $data->link = $this->router->generate(
+            'sylius_shop_product_show',
+            ['slug' => $translation->getSlug(), '_locale' => $locale],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+        $data->availability = 'out of stock';
+//        $data->price = ''; todo
+        $data->condition = $product instanceof ConditionAwareInterface ? (string) $product->getCondition() : 'new';
+        $data->itemGroupId = $product->getCode();
 
-        $data[] = [
-            'id' => $product->getCode(),
-            'title' => $translation->getName(),
-            'description' => $translation->getDescription(),
-            'link' => $this->router->generate(
-                'sylius_shop_product_show',
-                ['slug' => $translation->getSlug(), '_locale' => $locale],
-                UrlGeneratorInterface::ABSOLUTE_URL
-            ),
-//            'image_link' => $product, // todo
-            'availability' => 'out of stock',
-//            'price' => $product, // todo
-//            'brand' => $product, // todo
-//            'gtin' => $product, // todo
-            'condition' => 'new',
-            'item_group_id' => $product->getCode(),
-        ];
+        $imageUrl = $this->getImageUrl($product);
+        if(null !== $imageUrl) {
+            $data->imageLink = $imageUrl;
+        }
+
+        if ($product instanceof BrandAwareInterface) {
+            $data->brand = (string) $product->getBrand();
+        }
+
+        if ($product instanceof GtinAwareInterface) {
+            $data->gtin = (string) $product->getGtin();
+        }
+
+        $items = [$data];
 
         foreach ($product->getVariants() as $variant) {
-            $data[] = $this->variantNormalizer->normalize($variant, $channel, $locale);
+            $normalizedVariants = $this->variantNormalizer->normalize($variant, $channel, $locale);
+            foreach ($normalizedVariants as $normalizedVariant) {
+                $items[] = $normalizedVariant;
+            }
         }
 
         // todo fire event
 
-        return $data;
+        return $items;
+    }
+
+    private function getImageUrl(ImagesAwareInterface $imagesAware): ?string
+    {
+        $images = $imagesAware->getImagesByType('main');
+        if($images->count() === 0) {
+            $images = $imagesAware->getImages();
+        }
+
+        if($images->count() === 0) {
+            return null;
+        }
+
+        return $this->cacheManager->getBrowserPath($images[0]->getPath(), 'sylius_shop_product_large_thumbnail');
     }
 }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Model;
 
-use Setono\SyliusFeedPlugin\Repository\FeedRepositoryInterface;
 use Sylius\Component\Channel\Model\ChannelsAwareInterface;
 use Sylius\Component\Resource\Model\ResourceInterface;
 use Sylius\Component\Resource\Model\ToggleableInterface;
@@ -31,9 +30,11 @@ interface FeedInterface extends ResourceInterface, ChannelsAwareInterface, Toggl
 
     public function setBatches(?int $batches): void;
 
-    /**
-     * The finished batches property should be read only
-     * Use the @see FeedRepositoryInterface::incrementFinishedBatches() method to update the property
-     */
     public function getFinishedBatches(): int;
+
+    /**
+     * This will reset the batches and finished batches
+     * Use this method when processing starts
+     */
+    public function resetBatches(): void;
 }

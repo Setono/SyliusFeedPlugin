@@ -22,4 +22,9 @@ interface FeedRepositoryInterface extends RepositoryInterface
      * Increments the finished batches count by 1
      */
     public function incrementFinishedBatches(FeedInterface $feed): void;
+
+    /**
+     * Returns true if all batches for the given feed has been generated
+     */
+    public function batchesGenerated(FeedInterface $feed): bool;
 }

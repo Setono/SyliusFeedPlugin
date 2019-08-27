@@ -38,10 +38,25 @@ class FeedRepository extends EntityRepository implements FeedRepositoryInterface
         $this->createQueryBuilder('o')
             ->update()
             ->set('o.finishedBatches', 'o.finishedBatches + 1')
-            ->where('o.id = :id')
+            ->andWhere('o.id = :id')
             ->setParameter('id', $feed->getId())
             ->getQuery()
             ->execute()
+        ;
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     */
+    public function batchesGenerated(FeedInterface $feed): bool
+    {
+        return (int) $this->createQueryBuilder('o')
+            ->select('COUNT(o)')
+            ->andWhere('o.id = :id')
+            ->andWhere('o.batches = o.finishedBatches')
+            ->setParameter('id', $feed->getId())
+            ->getQuery()
+            ->getSingleScalarResult() > 0
         ;
     }
 }

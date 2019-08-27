@@ -6,16 +6,20 @@ namespace Setono\SyliusFeedPlugin\DataProvider;
 
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\QueryBuilder;
 use InvalidArgumentException;
 use Safe\Exceptions\StringsException;
 use function Safe\sprintf;
 use Setono\DoctrineORMBatcher\Batch\BatchInterface;
 use Setono\DoctrineORMBatcher\Batch\CollectionBatchInterface;
+use Setono\DoctrineORMBatcher\Batcher\BatcherInterface;
 use Setono\DoctrineORMBatcher\Factory\BatcherFactoryInterface;
 use Setono\DoctrineORMBatcher\Query\QueryRebuilderInterface;
 
 class DataProvider implements DataProviderInterface
 {
+    private const BATCH_SIZE = 100;
+
     /** @var BatcherFactoryInterface */
     private $batcherFactory;
 
@@ -27,6 +31,12 @@ class DataProvider implements DataProviderInterface
 
     /** @var string */
     private $class;
+
+    /** @var string */
+    private $code;
+
+    /** @var BatcherInterface */
+    private $batcher;
 
     public function __construct(
         BatcherFactoryInterface $batcherFactory,
@@ -47,16 +57,15 @@ class DataProvider implements DataProviderInterface
      */
     public function getBatches(): iterable
     {
-        $manager = $this->getManager();
-        $qb = $manager->createQueryBuilder();
-        $qb->select('o')
-            ->from($this->class, 'o');
+        yield from $this->getBatcher()->getBatches(self::BATCH_SIZE);
+    }
 
-        // todo fire event to let users filter the $qb
-
-        $batcher = $this->batcherFactory->createIdCollectionBatcher($qb);
-
-        yield from $batcher->getBatches();
+    /**
+     * @throws StringsException
+     */
+    public function getBatchCount(): int
+    {
+        return $this->getBatcher()->getBatchCount(self::BATCH_SIZE);
     }
 
     public function getItems(BatchInterface $batch): iterable
@@ -64,6 +73,21 @@ class DataProvider implements DataProviderInterface
         $q = $this->queryRebuilder->rebuild($batch);
 
         return $q->getResult();
+    }
+
+    /**
+     * @throws StringsException
+     */
+    private function getQueryBuilder(): QueryBuilder
+    {
+        $manager = $this->getManager();
+        $qb = $manager->createQueryBuilder();
+        $qb->select('o')
+            ->from($this->class, 'o');
+
+        // todo fire event to let users filter the $qb
+
+        return $qb;
     }
 
     /**
@@ -79,5 +103,17 @@ class DataProvider implements DataProviderInterface
         }
 
         return $manager;
+    }
+
+    /**
+     * @throws StringsException
+     */
+    private function getBatcher(): BatcherInterface
+    {
+        if (null === $this->batcher) {
+            $this->batcher = $this->batcherFactory->createIdCollectionBatcher($this->getQueryBuilder());
+        }
+
+        return $this->batcher;
     }
 }

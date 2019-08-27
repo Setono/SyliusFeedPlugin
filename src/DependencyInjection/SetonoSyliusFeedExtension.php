@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\DependencyInjection;
 
 use Exception;
+use Setono\SyliusFeedPlugin\DataProvider\DataProviderInterface;
+use Setono\SyliusFeedPlugin\FeedType\FeedTypeInterface;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
 use Sylius\Bundle\ResourceBundle\DependencyInjection\Extension\AbstractResourceExtension;
@@ -22,6 +24,12 @@ final class SetonoSyliusFeedExtension extends AbstractResourceExtension implemen
     {
         $config = $this->processConfiguration($this->getConfiguration([], $container), $config);
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
+
+        $container->setParameter('setono_sylius_feed.storage.feed', $config['storage']['feed']);
+        $container->setParameter('setono_sylius_feed.storage.feed_tmp', $config['storage']['feed_tmp']);
+
+        $container->registerForAutoconfiguration(DataProviderInterface::class)->addTag('setono_sylius_feed.data_provider');
+        $container->registerForAutoconfiguration(FeedTypeInterface::class)->addTag('setono_sylius_feed.feed_type');
 
         $loader->load('services.xml');
 

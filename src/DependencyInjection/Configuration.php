@@ -29,8 +29,24 @@ final class Configuration implements ConfigurationInterface
         }
 
         $rootNode
+            ->addDefaultsIfNotSet()
             ->children()
                 ->scalarNode('driver')->defaultValue(SyliusResourceBundle::DRIVER_DOCTRINE_ORM)->end()
+                ->arrayNode('storage')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->scalarNode('feed')
+                            ->info('A service id for the feed filesystem')
+                            ->cannotBeEmpty()
+                            ->defaultValue('setono_sylius_feed.storage.local.feed')
+                        ->end()
+                        ->scalarNode('feed_tmp')
+                            ->info('A service id for the temporary feed filesystem')
+                            ->cannotBeEmpty()
+                            ->defaultValue('setono_sylius_feed.storage.local.feed_tmp')
+                        ->end()
+                    ->end()
+                ->end()
             ->end();
 
         $this->addResourcesSection($rootNode);
