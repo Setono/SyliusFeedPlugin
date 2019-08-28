@@ -5,17 +5,15 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\Message\Handler;
 
 use Doctrine\Common\Persistence\ObjectManager;
-use Exception;
 use InvalidArgumentException;
 use League\Flysystem\FilesystemInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use RuntimeException;
+use Psr\Log\LoggerInterface;
 use Safe\Exceptions\FilesystemException;
 use Safe\Exceptions\StringsException;
 use function Safe\fclose;
 use function Safe\fopen;
 use function Safe\fwrite;
-use function Safe\ob_end_clean;
 use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\Event\FeedChunkGeneratedEvent;
 use Setono\SyliusFeedPlugin\Message\Command\GenerateFeedChunk;
@@ -27,7 +25,10 @@ use Sylius\Component\Core\Model\ChannelInterface;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Workflow\Registry;
+use Symfony\Component\Workflow\Workflow;
+use Throwable;
 use Twig\Environment;
+use Webmozart\Assert\Assert;
 
 final class GenerateFeedChunkHandler implements MessageHandlerInterface
 {
@@ -52,6 +53,9 @@ final class GenerateFeedChunkHandler implements MessageHandlerInterface
     /** @var Registry */
     private $workflowRegistry;
 
+    /** @var LoggerInterface */
+    private $logger;
+
     public function __construct(
         FeedRepositoryInterface $feedRepository,
         ObjectManager $feedManager,
@@ -59,7 +63,8 @@ final class GenerateFeedChunkHandler implements MessageHandlerInterface
         Environment $twig,
         FilesystemInterface $filesystem,
         EventDispatcherInterface $eventDispatcher,
-        Registry $workflowRegistry
+        Registry $workflowRegistry,
+        LoggerInterface $logger
     ) {
         $this->feedRepository = $feedRepository;
         $this->feedManager = $feedManager;
@@ -68,22 +73,17 @@ final class GenerateFeedChunkHandler implements MessageHandlerInterface
         $this->filesystem = $filesystem;
         $this->eventDispatcher = $eventDispatcher;
         $this->workflowRegistry = $workflowRegistry;
+        $this->logger = $logger;
     }
 
+    /**
+     * @throws Throwable
+     */
     public function __invoke(GenerateFeedChunk $message): void
     {
-        /** @var FeedInterface|null $feed */
-        $feed = $this->feedRepository->find($message->getFeedId());
+        $feed = $this->getFeed($message->getFeedId());
 
-        if (null === $feed) {
-            throw new UnrecoverableMessageHandlingException('Feed does not exist');
-        }
-
-        try {
-            $workflow = $this->workflowRegistry->get($feed, FeedGraph::GRAPH);
-        } catch (InvalidArgumentException $e) {
-            throw new UnrecoverableMessageHandlingException('An error occurred when trying to get the workflow for the feed', 0, $e);
-        }
+        $workflow = $this->getWorkflow($feed);
 
         try {
             $feedType = $this->feedTypeRegistry->get($feed->getFeedType());
@@ -97,46 +97,60 @@ final class GenerateFeedChunkHandler implements MessageHandlerInterface
             /** @var ChannelInterface $channel */
             foreach ($feed->getChannels() as $channel) {
                 foreach ($channel->getLocales() as $locale) {
-                    $fp = fopen('php://memory',
-                        'w+b'); // needs to be w+ since we use the same stream later to read from
-
-                    ob_start(static function ($buffer) use ($fp) {
-                        fwrite($fp, $buffer);
-                    }, 8192);
+                    $stream = $this->openStream();
 
                     foreach ($items as $item) {
                         $arr = $normalizer->normalize($item, $channel->getCode(), $locale->getCode());
                         foreach ($arr as $val) {
-                            $template->displayBlock('item', ['item' => $val]);
+                            // todo fire event here
+                            fwrite($stream, $template->renderBlock('item', ['item' => $val]));
                         }
                     }
 
-                    ob_end_clean();
-
                     $path = $this->getPath($feed, $channel->getCode(), $locale->getCode());
-                    $res = $this->filesystem->writeStream($path, $fp);
+                    $res = $this->filesystem->writeStream($path, $stream);
 
-                    try {
-                        // tries to close the file pointer although it may already have been closed by flysystem
-                        fclose($fp);
-                    } catch (FilesystemException $e) {
-                    }
+                    $this->closeStream($stream);
 
-                    if (false === $res) {
-                        throw new RuntimeException('An error occurred when trying to write a feed item');
-                    }
+                    Assert::true($res, 'An error occurred when trying to write a feed item');
                 }
             }
 
             $this->feedRepository->incrementFinishedBatches($feed);
 
             $this->eventDispatcher->dispatch(new FeedChunkGeneratedEvent($feed));
-        } catch (Exception $e) {
-            dd($e->getMessage());
-            $workflow->apply($feed, FeedGraph::TRANSITION_ERRORED);
+        } catch (Throwable $e) {
+            $this->logger->critical($e->getMessage(), ['feedId' => $feed->getId()]);
+
+            $this->applyErrorTransition($workflow, $feed);
 
             $this->feedManager->flush();
+
+            throw $e;
         }
+    }
+
+    private function getFeed(int $feedId): FeedInterface
+    {
+        /** @var FeedInterface|null $feed */
+        $feed = $this->feedRepository->find($feedId);
+
+        if (null === $feed) {
+            throw new UnrecoverableMessageHandlingException('Feed does not exist');
+        }
+
+        return $feed;
+    }
+
+    private function getWorkflow(FeedInterface $feed): Workflow
+    {
+        try {
+            $workflow = $this->workflowRegistry->get($feed, FeedGraph::GRAPH);
+        } catch (InvalidArgumentException $e) {
+            throw new UnrecoverableMessageHandlingException('An error occurred when trying to get the workflow for the feed', 0, $e);
+        }
+
+        return $workflow;
     }
 
     /**
@@ -151,5 +165,40 @@ final class GenerateFeedChunkHandler implements MessageHandlerInterface
         } while ($this->filesystem->has($path));
 
         return $path;
+    }
+
+    /**
+     * @return resource
+     *
+     * @throws FilesystemException
+     */
+    private function openStream()
+    {
+        // needs to be w+ since we use the same stream later to read from
+        return fopen('php://temp', 'w+b');
+    }
+
+    /**
+     * @param resource $stream
+     */
+    private function closeStream($stream): void
+    {
+        try {
+            // tries to close the stream although it may already have been closed by flysystem
+            fclose($stream);
+        } catch (FilesystemException $e) {
+        }
+    }
+
+    /**
+     * @throws StringsException
+     */
+    private function applyErrorTransition(Workflow $workflow, FeedInterface $feed): void
+    {
+        if(!$workflow->can($feed, FeedGraph::TRANSITION_ERRORED)) {
+            throw new InvalidArgumentException(sprintf('The transition "%s" could not be applied. State was: "%s"', FeedGraph::TRANSITION_ERRORED, $feed->getState()));
+        }
+
+        $workflow->apply($feed, FeedGraph::TRANSITION_ERRORED);
     }
 }

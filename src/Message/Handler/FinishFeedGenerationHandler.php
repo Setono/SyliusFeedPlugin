@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\Message\Handler;
 
 use Doctrine\Common\Persistence\ObjectManager;
-use Exception;
 use InvalidArgumentException;
 use League\Flysystem\FilesystemInterface;
+use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Safe\Exceptions\FilesystemException;
 use function Safe\fclose;
@@ -25,6 +25,7 @@ use Sylius\Component\Core\Model\ChannelInterface;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Workflow\Registry;
+use Throwable;
 use Twig\Environment;
 use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
@@ -50,13 +51,17 @@ final class FinishFeedGenerationHandler implements MessageHandlerInterface
     /** @var FeedTypeRegistryInterface */
     private $feedTypeRegistry;
 
+    /** @var LoggerInterface */
+    private $logger;
+
     public function __construct(
         FeedRepositoryInterface $feedRepository,
         ObjectManager $feedManager,
         FilesystemInterface $filesystem,
         Registry $workflowRegistry,
         Environment $twig,
-        FeedTypeRegistryInterface $feedTypeRegistry
+        FeedTypeRegistryInterface $feedTypeRegistry,
+        LoggerInterface $logger
     ) {
         $this->feedRepository = $feedRepository;
         $this->feedManager = $feedManager;
@@ -64,8 +69,12 @@ final class FinishFeedGenerationHandler implements MessageHandlerInterface
         $this->workflowRegistry = $workflowRegistry;
         $this->twig = $twig;
         $this->feedTypeRegistry = $feedTypeRegistry;
+        $this->logger = $logger;
     }
 
+    /**
+     * @throws Throwable
+     */
     public function __invoke(FinishFeedGeneration $message): void
     {
         /** @var FeedInterface|null $feed */
@@ -143,12 +152,16 @@ final class FinishFeedGenerationHandler implements MessageHandlerInterface
             }
 
             $workflow->apply($feed, FeedGraph::TRANSITION_PROCESSED);
-        } catch (Exception $e) {
-            dd($e->getMessage());
-            $workflow->apply($feed, FeedGraph::TRANSITION_ERRORED);
-        }
 
-        $this->feedManager->flush();
+            $this->feedManager->flush();
+        } catch (Throwable $e) {
+            $this->logger->critical($e->getMessage(), ['feedId' => $feed->getId()]);
+
+            $workflow->apply($feed, FeedGraph::TRANSITION_ERRORED);
+            $this->feedManager->flush();
+
+            throw $e;
+        }
     }
 
     /**

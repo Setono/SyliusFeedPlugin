@@ -16,7 +16,7 @@ final class AdminMenuListener
             $catalog->addChild('feeds', [
                 'route' => 'setono_sylius_feed_admin_feed_index',
             ])
-                ->setLabel('Feeds')
+                ->setLabel('setono_sylius_feed.ui.feeds')
                 ->setLabelAttribute('icon', 'table')
             ;
         }

@@ -14,7 +14,8 @@
         "symfony/event-dispatcher": "^4.3",
         "symfony/messenger": "^4.3",
         "symfony/workflow": "^4.3",
-        "thecodingmachine/safe": "^0.1.15"
+        "thecodingmachine/safe": "^0.1.15",
+        "webmozart/assert": "^1.5"
     },
     "require-dev": {
         "behat/behat": "^3.4",

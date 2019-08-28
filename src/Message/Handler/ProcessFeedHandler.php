@@ -13,14 +13,12 @@ use Setono\SyliusFeedPlugin\Message\Command\ProcessFeed;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Registry\FeedTypeRegistryInterface;
 use Setono\SyliusFeedPlugin\Repository\FeedRepositoryInterface;
+use Setono\SyliusFeedPlugin\Validator\TemplateValidatorInterface;
 use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
+use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Registry;
-use Twig\Environment;
-use Twig\Error\LoaderError;
-use Twig\Error\RuntimeError;
-use Twig\Error\SyntaxError;
 
 final class ProcessFeedHandler implements MessageHandlerInterface
 {
@@ -39,8 +37,8 @@ final class ProcessFeedHandler implements MessageHandlerInterface
     /** @var Registry */
     private $workflowRegistry;
 
-    /** @var Environment */
-    private $twig;
+    /** @var TemplateValidatorInterface */
+    private $templateValidator;
 
     public function __construct(
         FeedRepositoryInterface $feedRepository,
@@ -48,41 +46,28 @@ final class ProcessFeedHandler implements MessageHandlerInterface
         FeedTypeRegistryInterface $feedTypeRegistry,
         MessageBusInterface $commandBus,
         Registry $workflowRegistry,
-        Environment $twig
+        TemplateValidatorInterface $templateValidator
     ) {
         $this->feedRepository = $feedRepository;
         $this->feedManager = $feedManager;
         $this->feedTypeRegistry = $feedTypeRegistry;
         $this->commandBus = $commandBus;
         $this->workflowRegistry = $workflowRegistry;
-        $this->twig = $twig;
+        $this->templateValidator = $templateValidator;
     }
 
     /**
-     * @throws LoaderError
-     * @throws RuntimeError
      * @throws StringsException
-     * @throws SyntaxError
      */
     public function __invoke(ProcessFeed $message): void
     {
-        /** @var FeedInterface|null $feed */
-        $feed = $this->feedRepository->find($message->getFeedId());
-
-        if (null === $feed) {
-            throw new InvalidArgumentException('Feed does not exist');
-        }
+        $feed = $this->getFeed($message->getFeedId());
 
         $feedType = $this->feedTypeRegistry->get($feed->getFeedType());
 
-        $this->validateTemplate($feedType->getTemplate());
+        $this->templateValidator->validate($feedType->getTemplate());
 
-        $workflow = $this->workflowRegistry->get($feed, FeedGraph::GRAPH);
-        if (!$workflow->can($feed, FeedGraph::TRANSITION_PROCESS)) {
-            throw new InvalidArgumentException('The feed is not in a valid state. It could be processing already?');
-        }
-
-        $workflow->apply($feed, FeedGraph::TRANSITION_PROCESS);
+        $this->applyProcessTransition($feed);
 
         $this->feedManager->flush();
 
@@ -92,21 +77,33 @@ final class ProcessFeedHandler implements MessageHandlerInterface
         }
     }
 
+    private function getFeed(int $feedId): FeedInterface
+    {
+        /** @var FeedInterface|null $feed */
+        $feed = $this->feedRepository->find($feedId);
+
+        if (null === $feed) {
+            throw new UnrecoverableMessageHandlingException('Feed does not exist');
+        }
+
+        return $feed;
+    }
+
     /**
      * @throws StringsException
-     * @throws LoaderError
-     * @throws RuntimeError
-     * @throws SyntaxError
      */
-    private function validateTemplate(string $template): void
+    private function applyProcessTransition(FeedInterface $feed): void
     {
-        $templateWrapper = $this->twig->load($template);
-        $requiredBlocks = ['extension', 'item'];
-
-        foreach ($requiredBlocks as $requiredBlock) {
-            if (!$templateWrapper->hasBlock($requiredBlock)) {
-                throw new InvalidArgumentException(sprintf('The template "%s" does not have the block "%s" defined.', $template, $requiredBlock));
-            }
+        try {
+            $workflow = $this->workflowRegistry->get($feed, FeedGraph::GRAPH);
+        } catch (InvalidArgumentException $e) {
+            throw new UnrecoverableMessageHandlingException('An error occurred when trying to get the workflow for the feed', 0, $e);
         }
+
+        if (!$workflow->can($feed, FeedGraph::TRANSITION_PROCESS)) {
+            throw new InvalidArgumentException(sprintf('The feed is not in a valid state. State is %s', $feed->getState()));
+        }
+
+        $workflow->apply($feed, FeedGraph::TRANSITION_PROCESS);
     }
 }

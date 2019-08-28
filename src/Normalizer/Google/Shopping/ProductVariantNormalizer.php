@@ -25,10 +25,9 @@ class ProductVariantNormalizer implements NormalizerInterface
     /** @var AvailabilityCheckerInterface */
     private $availabilityChecker;
 
-    /**
-     * @var CacheManager
-     */
+    /** @var CacheManager */
     private $cacheManager;
+
     /** @var RouterInterface */
     private $router;
 
@@ -73,7 +72,7 @@ class ProductVariantNormalizer implements NormalizerInterface
         $data->itemGroupId = $product->getCode();
 
         $imageUrl = $this->getImageUrl($product);
-        if(null !== $imageUrl) {
+        if (null !== $imageUrl) {
             $data->imageLink = $imageUrl;
         }
 
@@ -98,11 +97,11 @@ class ProductVariantNormalizer implements NormalizerInterface
     private function getImageUrl(ImagesAwareInterface $imagesAware): ?string
     {
         $images = $imagesAware->getImagesByType('main');
-        if($images->count() === 0) {
+        if ($images->count() === 0) {
             $images = $imagesAware->getImages();
         }
 
-        if($images->count() === 0) {
+        if ($images->count() === 0) {
             return null;
         }
 

@@ -9,6 +9,7 @@
             <argument type="service" id="workflow.registry" />
             <argument type="service" id="twig" />
             <argument type="service" id="setono_sylius_feed.registry.feed_type" />
+            <argument type="service" id="logger" />
 
             <tag name="messenger.message_handler" />
         </service>
@@ -21,6 +22,7 @@
             <argument type="service" id="setono_sylius_feed.storage.feed_tmp" />
             <argument type="service" id="event_dispatcher" />
             <argument type="service" id="workflow.registry" />
+            <argument type="service" id="logger" />
 
             <tag name="messenger.message_handler" />
         </service>
@@ -31,7 +33,7 @@
             <argument type="service" id="setono_sylius_feed.registry.feed_type" />
             <argument type="service" id="setono_sylius_feed.command_bus" />
             <argument type="service" id="workflow.registry" />
-            <argument type="service" id="twig" />
+            <argument type="service" id="setono_sylius_feed.validator.template" />
 
             <tag name="messenger.message_handler" />
         </service>
