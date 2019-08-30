@@ -4,10 +4,27 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Repository;
 
-use Setono\SyliusFeedPlugin\Entity\FeedInterface;
+use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 
 interface FeedRepositoryInterface extends RepositoryInterface
 {
-    public function findOneBySlug(string $slug): ?FeedInterface;
+    public function findOneByUuid(string $uuid): ?FeedInterface;
+
+    /**
+     * Returns all enabled feeds
+     *
+     * @return FeedInterface[]
+     */
+    public function findEnabled(): array;
+
+    /**
+     * Increments the finished batches count by 1
+     */
+    public function incrementFinishedBatches(FeedInterface $feed): void;
+
+    /**
+     * Returns true if all batches for the given feed has been generated
+     */
+    public function batchesGenerated(FeedInterface $feed): bool;
 }

@@ -5,9 +5,17 @@
     "license": "MIT",
     "require": {
         "php": "^7.2",
-        "ext-xmlwriter": "*",
+        "league/flysystem-bundle": "^1.1",
+        "localheinz/composer-normalize": "^1.3",
+        "psr/event-dispatcher": "^1.0",
         "ramsey/uuid": "^3.7",
-        "sylius/sylius": "^1.3"
+        "setono/doctrine-orm-batcher-bundle": "^0.3.1",
+        "sylius/sylius": "^1.3",
+        "symfony/event-dispatcher": "^4.3",
+        "symfony/messenger": "^4.3",
+        "symfony/workflow": "^4.3",
+        "thecodingmachine/safe": "^0.1.15",
+        "webmozart/assert": "^1.5"
     },
     "require-dev": {
         "behat/behat": "^3.4",
@@ -15,43 +23,54 @@
         "behat/mink-browserkit-driver": "^1.3",
         "behat/mink-extension": "^2.2",
         "behat/mink-selenium2-driver": "^1.3",
-        "friends-of-behat/context-service-extension": "^1.2",
-        "friends-of-behat/cross-container-extension": "^1.1",
-        "friends-of-behat/service-container-extension": "^1.0",
-        "friends-of-behat/symfony-extension": "^1.2.1",
+        "friends-of-behat/page-object-extension": "^0.3",
+        "friends-of-behat/suite-settings-extension": "^1.0",
+        "friends-of-behat/symfony-extension": "^2.0",
         "friends-of-behat/variadic-extension": "^1.1",
         "lakion/mink-debug-extension": "^1.2.3",
         "phpspec/phpspec": "^5.0",
-        "phpstan/phpstan-doctrine": "^0.10",
-        "phpstan/phpstan-shim": "^0.10",
-        "phpstan/phpstan-symfony": "^0.10",
-        "phpstan/phpstan-webmozart-assert": "^0.10",
-        "phpunit/phpunit": "^6.5",
-        "sensiolabs/security-checker": "^4.1",
-        "sylius-labs/coding-standard": "^2.0",
-        "symfony/browser-kit": "^3.4|^4.1",
-        "symfony/debug-bundle": "^3.4|^4.1",
-        "symfony/dotenv": "^3.4|^4.1",
-        "symfony/intl": "^3.4|^4.1",
-        "symfony/web-profiler-bundle": "^3.4|^4.1",
-        "symfony/web-server-bundle": "^3.4|^4.1"
+        "phpstan/phpstan": "^0.11",
+        "phpstan/phpstan-doctrine": "^0.11",
+        "phpstan/phpstan-strict-rules": "^0.11",
+        "phpstan/phpstan-webmozart-assert": "^0.11",
+        "phpunit/phpunit": "^8.0",
+        "sensiolabs/security-checker": "^5.0",
+        "sylius-labs/coding-standard": "^3.0",
+        "symfony/browser-kit": "^3.4 || ^4.3",
+        "symfony/debug-bundle": "^3.4 || ^4.3",
+        "symfony/dotenv": "^4.3",
+        "symfony/intl": "^3.4 || ^4.3",
+        "symfony/web-profiler-bundle": "^3.4 || ^4.3",
+        "symfony/web-server-bundle": "^3.4 || ^4.3",
+        "thecodingmachine/phpstan-safe-rule": "^0.1.4"
     },
-    "prefer-stable": true,
-    "autoload": {
-        "psr-4": {
-            "Setono\\SyliusFeedPlugin\\": "src/",
-            "Tests\\Setono\\SyliusFeedPlugin\\": "tests/"
-        }
+    "config": {
+        "sort-packages": true
     },
     "extra": {
         "branch-alias": {
             "dev-master": "1.0-dev"
         }
     },
+    "autoload": {
+        "psr-4": {
+            "Setono\\SyliusFeedPlugin\\": "src/",
+            "Tests\\Setono\\SyliusFeedPlugin\\": "tests/"
+        }
+    },
+    "autoload-dev": {
+        "classmap": [
+            "tests/Application/Kernel.php"
+        ]
+    },
+    "prefer-stable": true,
     "scripts": {
-        "test": "./vendor/bin/phpunit",
-        "check-style": "./vendor/bin/ecs check src",
-        "fix-style": "./vendor/bin/ecs check src --fix",
-        "analyse": "./vendor/bin/phpstan.phar analyse -c phpstan.neon -l max src/"
+        "analyse": "vendor/bin/phpstan analyse -c phpstan.neon -l max src/",
+        "check-style": "vendor/bin/ecs check src/ spec/",
+        "fix-style": "vendor/bin/ecs check src/ spec/ --fix",
+        "test": [
+            "vendor/bin/phpunit",
+            "vendor/bin/phpspec run"
+        ]
     }
 }

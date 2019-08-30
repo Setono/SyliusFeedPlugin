@@ -1,0 +1,9 @@
+{# @var item \Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Product #}
+<item>
+    <g:id>{{ item.id|e }}</g:id>
+    <title>{{ item.title|e }}</title>
+    <g:description>{{ item.description|e }}</g:description>
+    <link>{{ item.link|e }}</link>
+    <g:image_link>{{ item.imageLink|e }}</g:image_link>
+    <g:availability>{{ item.availability|e }}</g:availability>
+</item>

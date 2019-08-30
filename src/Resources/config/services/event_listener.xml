@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<container xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://symfony.com/schema/dic/services"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <service id="setono_sylius_feed.event_listener.delete_generated_files"
+                 class="Setono\SyliusFeedPlugin\EventListener\DeleteGeneratedFilesSubscriber">
+            <argument type="service" id="setono_sylius_feed.storage.feed_tmp"/>
+
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="setono_sylius_feed.event_listener.increment_finished_batches"
+                 class="Setono\SyliusFeedPlugin\EventListener\IncrementFinishedBatchesSubscriber">
+            <argument type="service" id="setono_sylius_feed.repository.feed"/>
+
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="setono_sylius_feed.event_listener.move_generated_feed"
+                 class="Setono\SyliusFeedPlugin\EventListener\MoveGeneratedFeedSubscriber">
+            <argument type="service" id="setono_sylius_feed.registry.feed_type"/>
+            <argument type="service" id="setono_sylius_feed.storage.feed_tmp"/>
+            <argument type="service" id="setono_sylius_feed.storage.feed"/>
+            <argument type="service" id="twig"/>
+
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="setono_sylius_feed.event_listener.send_finish_generation_command"
+                 class="Setono\SyliusFeedPlugin\EventListener\SendFinishGenerationCommandSubscriber">
+            <argument type="service" id="setono_sylius_feed.repository.feed"/>
+            <argument type="service" id="setono_sylius_feed.command_bus"/>
+
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="setono_sylius_feed.event_listener.start_processing"
+                 class="Setono\SyliusFeedPlugin\EventListener\StartProcessingSubscriber">
+            <argument type="service" id="setono_sylius_feed.registry.feed_type"/>
+
+            <tag name="kernel.event_subscriber"/>
+        </service>
+    </services>
+</container>

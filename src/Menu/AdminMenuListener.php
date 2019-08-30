@@ -8,9 +8,6 @@ use Sylius\Bundle\UiBundle\Menu\Event\MenuBuilderEvent;
 
 final class AdminMenuListener
 {
-    /**
-     * @param MenuBuilderEvent $event
-     */
     public function addAdminMenuItems(MenuBuilderEvent $event): void
     {
         $menu = $event->getMenu();
@@ -19,7 +16,7 @@ final class AdminMenuListener
             $catalog->addChild('feeds', [
                 'route' => 'setono_sylius_feed_admin_feed_index',
             ])
-                ->setLabel('Feeds')
+                ->setLabel('setono_sylius_feed.ui.feeds')
                 ->setLabelAttribute('icon', 'table')
             ;
         }

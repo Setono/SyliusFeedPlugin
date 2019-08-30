@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                                      http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <mapped-superclass name="Setono\SyliusFeedPlugin\Model\Violation" table="setono_sylius_feed__violation">
+        <id name="id" column="id" type="integer">
+            <generator strategy="AUTO" />
+        </id>
+
+        <indexes>
+            <index columns="severity"/>
+        </indexes>
+
+        <field name="severity" type="string" />
+        <field name="message" type="text" />
+
+        <many-to-one field="feed" target-entity="Setono\SyliusFeedPlugin\Model\FeedInterface" inversed-by="violations">
+            <join-column name="feed_id" referenced-column-name="id" on-delete="CASCADE" nullable="false"/>
+        </many-to-one>
+
+        <one-to-one field="channel" target-entity="Sylius\Component\Channel\Model\ChannelInterface" fetch="EAGER">
+            <join-column name="channel_id" referenced-column-name="id" />
+        </one-to-one>
+
+        <one-to-one field="locale" target-entity="Sylius\Component\Locale\Model\LocaleInterface" fetch="EAGER">
+            <join-column name="locale_id" referenced-column-name="id" />
+        </one-to-one>
+    </mapped-superclass>
+
+</doctrine-mapping>

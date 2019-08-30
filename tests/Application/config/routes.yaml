@@ -1,9 +1,2 @@
-setono_sylius_feed_shop:
-    resource: "@SetonoSyliusFeedPlugin/Resources/config/shop_routing.yml"
-    prefix: /{_locale}
-    requirements:
-        _locale: ^[a-z]{2}(?:_[A-Z]{2})?$
-
-setono_sylius_feed_admin:
-    resource: "@SetonoSyliusFeedPlugin/Resources/config/admin_routing.yml"
-    prefix: /admin
+setono_sylius_feed:
+    resource: "@SetonoSyliusFeedPlugin/Resources/config/routing.yaml"

@@ -1,9 +1,17 @@
 setono_sylius_feed:
+    feed_type:
+        google_shopping: Google shopping
+    form:
+        feed:
+            name: Name
+            feed_type: Template
+            feed_type_placeholder: Choose feed type...
+            uuid: UUID
     ui:
         name: Name
-        slug: Slug
+        edit_feed: Edit feed
         feed: Feed
         feeds: Feeds
-        edit_feed: Edit feed
-        new_feed: New feed
         manage_feeds: Manage feeds
+        new_feed: New feed
+        uuid: UUID

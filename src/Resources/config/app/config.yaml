@@ -1,0 +1,21 @@
+imports:
+    - { resource: "@SetonoSyliusFeedPlugin/Resources/config/grids/setono_sylius_feed_admin_feed.yaml" }
+
+flysystem:
+    storages:
+        # Temporary storage where feeds are created
+        # It is best that this storage is local (or some shared fast storage)
+        # because we stream to this storage when creating feeds
+        setono_sylius_feed.storage.local.feed_tmp:
+            adapter: 'local'
+            options:
+                directory: '%kernel.project_dir%/var/storage/setono_sylius_feed/feed_tmp'
+        setono_sylius_feed.storage.local.feed:
+            adapter: 'local'
+            options:
+                directory: '%kernel.project_dir%/var/storage/setono_sylius_feed/feed'
+
+framework:
+    messenger:
+        buses:
+            setono_sylius_feed.command_bus: ~

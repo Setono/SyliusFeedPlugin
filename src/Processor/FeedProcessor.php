@@ -1,0 +1,44 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Setono\SyliusFeedPlugin\Processor;
+
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\NullLogger;
+use Safe\Exceptions\StringsException;
+use function Safe\sprintf;
+use Setono\SyliusFeedPlugin\Message\Command\ProcessFeed;
+use Setono\SyliusFeedPlugin\Repository\FeedRepositoryInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
+
+final class FeedProcessor implements FeedProcessorInterface
+{
+    use LoggerAwareTrait;
+
+    /** @var FeedRepositoryInterface */
+    private $feedRepository;
+
+    /** @var MessageBusInterface */
+    private $messageBus;
+
+    public function __construct(FeedRepositoryInterface $feedRepository, MessageBusInterface $messageBus)
+    {
+        $this->feedRepository = $feedRepository;
+        $this->messageBus = $messageBus;
+        $this->logger = new NullLogger();
+    }
+
+    /**
+     * @throws StringsException
+     */
+    public function process(): void
+    {
+        $feeds = $this->feedRepository->findEnabled();
+
+        foreach ($feeds as $feed) {
+            $this->logger->info(sprintf('Triggering processing for feed "%s" (id: %s)', $feed->getName(), $feed->getId()));
+            $this->messageBus->dispatch(new ProcessFeed($feed->getId()));
+        }
+    }
+}
