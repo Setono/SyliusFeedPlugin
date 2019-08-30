@@ -7,7 +7,7 @@ namespace Setono\SyliusFeedPlugin\Event;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Symfony\Contracts\EventDispatcher\Event;
 
-final class FeedChunkGeneratedEvent extends Event
+final class BatchGeneratedEvent extends Event
 {
     /** @var FeedInterface */
     private $feed;

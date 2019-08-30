@@ -6,6 +6,7 @@ namespace Setono\SyliusFeedPlugin\DataProvider;
 
 use Setono\DoctrineORMBatcher\Batch\BatchInterface;
 use Setono\DoctrineORMBatcher\Batch\CollectionBatchInterface;
+use Sylius\Component\Resource\Model\ResourceInterface;
 
 interface DataProviderInterface
 {
@@ -23,6 +24,8 @@ interface DataProviderInterface
 
     /**
      * This will return the items based on the given batch
+     *
+     * @return iterable<ResourceInterface>
      */
     public function getItems(BatchInterface $batch): iterable;
 }

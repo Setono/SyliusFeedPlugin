@@ -41,6 +41,9 @@ class Feed implements FeedInterface
     /** @var Collection|ChannelInterface[] */
     protected $channels;
 
+    /** @var Collection|ViolationInterface[] */
+    protected $violations;
+
     /**
      * @throws Exception
      */
@@ -48,6 +51,7 @@ class Feed implements FeedInterface
     {
         $this->uuid = Uuid::uuid4()->toString();
         $this->channels = new ArrayCollection();
+        $this->violations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -133,5 +137,40 @@ class Feed implements FeedInterface
     public function hasChannel(BaseChannelInterface $channel): bool
     {
         return $this->channels->contains($channel);
+    }
+
+    public function getViolations(): Collection
+    {
+        return $this->violations;
+    }
+
+    public function addViolation(ViolationInterface $violation): void
+    {
+        if (!$this->hasViolation($violation)) {
+            $violation->setFeed($this);
+            $this->violations->add($violation);
+        }
+    }
+
+    public function removeViolation(ViolationInterface $violation): void
+    {
+        if ($this->hasViolation($violation)) {
+            $violation->setFeed(null);
+            $this->violations->removeElement($violation);
+        }
+    }
+
+    public function hasViolation(ViolationInterface $violation): bool
+    {
+        return $this->violations->contains($violation);
+    }
+
+    public function clearViolations(): void
+    {
+        foreach ($this->violations as $violation) {
+            $violation->setFeed(null);
+        }
+
+        $this->violations->clear();
     }
 }

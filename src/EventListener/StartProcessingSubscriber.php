@@ -46,5 +46,6 @@ final class StartProcessingSubscriber implements EventSubscriberInterface
 
         $feed->resetBatches();
         $feed->setBatches($feedType->getDataProvider()->getBatchCount());
+        $feed->clearViolations();
     }
 }

@@ -16,7 +16,7 @@ use function Safe\fread;
 use function Safe\fwrite;
 use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\FeedType\FeedTypeInterface;
-use Setono\SyliusFeedPlugin\Message\Command\FinishFeedGeneration;
+use Setono\SyliusFeedPlugin\Message\Command\FinishGeneration;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Registry\FeedTypeRegistryInterface;
 use Setono\SyliusFeedPlugin\Repository\FeedRepositoryInterface;
@@ -31,7 +31,7 @@ use Twig\Error\LoaderError;
 use Twig\Error\RuntimeError;
 use Twig\Error\SyntaxError;
 
-final class FinishFeedGenerationHandler implements MessageHandlerInterface
+final class FinishGenerationHandler implements MessageHandlerInterface
 {
     /** @var FeedRepositoryInterface */
     private $feedRepository;
@@ -75,7 +75,7 @@ final class FinishFeedGenerationHandler implements MessageHandlerInterface
     /**
      * @throws Throwable
      */
-    public function __invoke(FinishFeedGeneration $message): void
+    public function __invoke(FinishGeneration $message): void
     {
         /** @var FeedInterface|null $feed */
         $feed = $this->feedRepository->find($message->getFeedId());
@@ -98,12 +98,12 @@ final class FinishFeedGenerationHandler implements MessageHandlerInterface
                 foreach ($channel->getLocales() as $locale) {
                     $dir = sprintf('%s/%s/%s', $feed->getUuid(), $channel->getCode(), $locale->getCode());
 
-                    $chunkStream = $this->getChunkStream();
+                    $batchStream = $this->getBatchStream();
 
                     [$feedStart, $feedEnd] = $this->getFeedParts($feed, $feedType, $channel->getCode(),
                         $locale->getCode());
 
-                    fwrite($chunkStream, $feedStart);
+                    fwrite($batchStream, $feedStart);
 
                     $files = $this->filesystem->listContents($dir);
                     foreach ($files as $file) {
@@ -120,7 +120,7 @@ final class FinishFeedGenerationHandler implements MessageHandlerInterface
                         }
 
                         while (!feof($fp)) {
-                            fwrite($chunkStream, fread($fp, 8192));
+                            fwrite($batchStream, fread($fp, 8192));
                         }
 
                         fclose($fp);
@@ -128,13 +128,13 @@ final class FinishFeedGenerationHandler implements MessageHandlerInterface
                         $this->filesystem->delete($file['path']);
                     }
 
-                    fwrite($chunkStream, $feedEnd);
+                    fwrite($batchStream, $feedEnd);
 
-                    $res = $this->filesystem->writeStream($dir . '/_feed', $chunkStream);
+                    $res = $this->filesystem->writeStream($dir . '/_feed', $batchStream);
 
                     try {
                         // tries to close the file pointer although it may already have been closed by flysystem
-                        fclose($chunkStream);
+                        fclose($batchStream);
                     } catch (FilesystemException $e) {
                     }
 
@@ -169,10 +169,10 @@ final class FinishFeedGenerationHandler implements MessageHandlerInterface
      *
      * @throws FilesystemException
      */
-    private function getChunkStream()
+    private function getBatchStream()
     {
         do {
-            $path = sys_get_temp_dir() . '/' . uniqid('chunk-', true);
+            $path = sys_get_temp_dir() . '/' . uniqid('batch-', true);
         } while (file_exists($path));
 
         return fopen($path, 'wb+'); // needs to be w+ because we use it for reading later

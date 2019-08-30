@@ -6,6 +6,7 @@
         <import resource="services/command.xml"/>
         <import resource="services/data_provider.xml"/>
         <import resource="services/event_listener.xml"/>
+        <import resource="services/factory.xml"/>
         <import resource="services/feed_context.xml"/>
         <import resource="services/feed_type.xml"/>
         <import resource="services/form.xml"/>

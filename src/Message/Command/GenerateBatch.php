@@ -6,7 +6,7 @@ namespace Setono\SyliusFeedPlugin\Message\Command;
 
 use Setono\DoctrineORMBatcher\Batch\BatchInterface;
 
-final class GenerateFeedChunk implements CommandInterface
+final class GenerateBatch implements CommandInterface
 {
     /** @var int */
     private $feedId;

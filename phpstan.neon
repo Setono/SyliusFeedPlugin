@@ -13,3 +13,6 @@ parameters:
 
     ignoreErrors:
         - '/Parameter #1 $configuration of method Symfony\Component\DependencyInjection\Extension\Extension::processConfiguration() expects Symfony\Component\Config\Definition\ConfigurationInterface, Symfony\Component\Config\Definition\ConfigurationInterface|null given./'
+        - '/Method Setono\\SyliusFeedPlugin\\Model\\BrandAwareInterface\:\:getBrand\(\) has no return typehint specified\./'
+        - '/Method Setono\\SyliusFeedPlugin\\Model\\ConditionAwareInterface\:\:getCondition\(\) has no return typehint specified\./'
+        - '/Method Setono\\SyliusFeedPlugin\\Model\\GtinAwareInterface\:\:getGtin\(\) has no return typehint specified\./'

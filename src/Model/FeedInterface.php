@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Model;
 
+use Doctrine\Common\Collections\Collection;
 use Sylius\Component\Channel\Model\ChannelsAwareInterface;
 use Sylius\Component\Resource\Model\ResourceInterface;
 use Sylius\Component\Resource\Model\ToggleableInterface;
@@ -37,4 +38,17 @@ interface FeedInterface extends ResourceInterface, ChannelsAwareInterface, Toggl
      * Use this method when processing starts
      */
     public function resetBatches(): void;
+
+    /**
+     * @return Collection|ViolationInterface[]
+     */
+    public function getViolations(): Collection;
+
+    public function addViolation(ViolationInterface $violation): void;
+
+    public function removeViolation(ViolationInterface $violation): void;
+
+    public function hasViolation(ViolationInterface $violation): bool;
+
+    public function clearViolations(): void;
 }

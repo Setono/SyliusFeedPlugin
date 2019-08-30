@@ -1,0 +1,84 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Setono\SyliusFeedPlugin\Model;
+
+use Sylius\Component\Core\Model\ChannelInterface;
+use Sylius\Component\Locale\Model\LocaleInterface;
+
+class Violation implements ViolationInterface
+{
+    /** @var int */
+    protected $id;
+
+    /** @var FeedInterface|null */
+    protected $feed;
+
+    /** @var ChannelInterface */
+    protected $channel;
+
+    /** @var LocaleInterface */
+    protected $locale;
+
+    /** @var string */
+    protected $severity = self::SEVERITY_NOTICE;
+
+    /** @var string */
+    protected $message;
+
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function getFeed(): ?FeedInterface
+    {
+        return $this->feed;
+    }
+
+    public function setFeed(?FeedInterface $feed): void
+    {
+        $this->feed = $feed;
+    }
+
+    public function getChannel(): ChannelInterface
+    {
+        return $this->channel;
+    }
+
+    public function setChannel(ChannelInterface $channel): void
+    {
+        $this->channel = $channel;
+    }
+
+    public function getLocale(): LocaleInterface
+    {
+        return $this->locale;
+    }
+
+    public function setLocale(LocaleInterface $locale): void
+    {
+        $this->locale = $locale;
+    }
+
+    public function getSeverity(): string
+    {
+        return $this->severity;
+    }
+
+    public function setSeverity(string $severity): void
+    {
+        $this->severity = $severity;
+    }
+
+    public function getMessage(): string
+    {
+        return $this->message;
+    }
+
+    public function setMessage(string $message): void
+    {
+        $this->message = $message;
+    }
+}

@@ -33,6 +33,12 @@
                 </inverse-join-columns>
             </join-table>
         </many-to-many>
+
+        <one-to-many field="violations" target-entity="Setono\SyliusFeedPlugin\Model\ViolationInterface" mapped-by="feed">
+            <cascade>
+                <cascade-persist/>
+            </cascade>
+        </one-to-many>
     </mapped-superclass>
 
 </doctrine-mapping>

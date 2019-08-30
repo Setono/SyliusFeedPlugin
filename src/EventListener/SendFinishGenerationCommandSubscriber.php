@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\EventListener;
 
-use Setono\SyliusFeedPlugin\Event\FeedChunkGeneratedEvent;
-use Setono\SyliusFeedPlugin\Message\Command\FinishFeedGeneration;
+use Setono\SyliusFeedPlugin\Event\BatchGeneratedEvent;
+use Setono\SyliusFeedPlugin\Message\Command\FinishGeneration;
 use Setono\SyliusFeedPlugin\Repository\FeedRepositoryInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-final class SendConcatenateFeedChunksCommandSubscriber implements EventSubscriberInterface
+final class SendFinishGenerationCommandSubscriber implements EventSubscriberInterface
 {
     /** @var FeedRepositoryInterface */
     private $feedRepository;
@@ -27,11 +27,11 @@ final class SendConcatenateFeedChunksCommandSubscriber implements EventSubscribe
     public static function getSubscribedEvents(): array
     {
         return [
-            FeedChunkGeneratedEvent::class => 'sendCommand',
+            BatchGeneratedEvent::class => 'sendCommand',
         ];
     }
 
-    public function sendCommand(FeedChunkGeneratedEvent $event): void
+    public function sendCommand(BatchGeneratedEvent $event): void
     {
         $feed = $event->getFeed();
 
@@ -39,6 +39,6 @@ final class SendConcatenateFeedChunksCommandSubscriber implements EventSubscribe
             return;
         }
 
-        $this->commandBus->dispatch(new FinishFeedGeneration($feed->getId()));
+        $this->commandBus->dispatch(new FinishGeneration($feed->getId()));
     }
 }

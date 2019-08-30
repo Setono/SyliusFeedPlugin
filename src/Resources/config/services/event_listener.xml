@@ -10,6 +10,13 @@
             <tag name="kernel.event_subscriber"/>
         </service>
 
+        <service id="setono_sylius_feed.event_listener.increment_finished_batches"
+                 class="Setono\SyliusFeedPlugin\EventListener\IncrementFinishedBatchesSubscriber">
+            <argument type="service" id="setono_sylius_feed.repository.feed"/>
+
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
         <service id="setono_sylius_feed.event_listener.move_generated_feed"
                  class="Setono\SyliusFeedPlugin\EventListener\MoveGeneratedFeedSubscriber">
             <argument type="service" id="setono_sylius_feed.registry.feed_type"/>
@@ -20,8 +27,8 @@
             <tag name="kernel.event_subscriber"/>
         </service>
 
-        <service id="setono_sylius_feed.event_listener.send_concatenate_feed_chunks_command"
-                 class="Setono\SyliusFeedPlugin\EventListener\SendConcatenateFeedChunksCommandSubscriber">
+        <service id="setono_sylius_feed.event_listener.send_finish_generation_command"
+                 class="Setono\SyliusFeedPlugin\EventListener\SendFinishGenerationCommandSubscriber">
             <argument type="service" id="setono_sylius_feed.repository.feed"/>
             <argument type="service" id="setono_sylius_feed.command_bus"/>
 

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    See validation specifications in the product data specfication:
+    https://support.google.com/merchants/answer/7052112?hl=en
+-->
+<constraint-mapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xmlns="http://symfony.com/schema/dic/constraint-mapping"
+                    xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping http://symfony.com/schema/dic/services/constraint-mapping-1.0.xsd">
+    <class name="Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Product">
+        <property name="id">
+            <constraint name="NotNull">
+                <option name="message">setono_sylius_feed.google.shopping.product.id.not_null</option>
+                <option name="groups">setono_sylius_feed</option>
+                <option name="payload">
+                    <value key="severity">error</value>
+                </option>
+            </constraint>
+            <constraint name="NotBlank">
+                <option name="message">setono_sylius_feed.google.shopping.product.id.not_blank</option>
+                <option name="groups">setono_sylius_feed</option>
+                <option name="payload">
+                    <value key="severity">error</value>
+                </option>
+            </constraint>
+            <constraint name="Length">
+                <option name="min">1</option>
+                <option name="max">50</option>
+                <option name="minMessage">setono_sylius_feed.google.shopping.product.id.length_min</option>
+                <option name="maxMessage">setono_sylius_feed.google.shopping.product.id.length_max</option>
+                <option name="payload">
+                    <value key="severity">error</value>
+                </option>
+            </constraint>
+        </property>
+    </class>
+</constraint-mapping>

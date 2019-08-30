@@ -8,7 +8,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use InvalidArgumentException;
 use Safe\Exceptions\StringsException;
 use function Safe\sprintf;
-use Setono\SyliusFeedPlugin\Message\Command\GenerateFeedChunk;
+use Setono\SyliusFeedPlugin\Message\Command\GenerateBatch;
 use Setono\SyliusFeedPlugin\Message\Command\ProcessFeed;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Registry\FeedTypeRegistryInterface;
@@ -73,7 +73,7 @@ final class ProcessFeedHandler implements MessageHandlerInterface
 
         $dataProvider = $feedType->getDataProvider();
         foreach ($dataProvider->getBatches() as $batch) {
-            $this->commandBus->dispatch(new GenerateFeedChunk($feed->getId(), $batch));
+            $this->commandBus->dispatch(new GenerateBatch($feed->getId(), $batch));
         }
     }
 

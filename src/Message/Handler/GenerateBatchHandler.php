@@ -15,8 +15,9 @@ use function Safe\fclose;
 use function Safe\fopen;
 use function Safe\fwrite;
 use function Safe\sprintf;
-use Setono\SyliusFeedPlugin\Event\FeedChunkGeneratedEvent;
-use Setono\SyliusFeedPlugin\Message\Command\GenerateFeedChunk;
+use Setono\SyliusFeedPlugin\Event\BatchGeneratedEvent;
+use Setono\SyliusFeedPlugin\Factory\ViolationFactoryInterface;
+use Setono\SyliusFeedPlugin\Message\Command\GenerateBatch;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Registry\FeedTypeRegistryInterface;
 use Setono\SyliusFeedPlugin\Repository\FeedRepositoryInterface;
@@ -24,13 +25,14 @@ use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Component\Workflow\Workflow;
 use Throwable;
 use Twig\Environment;
 use Webmozart\Assert\Assert;
 
-final class GenerateFeedChunkHandler implements MessageHandlerInterface
+final class GenerateBatchHandler implements MessageHandlerInterface
 {
     /** @var FeedRepositoryInterface */
     private $feedRepository;
@@ -53,6 +55,12 @@ final class GenerateFeedChunkHandler implements MessageHandlerInterface
     /** @var Registry */
     private $workflowRegistry;
 
+    /** @var ValidatorInterface */
+    private $validator;
+
+    /** @var ViolationFactoryInterface */
+    private $violationFactory;
+
     /** @var LoggerInterface */
     private $logger;
 
@@ -64,6 +72,8 @@ final class GenerateFeedChunkHandler implements MessageHandlerInterface
         FilesystemInterface $filesystem,
         EventDispatcherInterface $eventDispatcher,
         Registry $workflowRegistry,
+        ValidatorInterface $validator,
+        ViolationFactoryInterface $violationFactory,
         LoggerInterface $logger
     ) {
         $this->feedRepository = $feedRepository;
@@ -73,13 +83,15 @@ final class GenerateFeedChunkHandler implements MessageHandlerInterface
         $this->filesystem = $filesystem;
         $this->eventDispatcher = $eventDispatcher;
         $this->workflowRegistry = $workflowRegistry;
+        $this->validator = $validator;
+        $this->violationFactory = $violationFactory;
         $this->logger = $logger;
     }
 
     /**
      * @throws Throwable
      */
-    public function __invoke(GenerateFeedChunk $message): void
+    public function __invoke(GenerateBatch $message): void
     {
         $feed = $this->getFeed($message->getFeedId());
 
@@ -100,9 +112,20 @@ final class GenerateFeedChunkHandler implements MessageHandlerInterface
                     $stream = $this->openStream();
 
                     foreach ($items as $item) {
-                        $arr = $normalizer->normalize($item, $channel->getCode(), $locale->getCode());
+                        $arr = $normalizer->normalize($item, $channel, $locale);
                         foreach ($arr as $val) {
-                            // todo fire event here
+                            // todo fire event here so the user can hook into this event and change properties
+
+                            $constraintViolationList = $this->validator->validate($val, null, ['setono_sylius_feed']); // todo should be a parameter
+                            if ($constraintViolationList->count() > 0) {
+                                foreach ($constraintViolationList as $constraintViolation) {
+                                    $violation = $this->violationFactory->createFromConstraintViolation(
+                                        $constraintViolation, $channel, $locale
+                                    );
+
+                                    $feed->addViolation($violation);
+                                }
+                            }
                             fwrite($stream, $template->renderBlock('item', ['item' => $val]));
                         }
                     }
@@ -116,9 +139,7 @@ final class GenerateFeedChunkHandler implements MessageHandlerInterface
                 }
             }
 
-            $this->feedRepository->incrementFinishedBatches($feed);
-
-            $this->eventDispatcher->dispatch(new FeedChunkGeneratedEvent($feed));
+            $this->eventDispatcher->dispatch(new BatchGeneratedEvent($feed));
         } catch (Throwable $e) {
             $this->logger->critical($e->getMessage(), ['feedId' => $feed->getId()]);
 
@@ -147,7 +168,8 @@ final class GenerateFeedChunkHandler implements MessageHandlerInterface
         try {
             $workflow = $this->workflowRegistry->get($feed, FeedGraph::GRAPH);
         } catch (InvalidArgumentException $e) {
-            throw new UnrecoverableMessageHandlingException('An error occurred when trying to get the workflow for the feed', 0, $e);
+            throw new UnrecoverableMessageHandlingException('An error occurred when trying to get the workflow for the feed',
+                0, $e);
         }
 
         return $workflow;
@@ -195,8 +217,9 @@ final class GenerateFeedChunkHandler implements MessageHandlerInterface
      */
     private function applyErrorTransition(Workflow $workflow, FeedInterface $feed): void
     {
-        if(!$workflow->can($feed, FeedGraph::TRANSITION_ERRORED)) {
-            throw new InvalidArgumentException(sprintf('The transition "%s" could not be applied. State was: "%s"', FeedGraph::TRANSITION_ERRORED, $feed->getState()));
+        if (!$workflow->can($feed, FeedGraph::TRANSITION_ERRORED)) {
+            throw new InvalidArgumentException(sprintf('The transition "%s" could not be applied. State was: "%s"',
+                FeedGraph::TRANSITION_ERRORED, $feed->getState()));
         }
 
         $workflow->apply($feed, FeedGraph::TRANSITION_ERRORED);
