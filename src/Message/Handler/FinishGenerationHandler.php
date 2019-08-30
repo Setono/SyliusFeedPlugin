@@ -22,6 +22,7 @@ use Setono\SyliusFeedPlugin\Registry\FeedTypeRegistryInterface;
 use Setono\SyliusFeedPlugin\Repository\FeedRepositoryInterface;
 use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
 use Sylius\Component\Core\Model\ChannelInterface;
+use Sylius\Component\Locale\Model\LocaleInterface;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Workflow\Registry;
@@ -100,8 +101,7 @@ final class FinishGenerationHandler implements MessageHandlerInterface
 
                     $batchStream = $this->getBatchStream();
 
-                    [$feedStart, $feedEnd] = $this->getFeedParts($feed, $feedType, $channel->getCode(),
-                        $locale->getCode());
+                    [$feedStart, $feedEnd] = $this->getFeedParts($feed, $feedType, $channel, $locale);
 
                     fwrite($batchStream, $feedStart);
 
@@ -186,8 +186,8 @@ final class FinishGenerationHandler implements MessageHandlerInterface
     private function getFeedParts(
         FeedInterface $feed,
         FeedTypeInterface $feedType,
-        string $channel,
-        string $locale
+        ChannelInterface $channel,
+        LocaleInterface $locale
     ): array {
         $template = $this->twig->load('@SetonoSyliusFeedPlugin/Template/feed.txt.twig');
 
