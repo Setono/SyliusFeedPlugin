@@ -4,6 +4,7 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <imports>
         <import resource="services/command.xml"/>
+        <import resource="services/controller_action.xml"/>
         <import resource="services/data_provider.xml"/>
         <import resource="services/event_listener.xml"/>
         <import resource="services/factory.xml"/>
@@ -15,6 +16,7 @@
         <import resource="services/normalizer.xml"/>
         <import resource="services/processor.xml"/>
         <import resource="services/registry.xml"/>
+        <import resource="services/resolver.xml"/>
         <import resource="services/validator.xml"/>
     </imports>
 </container>

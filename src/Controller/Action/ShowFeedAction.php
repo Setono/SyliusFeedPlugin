@@ -17,6 +17,7 @@ use Sylius\Component\Channel\Context\ChannelContextInterface;
 use Sylius\Component\Locale\Context\LocaleContextInterface;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Mime\MimeTypesInterface;
 
 final class ShowFeedAction
 {
@@ -35,18 +36,23 @@ final class ShowFeedAction
     /** @var FilesystemInterface */
     private $filesystem;
 
+    /** @var MimeTypesInterface */
+    private $mimeTypes;
+
     public function __construct(
         FeedRepositoryInterface $repository,
         ChannelContextInterface $channelContext,
         LocaleContextInterface $localeContext,
         FeedPathResolverInterface $feedPathResolver,
-        FilesystemInterface $filesystem
+        FilesystemInterface $filesystem,
+        MimeTypesInterface $mimeTypes
     ) {
         $this->repository = $repository;
         $this->channelContext = $channelContext;
         $this->localeContext = $localeContext;
         $this->feedPathResolver = $feedPathResolver;
         $this->filesystem = $filesystem;
+        $this->mimeTypes = $mimeTypes;
     }
 
     /**
@@ -65,16 +71,19 @@ final class ShowFeedAction
 
         $feedPath = $this->feedPathResolver->resolve($feed, $channelCode, $localeCode);
 
-        if (!$this->filesystem->has($feedPath)) {
+        if (!$this->filesystem->has((string) $feedPath)) {
             throw new NotFoundHttpException(sprintf('The feed with id %s has not been generated', $uuid));
         }
 
-        $stream = $this->filesystem->readStream($feedPath);
+        $stream = $this->filesystem->readStream((string) $feedPath);
         if (false === $stream) {
             throw new RuntimeException(sprintf('An error occurred trying to read the feed file %s', $feedPath));
         }
 
+        $contentType = $this->mimeTypes->getMimeTypes($feedPath->getExtension())[0];
+
         $response = new StreamedResponse();
+        $response->headers->set('Content-Type', $contentType);
         $response->setCallback(static function () use ($stream) {
             while (!feof($stream)) {
                 echo fread($stream, 8192);

@@ -1,18 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+<container xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://symfony.com/schema/dic/services"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <service id="Setono\SyliusFeedPlugin\Controller\Action\ShowFeedAction">
-            <argument type="service" id="" />
-            <argument type="service" id="sylius.resource_controller.request_configuration_factory" />
-            <argument type="service" id="setono_sylius_feed.repository.feed" />
-            <argument type="service" id="sylius.resource_controller.single_resource_provider" />
-            <argument type="service" id="sylius.resource_controller.authorization_checker.disabled" />
-            <argument type="service" id="sylius.resource_controller.event_dispatcher" />
-            <argument type="service" id="sylius.context.channel" />
-            <argument type="service" id="sylius.context.locale" />
-
-            <tag name="console.command" />
+        <service id="setono_sylius_feed.controller.action.show_feed" class="Setono\SyliusFeedPlugin\Controller\Action\ShowFeedAction" public="true">
+            <argument type="service" id="setono_sylius_feed.repository.feed"/>
+            <argument type="service" id="sylius.context.channel"/>
+            <argument type="service" id="sylius.context.locale"/>
+            <argument type="service" id="setono_sylius_feed.resolver.feed_path"/>
+            <argument type="service" id="setono_sylius_feed.storage.feed"/>
+            <argument type="service" id="mime_types"/>
         </service>
     </services>
 </container>

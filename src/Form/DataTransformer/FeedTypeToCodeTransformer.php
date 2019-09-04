@@ -21,7 +21,7 @@ final class FeedTypeToCodeTransformer implements DataTransformerInterface
 
     public function transform($code): ?FeedTypeInterface
     {
-        if(null === $code || '' === $code) {
+        if (null === $code || '' === $code) {
             return null;
         }
 
@@ -34,7 +34,7 @@ final class FeedTypeToCodeTransformer implements DataTransformerInterface
 
     public function reverseTransform($feedType): ?string
     {
-        if(null === $feedType) {
+        if (null === $feedType) {
             return null;
         }
 
