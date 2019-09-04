@@ -4,7 +4,7 @@ setono_sylius_feed:
     form:
         feed:
             name: Name
-            feed_type: Template
+            feed_type: Feed type
             feed_type_placeholder: Choose feed type...
             uuid: UUID
     ui:
