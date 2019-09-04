@@ -16,7 +16,7 @@ if (!isset($_SERVER['APP_ENV']) && !isset($_ENV['APP_ENV'])) {
     }
 
     $envFile = file_exists(__DIR__.'/../.env') ? __DIR__.'/../.env' : __DIR__.'/../.env.dist';
-    (new Dotenv())->load($envFile);
+    (new Dotenv(true))->load($envFile);
 }
 
 $env = $_SERVER['APP_ENV'] ?? $_ENV['APP_ENV'] ?? 'dev';

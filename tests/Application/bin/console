@@ -23,7 +23,7 @@ if (!isset($_SERVER['APP_ENV'])) {
     }
 
     $envFile = file_exists(__DIR__.'/../.env') ? __DIR__.'/../.env' : __DIR__.'/../.env.dist';
-    (new Dotenv())->load($envFile);
+    (new Dotenv(true))->load($envFile);
 }
 
 $input = new ArgvInput();
