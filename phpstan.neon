@@ -16,3 +16,5 @@ parameters:
         - '/Method Setono\\SyliusFeedPlugin\\Model\\BrandAwareInterface\:\:getBrand\(\) has no return typehint specified\./'
         - '/Method Setono\\SyliusFeedPlugin\\Model\\ConditionAwareInterface\:\:getCondition\(\) has no return typehint specified\./'
         - '/Method Setono\\SyliusFeedPlugin\\Model\\GtinAwareInterface\:\:getGtin\(\) has no return typehint specified\./'
+        - '/Method Setono\\SyliusFeedPlugin\\Form\\DataTransformer\\FeedTypeToCodeTransformer\:\:transform\(\) has parameter \$code with no typehint specified\./'
+        - '/Method Setono\\SyliusFeedPlugin\\Form\\DataTransformer\\FeedTypeToCodeTransformer\:\:reverseTransform\(\) has parameter \$feedType with no typehint specified\./'
