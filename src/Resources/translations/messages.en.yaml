@@ -6,7 +6,6 @@ setono_sylius_feed:
             name: Name
             feed_type: Feed type
             feed_type_placeholder: Choose feed type...
-            uuid: UUID
     ui:
         name: Name
         edit_feed: Edit feed

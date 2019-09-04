@@ -18,10 +18,6 @@ final class FeedType extends AbstractResourceType
             ->add('name', TextType::class, [
                 'label' => 'setono_sylius_feed.form.feed.name',
             ])
-            ->add('uuid', TextType::class, [
-                'label' => 'setono_sylius_feed.form.feed.uuid',
-                'disabled' => true,
-            ])
             ->add('feedType', FeedTypeChoiceType::class)
             ->add('enabled', CheckboxType::class, [
                 'required' => false,

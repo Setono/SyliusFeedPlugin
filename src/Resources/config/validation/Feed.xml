@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<constraint-mapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xmlns="http://symfony.com/schema/dic/constraint-mapping"
+                    xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping http://symfony.com/schema/dic/services/constraint-mapping-1.0.xsd">
+    <class name="Setono\SyliusFeedPlugin\Model\Feed">
+        <constraint name="Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity">
+            <option name="fields">uuid</option>
+            <option name="message">setono_sylius_feed.feed.uuid.unique</option>
+            <option name="groups">setono_sylius_feed</option>
+        </constraint>
+        <property name="uuid">
+            <constraint name="NotBlank">
+                <option name="message">setono_sylius_feed.feed.uuid.not_blank</option>
+                <option name="groups">setono_sylius_feed</option>
+            </constraint>
+        </property>
+        <property name="name">
+            <constraint name="NotBlank">
+                <option name="message">setono_sylius_feed.feed.name.not_blank</option>
+                <option name="groups">setono_sylius_feed</option>
+            </constraint>
+        </property>
+        <property name="feedType">
+            <constraint name="NotBlank">
+                <option name="message">setono_sylius_feed.feed.feed_type.not_blank</option>
+                <option name="groups">setono_sylius_feed</option>
+            </constraint>
+        </property>
+    </class>
+</constraint-mapping>

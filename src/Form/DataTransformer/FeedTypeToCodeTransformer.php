@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Form\DataTransformer;
 
-use InvalidArgumentException;
 use Setono\SyliusFeedPlugin\FeedType\FeedTypeInterface;
 use Setono\SyliusFeedPlugin\Registry\FeedTypeRegistryInterface;
 use Symfony\Component\Form\DataTransformerInterface;
+use Symfony\Component\Form\Exception\UnexpectedTypeException;
 
 final class FeedTypeToCodeTransformer implements DataTransformerInterface
 {
@@ -19,19 +19,27 @@ final class FeedTypeToCodeTransformer implements DataTransformerInterface
         $this->feedTypeRegistry = $feedTypeRegistry;
     }
 
-    public function transform($code): FeedTypeInterface
+    public function transform($code): ?FeedTypeInterface
     {
+        if(null === $code || '' === $code) {
+            return null;
+        }
+
         if (!is_string($code)) {
-            throw new InvalidArgumentException('Invalid type'); // todo better exception
+            throw new UnexpectedTypeException($code, 'string');
         }
 
         return $this->feedTypeRegistry->get($code);
     }
 
-    public function reverseTransform($feedType): string
+    public function reverseTransform($feedType): ?string
     {
+        if(null === $feedType) {
+            return null;
+        }
+
         if (!$feedType instanceof FeedTypeInterface) {
-            throw new InvalidArgumentException('Invalid type'); // todo better exception
+            throw new UnexpectedTypeException($feedType, FeedTypeInterface::class);
         }
 
         return $feedType->getCode();

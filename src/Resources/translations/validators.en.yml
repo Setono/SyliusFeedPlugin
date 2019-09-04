@@ -1,0 +1,9 @@
+setono_sylius_feed:
+    feed:
+        uuid:
+            not_blank: The UUID cannot be blank
+            unique: The UUID must be unique
+        name:
+            not_blank: The name cannot be blank
+        feed_type:
+            not_blank: The feed type cannot be blank
