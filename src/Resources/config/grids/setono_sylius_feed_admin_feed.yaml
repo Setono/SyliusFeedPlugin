@@ -19,5 +19,7 @@ sylius_grid:
                 item:
                     update:
                         type: update
+                    show:
+                        type: show
                     delete:
                         type: delete

@@ -21,13 +21,13 @@
             <join-column name="feed_id" referenced-column-name="id" on-delete="CASCADE" nullable="false"/>
         </many-to-one>
 
-        <one-to-one field="channel" target-entity="Sylius\Component\Channel\Model\ChannelInterface" fetch="EAGER">
-            <join-column name="channel_id" referenced-column-name="id" />
-        </one-to-one>
+        <many-to-one field="channel" target-entity="Sylius\Component\Channel\Model\ChannelInterface" fetch="EAGER">
+            <join-column name="channel_id" referenced-column-name="id" on-delete="CASCADE" nullable="false" />
+        </many-to-one>
 
-        <one-to-one field="locale" target-entity="Sylius\Component\Locale\Model\LocaleInterface" fetch="EAGER">
-            <join-column name="locale_id" referenced-column-name="id" />
-        </one-to-one>
+        <many-to-one field="locale" target-entity="Sylius\Component\Locale\Model\LocaleInterface" fetch="EAGER">
+            <join-column name="locale_id" referenced-column-name="id" on-delete="CASCADE" nullable="false" />
+        </many-to-one>
     </mapped-superclass>
 
 </doctrine-mapping>

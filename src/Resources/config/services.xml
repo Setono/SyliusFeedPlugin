@@ -17,6 +17,7 @@
         <import resource="services/processor.xml"/>
         <import resource="services/registry.xml"/>
         <import resource="services/resolver.xml"/>
+        <import resource="services/twig.xml"/>
         <import resource="services/validator.xml"/>
     </imports>
 </container>

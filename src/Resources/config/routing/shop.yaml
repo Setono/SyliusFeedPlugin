@@ -2,4 +2,4 @@ setono_sylius_feed_shop_feed_show:
     path: /feed/{uuid}
     methods: [GET]
     defaults:
-        _controller: setono_sylius_feed.controller.action.show_feed
+        _controller: setono_sylius_feed.controller.action.shop.show_feed
