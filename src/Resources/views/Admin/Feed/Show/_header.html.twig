@@ -1,0 +1,18 @@
+{# @var \Setono\SyliusFeedPlugin\Model\FeedInterface feed #}
+
+<h1 class="ui header">
+    <i class="circular cart icon"></i>
+    <div class="content">
+        {{ 'setono_sylius_feed.ui.feed'|trans }} {{ feed.name }}
+        <div class="sub header">
+            <div class="ui horizontal divided list">
+                <div class="item">
+                    {{ 'setono_sylius_feed.ui.feed_type'|trans ~ ': ' ~ feed.feedType }} {# todo output the label of the feed type #}
+                </div>
+                <div class="item">
+                    <div class="ui label">{{ ('setono_sylius_feed.ui.' ~ feed.state)|trans }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</h1>

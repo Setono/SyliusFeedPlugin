@@ -1,0 +1,122 @@
+{% extends '@SyliusAdmin/layout.html.twig' %}
+
+{# @var \Setono\SyliusFeedPlugin\Model\FeedInterface feed #}
+
+{% block title %}{{ 'setono_sylius_feed.ui.feed'|trans ~' '~ feed.name }} {{ parent() }}{% endblock %}
+
+{% block content %}
+    {{ sonata_block_render_event('setono_sylius_feed.admin.feed.show.before_header', {'resource': resource}) }}
+
+    <div class="ui stackable two column grid">
+        <div class="ten wide column">
+            {% include '@SetonoSyliusFeedPlugin/Admin/Feed/Show/_header.html.twig' %}
+        </div>
+
+        {% set menu = knp_menu_get('setono_sylius_feed.admin.feed.show', [], {'feed': feed}) %}
+        {{ knp_menu_render(menu, {'template': '@SyliusUi/Menu/top.html.twig'}) }}
+    </div>
+
+    {{ sonata_block_render_event('setono_sylius_feed.admin.feed.show.after_header', {'resource': resource}) }}
+
+    {% include '@SetonoSyliusFeedPlugin/Admin/Feed/Show/_breadcrumb.html.twig' %}
+
+    {{ sonata_block_render_event('setono_sylius_feed.admin.feed.show.after_breadcrumb', {'resource': resource}) }}
+
+    {% if workflow_has_marked_place(feed, constant('Setono\\SyliusFeedPlugin\\Workflow\\FeedGraph::STATE_READY')) %}
+        <div class="ui segment spaceless">
+            <table class="ui basic celled table">
+                <thead>
+                <tr>
+                    <th>{{ 'sylius.ui.channel'|trans }}</th>
+                    <th>{{ 'sylius.ui.locale'|trans }}</th>
+                    <th>{{ 'setono_sylius_feed.ui.link'|trans }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for channel in feed.channels %}
+                    {% for locale in channel.locales %}
+                        <tr class="item">
+                            <td>{{ channel.name }}</td>
+                            <td>{{ locale.name }}</td>
+                            <td>
+                                <div class="ui icon input" style="width: 100%;position: relative;">
+                                    <div class="ui pointing below label teal"
+                                         style="position:absolute; right: 10px; top: -100%; display: none"
+                                         id="link-copied-{{ loop.index }}">
+                                        <i class="check icon"></i> {{ 'setono_sylius_feed.ui.link_copied'|trans }}
+                                    </div>
+                                    <input id="link-{{ loop.index }}" type="text"
+                                           value="{{ setono_sylius_feed_generate_feed_url(feed, channel, locale) }}"
+                                           readonly>
+                                    <i class="copy link icon" data-link-id="link-{{ loop.index }}"
+                                       data-link-copied-id="link-copied-{{ loop.index }}"
+                                       data-content="{{ 'setono_sylius_feed.ui.click_to_copy'|trans }}"
+                                       data-position="top right"></i>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+
+    {% if not feed.violations.empty %}
+        <h2 class="ui header">{{ 'setono_sylius_feed.ui.violations'|trans }}</h2>
+        <div class="ui segment spaceless">
+            <table class="ui basic celled table">
+                <thead>
+                <tr>
+                    <th>{{ 'setono_sylius_feed.ui.severity'|trans }}</th>
+                    <th>{{ 'setono_sylius_feed.ui.message'|trans }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {%
+                    set severityMap = {'error': 'negative', 'warning': 'warning', 'notice': ''}
+                %}
+                {# @var \Setono\SyliusFeedPlugin\Model\ViolationInterface violation #}
+                {% for violation in feed.violations %}
+                    <tr class="item {{ severityMap[violation.severity] }}">
+                        <td>{{ ('setono_sylius_feed.ui.' ~ violation.severity)|trans }}</td>
+                        <td>{{ violation.message }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+
+    {{ sonata_block_render_event('setono_sylius_feed.admin.feed.show.after_content', {'resource': resource}) }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script>
+        $('[data-content]').popup();
+
+        let timers = {};
+
+        $('i.copy').on('click', function () {
+            const linkId = $(this).data('link-id');
+            const linkCopiedId = $(this).data('link-copied-id');
+
+            const link = $('#' + linkId).get(0);
+            const $linkCopied = $('#' + linkCopiedId);
+
+            link.select();
+            link.setSelectionRange(0, 9999);
+
+            document.execCommand('copy');
+
+            $linkCopied.show();
+
+            clearTimeout(timers[linkId]);
+            timers[linkId] = setTimeout(function () {
+                $linkCopied.hide();
+            }, 3000);
+        });
+    </script>
+{% endblock %}
