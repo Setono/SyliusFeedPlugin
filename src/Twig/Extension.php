@@ -16,9 +16,7 @@ use Twig\TwigFunction;
 
 final class Extension extends AbstractExtension
 {
-    /**
-     * @var UrlGeneratorInterface
-     */
+    /** @var UrlGeneratorInterface */
     private $urlGenerator;
 
     public function __construct(UrlGeneratorInterface $urlGenerator)
@@ -36,7 +34,7 @@ final class Extension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('setono_sylius_feed_generate_feed_url', [$this, 'generateFeedUrl'])
+            new TwigFunction('setono_sylius_feed_generate_feed_url', [$this, 'generateFeedUrl']),
         ];
     }
 
@@ -52,7 +50,7 @@ final class Extension extends AbstractExtension
     {
         $path = $this->urlGenerator->generate('setono_sylius_feed_shop_feed_show', [
             '_locale' => $locale->getCode(),
-            'uuid' => $feed->getUuid()
+            'uuid' => $feed->getUuid(),
         ]);
 
         return 'https://' . $channel->getHostname() . $path;
