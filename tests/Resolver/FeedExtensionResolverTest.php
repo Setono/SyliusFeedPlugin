@@ -16,7 +16,7 @@ final class FeedExtensionResolverTest extends TestCase
     /**
      * @test
      */
-    public function it_resolves(): void
+    public function it_resolves_extension(): void
     {
         $feed = $this->createMock(FeedInterface::class);
         $feed->method('getFeedType')->willReturn('feed_type');
