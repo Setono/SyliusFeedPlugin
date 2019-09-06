@@ -9,6 +9,7 @@ use function Safe\preg_replace;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Locale\Model\LocaleInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
@@ -16,11 +17,15 @@ use Twig\TwigFunction;
 
 final class Extension extends AbstractExtension
 {
+    /** @var RequestStack */
+    private $requestStack;
+
     /** @var UrlGeneratorInterface */
     private $urlGenerator;
 
-    public function __construct(UrlGeneratorInterface $urlGenerator)
+    public function __construct(RequestStack $requestStack, UrlGeneratorInterface $urlGenerator)
     {
+        $this->requestStack = $requestStack;
         $this->urlGenerator = $urlGenerator;
     }
 
@@ -53,6 +58,16 @@ final class Extension extends AbstractExtension
             'uuid' => $feed->getUuid(),
         ]);
 
-        return 'https://' . $channel->getHostname() . $path;
+        return $this->getScheme() . '://' . $channel->getHostname() . $path;
+    }
+
+    private function getScheme(): string
+    {
+        $request = $this->requestStack->getMasterRequest();
+        if (null === $request) {
+            return 'https';
+        }
+
+        return $request->getScheme();
     }
 }
