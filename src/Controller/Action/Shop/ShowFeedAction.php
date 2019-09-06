@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Setono\SyliusFeedPlugin\Controller\Action;
+namespace Setono\SyliusFeedPlugin\Controller\Action\Shop;
 
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\FilesystemInterface;
