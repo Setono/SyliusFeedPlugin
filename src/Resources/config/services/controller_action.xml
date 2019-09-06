@@ -3,13 +3,20 @@
 <container xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://symfony.com/schema/dic/services"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <service id="setono_sylius_feed.controller.action.show_feed" class="Setono\SyliusFeedPlugin\Controller\Action\ShowFeedAction" public="true">
+        <service id="setono_sylius_feed.controller.action.shop.show_feed" class="Setono\SyliusFeedPlugin\Controller\Action\Shop\ShowFeedAction" public="true">
             <argument type="service" id="setono_sylius_feed.repository.feed"/>
             <argument type="service" id="sylius.context.channel"/>
             <argument type="service" id="sylius.context.locale"/>
             <argument type="service" id="setono_sylius_feed.resolver.feed_path"/>
             <argument type="service" id="setono_sylius_feed.storage.feed"/>
             <argument type="service" id="mime_types"/>
+        </service>
+
+        <service id="setono_sylius_feed.controller.action.admin.process_feed" class="Setono\SyliusFeedPlugin\Controller\Action\Admin\ProcessFeedAction" public="true">
+            <argument type="service" id="setono_sylius_feed.command_bus"/>
+            <argument type="service" id="router"/>
+            <argument type="service" id="session.flash_bag"/>
+            <argument type="service" id="translator"/>
         </service>
     </services>
 </container>

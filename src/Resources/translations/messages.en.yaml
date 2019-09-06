@@ -7,10 +7,24 @@ setono_sylius_feed:
             feed_type: Feed type
             feed_type_placeholder: Choose feed type...
     ui:
-        name: Name
+        click_to_copy: Click to copy
         edit_feed: Edit feed
+        error: Error
         feed: Feed
         feeds: Feeds
+        feed_type: Feed type
+        generate_feed: Generate feed
+        link: Link
+        link_copied: Link copied
         manage_feeds: Manage feeds
+        message: Message
+        name: Name
         new_feed: New feed
+        notice: Notice
+        processing: Processing
+        ready: Ready
+        severity: Severity
+        unprocessed: Unprocessed
         uuid: UUID
+        violations: Violations
+        warning: Warning

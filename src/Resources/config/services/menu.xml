@@ -5,5 +5,12 @@
         <service id="Setono\SyliusFeedPlugin\Menu\AdminMenuListener">
             <tag name="kernel.event_listener" event="sylius.menu.admin.main" method="addAdminMenuItems" />
         </service>
+
+        <service id="setono_sylius_feed.admin.menu_builder.feed.show" class="Setono\SyliusFeedPlugin\Menu\FeedShowMenuBuilder">
+            <argument type="service" id="knp_menu.factory" />
+            <argument type="service" id="event_dispatcher" />
+            <argument type="service" id="workflow.registry" />
+            <tag name="knp_menu.menu_builder" method="createMenu" alias="setono_sylius_feed.admin.feed.show" />
+        </service>
     </services>
 </container>
