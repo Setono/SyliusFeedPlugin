@@ -70,6 +70,7 @@
                 <tr>
                     <th>{{ 'setono_sylius_feed.ui.severity'|trans }}</th>
                     <th>{{ 'setono_sylius_feed.ui.message'|trans }}</th>
+                    <th>{{ 'setono_sylius_feed.ui.data'|trans }}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -81,6 +82,18 @@
                     <tr class="item {{ severityMap[violation.severity] }}">
                         <td>{{ ('setono_sylius_feed.ui.' ~ violation.severity)|trans }}</td>
                         <td>{{ violation.message }}</td>
+                        <td>
+                            <div class="ui accordion">
+                                <div class="title">
+                                    <i class="dropdown icon"></i>
+                                    {{ 'sylius.ui.view'|trans }}
+                                </div>
+                                <div class="content">
+                                    <pre>{{ violation.data|setono_sylius_feed_json }}</pre>
+                                </div>
+                            </div>
+
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>
