@@ -8,6 +8,7 @@ setono_sylius_feed:
             feed_type_placeholder: Choose feed type...
     ui:
         click_to_copy: Click to copy
+        data: Data
         edit_feed: Edit feed
         error: Error
         feed: Feed

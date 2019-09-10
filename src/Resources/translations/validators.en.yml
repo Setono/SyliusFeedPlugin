@@ -1,4 +1,15 @@
 setono_sylius_feed:
+    google:
+        shopping:
+            product:
+                brand:
+                    not_blank: The brand is blank
+                gtin:
+                    not_blank: The GTIN is blank
+                shipping:
+                    not_blank: The shipping is blank
+                title:
+                    not_blank: The title should not be blank
     feed:
         uuid:
             not_blank: The UUID cannot be blank
