@@ -12,6 +12,8 @@ use Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Availability;
 use Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Condition;
 use Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Price;
 use Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Product;
+use Setono\SyliusFeedPlugin\FeedContext\ContextList;
+use Setono\SyliusFeedPlugin\FeedContext\ContextListInterface;
 use Setono\SyliusFeedPlugin\FeedContext\ItemContextInterface;
 use Setono\SyliusFeedPlugin\Model\BrandAwareInterface;
 use Setono\SyliusFeedPlugin\Model\ConditionAwareInterface;
@@ -56,7 +58,7 @@ class ProductVariantItemContext implements ItemContextInterface
     /**
      * @throws StringsException
      */
-    public function getContext(object $variant, ChannelInterface $channel, LocaleInterface $locale): array
+    public function getContextList(object $variant, ChannelInterface $channel, LocaleInterface $locale): ContextListInterface
     {
         if (!$variant instanceof ProductVariantInterface) {
             throw new InvalidArgumentException(sprintf('The class %s is not an instance of %s', get_class($variant),
@@ -95,7 +97,7 @@ class ProductVariantItemContext implements ItemContextInterface
             $data->setGtin((string) $variant->getGtin());
         }
 
-        return [$data];
+        return new ContextList([$data]);
     }
 
     private function getAvailability(ProductVariantInterface $product): Availability

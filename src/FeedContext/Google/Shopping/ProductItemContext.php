@@ -12,6 +12,8 @@ use Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Availability;
 use Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Condition;
 use Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Price;
 use Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Product;
+use Setono\SyliusFeedPlugin\FeedContext\ContextList;
+use Setono\SyliusFeedPlugin\FeedContext\ContextListInterface;
 use Setono\SyliusFeedPlugin\FeedContext\ItemContextInterface;
 use Setono\SyliusFeedPlugin\Model\BrandAwareInterface;
 use Setono\SyliusFeedPlugin\Model\ConditionAwareInterface;
@@ -61,7 +63,7 @@ class ProductItemContext implements ItemContextInterface
     /**
      * @throws StringsException
      */
-    public function getContext(object $product, ChannelInterface $channel, LocaleInterface $locale): array
+    public function getContextList(object $product, ChannelInterface $channel, LocaleInterface $locale): ContextListInterface
     {
         if (!$product instanceof ProductInterface) {
             throw new InvalidArgumentException(sprintf(
@@ -90,18 +92,19 @@ class ProductItemContext implements ItemContextInterface
             $data->setGtin((string) $product->getGtin());
         }
 
-        $items = [$data];
+        $contextList = new ContextList();
+        $contextList->add($data);
 
         foreach ($product->getVariants() as $variant) {
-            $normalizedVariants = $this->productVariantItemContext->getContext($variant, $channel, $locale);
-            foreach ($normalizedVariants as $normalizedVariant) {
-                $items[] = $normalizedVariant;
+            $variantContextList = $this->productVariantItemContext->getContextList($variant, $channel, $locale);
+            foreach ($variantContextList as $item) {
+                $contextList->add($item);
             }
         }
 
         // todo fire event
 
-        return $items;
+        return $contextList;
     }
 
     private function getLink(LocaleInterface $locale, ProductTranslationInterface $translation): string

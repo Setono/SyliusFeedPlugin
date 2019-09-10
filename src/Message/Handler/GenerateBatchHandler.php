@@ -112,7 +112,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
                     $stream = $this->openStream();
 
                     foreach ($items as $item) {
-                        $arr = $itemContext->getContext($item, $channel, $locale);
+                        $arr = $itemContext->getContextList($item, $channel, $locale);
                         foreach ($arr as $val) {
                             // todo fire event here so the user can hook into this event and change properties
 
