@@ -14,9 +14,19 @@ final class FeedContext implements FeedContextInterface
     public function getContext(FeedInterface $feed, ChannelInterface $channel, LocaleInterface $locale): array
     {
         return [
-            'title' => 'title',
-            'url' => 'url',
-            'description' => 'description',
+            'title' => $this->getTitle($channel),
+            'url' => 'https://' . $channel->getHostname(),
+            'description' => '',
         ];
+    }
+
+    private function getTitle(ChannelInterface $channel): string
+    {
+        $billingData = $channel->getShopBillingData();
+        if (null !== $billingData && $billingData->getCompany() !== null) {
+            return $billingData->getCompany();
+        }
+
+        return (string) $channel->getHostname();
     }
 }
