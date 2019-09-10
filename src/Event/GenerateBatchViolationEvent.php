@@ -64,6 +64,9 @@ final class GenerateBatchViolationEvent extends Event
         return $this->locale;
     }
 
+    /**
+     * @return array|object
+     */
     public function getItem()
     {
         return $this->item;
