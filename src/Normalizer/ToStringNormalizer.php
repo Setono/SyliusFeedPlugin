@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Normalizer;
@@ -12,9 +13,12 @@ final class ToStringNormalizer implements NormalizerInterface
         return (string) $object;
     }
 
+    /**
+     * @param mixed|object $object
+     * @param string|null $format
+     */
     public function supportsNormalization($object, $format = null): bool
     {
         return is_object($object) && method_exists($object, '__toString');
     }
-
 }
