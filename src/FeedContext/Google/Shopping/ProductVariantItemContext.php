@@ -21,7 +21,6 @@ use Setono\SyliusFeedPlugin\Model\ConditionAwareInterface;
 use Setono\SyliusFeedPlugin\Model\GtinAwareInterface;
 use Setono\SyliusFeedPlugin\Model\MpnAwareInterface;
 use Setono\SyliusFeedPlugin\Model\SizeAwareInterface;
-use Sylius\Component\Core\Calculator\ProductVariantPriceCalculatorInterface;
 use Sylius\Component\Core\Exception\MissingChannelConfigurationException;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ImagesAwareInterface;
@@ -44,19 +43,14 @@ class ProductVariantItemContext implements ItemContextInterface
     /** @var RouterInterface */
     private $router;
 
-    /** @var ProductVariantPriceCalculatorInterface */
-    private $productVariantPriceCalculator;
-
     public function __construct(
         AvailabilityCheckerInterface $availabilityChecker,
         CacheManager $cacheManager,
-        RouterInterface $router,
-        ProductVariantPriceCalculatorInterface $productVariantPriceCalculator
+        RouterInterface $router
     ) {
         $this->availabilityChecker = $availabilityChecker;
         $this->cacheManager = $cacheManager;
         $this->router = $router;
-        $this->productVariantPriceCalculator = $productVariantPriceCalculator;
     }
 
     /**
