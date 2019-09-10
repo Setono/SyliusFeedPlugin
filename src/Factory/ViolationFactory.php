@@ -32,12 +32,15 @@ final class ViolationFactory implements ViolationFactoryInterface
     }
 
     /**
+     * @param mixed|null $data
+     *
      * @throws StringsException
      */
     public function createFromConstraintViolation(
         ConstraintViolationInterface $constraintViolation,
         ChannelInterface $channel,
-        LocaleInterface $locale
+        LocaleInterface $locale,
+        $data = null
     ): ViolationInterface {
         $violation = $this->createNew();
 
@@ -45,6 +48,7 @@ final class ViolationFactory implements ViolationFactoryInterface
         $violation->setLocale($locale);
         $violation->setMessage($constraintViolation->getPropertyPath() . ': ' . sprintf($constraintViolation->getMessage(),
                 $constraintViolation->getInvalidValue()));
+        $violation->setData($data);
 
         if ($constraintViolation instanceof ConstraintViolation) {
             $constraint = $constraintViolation->getConstraint();

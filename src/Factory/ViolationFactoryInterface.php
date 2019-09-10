@@ -12,9 +12,13 @@ use Symfony\Component\Validator\ConstraintViolationInterface;
 
 interface ViolationFactoryInterface extends FactoryInterface
 {
+    /**
+     * @param mixed|null $data
+     */
     public function createFromConstraintViolation(
         ConstraintViolationInterface $constraintViolation,
         ChannelInterface $channel,
-        LocaleInterface $locale
+        LocaleInterface $locale,
+        $data = null
     ): ViolationInterface;
 }
