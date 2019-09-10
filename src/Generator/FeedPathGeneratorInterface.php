@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Setono\SyliusFeedPlugin\Resolver;
+namespace Setono\SyliusFeedPlugin\Generator;
 
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use SplFileInfo;
 
-interface FeedPathResolverInterface
+interface FeedPathGeneratorInterface
 {
     public function resolve(FeedInterface $feed, string $channelCode, string $localeCode): SplFileInfo;
 }

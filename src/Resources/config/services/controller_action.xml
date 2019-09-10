@@ -7,7 +7,7 @@
             <argument type="service" id="setono_sylius_feed.repository.feed"/>
             <argument type="service" id="sylius.context.channel"/>
             <argument type="service" id="sylius.context.locale"/>
-            <argument type="service" id="setono_sylius_feed.resolver.feed_path"/>
+            <argument type="service" id="setono_sylius_feed.generator.feed_path"/>
             <argument type="service" id="setono_sylius_feed.storage.feed"/>
             <argument type="service" id="mime_types"/>
         </service>

@@ -11,6 +11,7 @@
         <import resource="services/feed_context.xml"/>
         <import resource="services/feed_type.xml"/>
         <import resource="services/form.xml"/>
+        <import resource="services/generator.xml"/>
         <import resource="services/menu.xml"/>
         <import resource="services/message_handler.xml"/>
         <import resource="services/normalizer.xml"/>

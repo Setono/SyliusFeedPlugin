@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Setono\SyliusFeedPlugin\Resolver;
+namespace Setono\SyliusFeedPlugin\Generator;
 
 use Safe\Exceptions\StringsException;
 use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
+use Setono\SyliusFeedPlugin\Resolver\FeedExtensionResolverInterface;
 use SplFileInfo;
 
-final class FeedPathResolver implements FeedPathResolverInterface
+final class FeedPathGenerator implements FeedPathGeneratorInterface
 {
     /** @var FeedExtensionResolverInterface */
     private $feedExtensionResolver;

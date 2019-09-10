@@ -11,8 +11,8 @@ use Safe\Exceptions\StringsException;
 use function Safe\fclose;
 use function Safe\fread;
 use function Safe\sprintf;
+use Setono\SyliusFeedPlugin\Generator\FeedPathGeneratorInterface;
 use Setono\SyliusFeedPlugin\Repository\FeedRepositoryInterface;
-use Setono\SyliusFeedPlugin\Resolver\FeedPathResolverInterface;
 use Sylius\Component\Channel\Context\ChannelContextInterface;
 use Sylius\Component\Locale\Context\LocaleContextInterface;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -30,8 +30,8 @@ final class ShowFeedAction
     /** @var LocaleContextInterface */
     private $localeContext;
 
-    /** @var FeedPathResolverInterface */
-    private $feedPathResolver;
+    /** @var FeedPathGeneratorInterface */
+    private $feedPathGenerator;
 
     /** @var FilesystemInterface */
     private $filesystem;
@@ -43,14 +43,14 @@ final class ShowFeedAction
         FeedRepositoryInterface $repository,
         ChannelContextInterface $channelContext,
         LocaleContextInterface $localeContext,
-        FeedPathResolverInterface $feedPathResolver,
+        FeedPathGeneratorInterface $feedPathGenerator,
         FilesystemInterface $filesystem,
         MimeTypesInterface $mimeTypes
     ) {
         $this->repository = $repository;
         $this->channelContext = $channelContext;
         $this->localeContext = $localeContext;
-        $this->feedPathResolver = $feedPathResolver;
+        $this->feedPathGenerator = $feedPathGenerator;
         $this->filesystem = $filesystem;
         $this->mimeTypes = $mimeTypes;
     }
@@ -69,7 +69,7 @@ final class ShowFeedAction
         $channelCode = $this->channelContext->getChannel()->getCode();
         $localeCode = $this->localeContext->getLocaleCode();
 
-        $feedPath = $this->feedPathResolver->resolve($feed, $channelCode, $localeCode);
+        $feedPath = $this->feedPathGenerator->resolve($feed, $channelCode, $localeCode);
 
         if (!$this->filesystem->has((string) $feedPath)) {
             throw new NotFoundHttpException(sprintf('The feed with id %s has not been generated', $uuid));
