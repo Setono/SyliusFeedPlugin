@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Feed\Model;
 
+use Webmozart\Assert\Assert;
+
 /**
  * This is taken directly from the excellent post by Matthias Pigulla here:
  *
@@ -41,14 +43,23 @@ trait ConstantClassTrait
     }
 
     /**
-     * Returns an array of possible values
-     */
-    abstract public static function getValues(): array;
-
-    /**
      * Will return an instance based on the $value
      *
      * @param object|string|int $value
      */
-    abstract public static function fromValue($value);
+    public static function fromValue($value): self
+    {
+        if (is_object($value)) {
+            $value = (string) $value;
+        }
+
+        Assert::oneOf($value, self::getValues());
+
+        return self::constant($value);
+    }
+
+    /**
+     * Returns an array of possible values
+     */
+    abstract public static function getValues(): array;
 }

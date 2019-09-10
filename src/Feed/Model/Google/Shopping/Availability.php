@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping;
 
 use Setono\SyliusFeedPlugin\Feed\Model\ConstantClassTrait;
-use Webmozart\Assert\Assert;
 
 final class Availability
 {
@@ -30,18 +29,6 @@ final class Availability
     public static function preorder(): self
     {
         return self::constant(self::PREORDER);
-    }
-
-    /**
-     * @param object|string $value
-     */
-    public static function fromValue($value): self
-    {
-        $value = (string) $value;
-
-        Assert::oneOf($value, self::getValues());
-
-        return self::constant($value);
     }
 
     public static function getValues(): array
