@@ -16,6 +16,8 @@ use function Safe\fopen;
 use function Safe\fwrite;
 use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\Event\BatchGeneratedEvent;
+use Setono\SyliusFeedPlugin\Event\GenerateBatchItemEvent;
+use Setono\SyliusFeedPlugin\Event\GenerateBatchViolationEvent;
 use Setono\SyliusFeedPlugin\Factory\ViolationFactoryInterface;
 use Setono\SyliusFeedPlugin\Message\Command\GenerateBatch;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
@@ -112,21 +114,29 @@ final class GenerateBatchHandler implements MessageHandlerInterface
                     $stream = $this->openStream();
 
                     foreach ($items as $item) {
-                        $arr = $itemContext->getContextList($item, $channel, $locale);
-                        foreach ($arr as $val) {
-                            // todo fire event here so the user can hook into this event and change properties
+                        $contextList = $itemContext->getContextList($item, $channel, $locale);
+                        foreach ($contextList as $context) {
+                            $this->eventDispatcher->dispatch(new GenerateBatchItemEvent(
+                                $feed, $feedType, $channel, $locale, $context
+                            ));
 
-                            $constraintViolationList = $this->validator->validate($val, null, ['setono_sylius_feed']); // todo should be a parameter
+                            $constraintViolationList = $this->validator->validate(
+                                $context, null, ['setono_sylius_feed'] // todo should be a parameter
+                            );
                             if ($constraintViolationList->count() > 0) {
                                 foreach ($constraintViolationList as $constraintViolation) {
                                     $violation = $this->violationFactory->createFromConstraintViolation(
-                                        $constraintViolation, $channel, $locale, $val
+                                        $constraintViolation, $channel, $locale, $context
                                     );
 
                                     $feed->addViolation($violation);
                                 }
+
+                                $this->eventDispatcher->dispatch(new GenerateBatchViolationEvent(
+                                    $feed, $feedType, $channel, $locale, $context, $constraintViolationList
+                                ));
                             }
-                            fwrite($stream, $template->renderBlock('item', ['item' => $val]));
+                            fwrite($stream, $template->renderBlock('item', ['item' => $context]));
                         }
                     }
 

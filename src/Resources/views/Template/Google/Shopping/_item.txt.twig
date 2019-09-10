@@ -12,10 +12,22 @@
         {% endfor %}
         <g:availability>{{ item.availability|e }}</g:availability>
         <g:price>{{ item.price|e }}</g:price>
-        <g:google_product_category>{{ item.googleProductCategory|e }}</g:google_product_category>
-        <g:product_type>{{ item.productType|e }}</g:product_type>
+        <g:sale_price>{{ item.salePrice|e }}</g:sale_price>
+        <g:sale_price_effective_date>{{ item.salePriceEffectiveDate|e }}</g:sale_price_effective_date>
         <g:brand>{{ item.brand|e }}</g:brand>
         <g:gtin>{{ item.gtin|e }}</g:gtin>
+        <g:mpn>{{ item.mpn|e }}</g:mpn>
+        <g:identifier_exists>{{ item.identifierExists|e }}</g:identifier_exists>
+        <g:condition>{{ item.condition|e }}</g:condition>
+        <g:item_group_id>{{ item.itemGroupId|e }}</g:item_group_id>
+        <g:google_product_category>{{ item.googleProductCategory|e }}</g:google_product_category>
+        <g:product_type>{{ item.productType|e }}</g:product_type>
+        <g:shipping>{{ item.shipping|e }}</g:shipping>
+        <g:size>{{ item.size|e }}</g:size>
+        <g:color>{{ item.color|e }}</g:color>
+        {% for idx, customLabel in item.customLabels %}
+            <g:custom_label_{{ idx }}>{{ customLabel|e }}</g:custom_label_{{ idx }}>
+        {% endfor %}
     {% endapply %}
     {% endspaceless %}
 </item>

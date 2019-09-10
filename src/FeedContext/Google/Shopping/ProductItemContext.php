@@ -16,8 +16,11 @@ use Setono\SyliusFeedPlugin\FeedContext\ContextList;
 use Setono\SyliusFeedPlugin\FeedContext\ContextListInterface;
 use Setono\SyliusFeedPlugin\FeedContext\ItemContextInterface;
 use Setono\SyliusFeedPlugin\Model\BrandAwareInterface;
+use Setono\SyliusFeedPlugin\Model\ColorAwareInterface;
 use Setono\SyliusFeedPlugin\Model\ConditionAwareInterface;
 use Setono\SyliusFeedPlugin\Model\GtinAwareInterface;
+use Setono\SyliusFeedPlugin\Model\MpnAwareInterface;
+use Setono\SyliusFeedPlugin\Model\SizeAwareInterface;
 use Sylius\Component\Core\Calculator\ProductVariantPriceCalculatorInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ImagesAwareInterface;
@@ -90,6 +93,18 @@ class ProductItemContext implements ItemContextInterface
 
         if ($product instanceof GtinAwareInterface && $product->getGtin() !== null) {
             $data->setGtin((string) $product->getGtin());
+        }
+
+        if ($product instanceof MpnAwareInterface && $product->getMpn() !== null) {
+            $data->setMpn((string) $product->getMpn());
+        }
+
+        if ($product instanceof SizeAwareInterface && $product->getSize() !== null) {
+            $data->setSize((string) $product->getSize());
+        }
+
+        if ($product instanceof ColorAwareInterface && $product->getColor() !== null) {
+            $data->setColor((string) $product->getColor());
         }
 
         $contextList = new ContextList();

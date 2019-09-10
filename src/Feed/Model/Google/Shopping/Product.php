@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping;
 
-use DateTimeInterface;
+use Webmozart\Assert\Assert;
 
 final class Product
 {
@@ -35,7 +35,7 @@ final class Product
     /** @var Price|null */
     private $salePrice;
 
-    /** @var DateTimeInterface|null */
+    /** @var DateRange|null */
     private $salePriceEffectiveDate;
 
     /** @var string|null */
@@ -64,6 +64,15 @@ final class Product
 
     /** @var string|null */
     private $shipping;
+
+    /** @var string|null */
+    private $size;
+
+    /** @var string|null */
+    private $color;
+
+    /** @var array */
+    private $customLabels = [];
 
     public function __construct(
         string $id,
@@ -183,12 +192,12 @@ final class Product
         $this->salePrice = $salePrice;
     }
 
-    public function getSalePriceEffectiveDate(): ?DateTimeInterface
+    public function getSalePriceEffectiveDate(): ?DateRange
     {
         return $this->salePriceEffectiveDate;
     }
 
-    public function setSalePriceEffectiveDate(?DateTimeInterface $salePriceEffectiveDate): void
+    public function setSalePriceEffectiveDate(?DateRange $salePriceEffectiveDate): void
     {
         $this->salePriceEffectiveDate = $salePriceEffectiveDate;
     }
@@ -281,5 +290,38 @@ final class Product
     public function setShipping(?string $shipping): void
     {
         $this->shipping = $shipping;
+    }
+
+    public function getSize(): ?string
+    {
+        return $this->size;
+    }
+
+    public function setSize(?string $size): void
+    {
+        $this->size = $size;
+    }
+
+    public function getColor(): ?string
+    {
+        return $this->color;
+    }
+
+    public function setColor(?string $color): void
+    {
+        $this->color = $color;
+    }
+
+    public function getCustomLabels(): array
+    {
+        return $this->customLabels;
+    }
+
+    public function setCustomLabel(string $label, int $index): void
+    {
+        Assert::greaterThanEq($index, 0);
+        Assert::lessThanEq($index, 4);
+
+        $this->customLabels[$index] = $label;
     }
 }

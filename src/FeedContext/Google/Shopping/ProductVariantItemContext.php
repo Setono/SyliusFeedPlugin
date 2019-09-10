@@ -16,9 +16,13 @@ use Setono\SyliusFeedPlugin\FeedContext\ContextList;
 use Setono\SyliusFeedPlugin\FeedContext\ContextListInterface;
 use Setono\SyliusFeedPlugin\FeedContext\ItemContextInterface;
 use Setono\SyliusFeedPlugin\Model\BrandAwareInterface;
+use Setono\SyliusFeedPlugin\Model\ColorAwareInterface;
 use Setono\SyliusFeedPlugin\Model\ConditionAwareInterface;
 use Setono\SyliusFeedPlugin\Model\GtinAwareInterface;
+use Setono\SyliusFeedPlugin\Model\MpnAwareInterface;
+use Setono\SyliusFeedPlugin\Model\SizeAwareInterface;
 use Sylius\Component\Core\Calculator\ProductVariantPriceCalculatorInterface;
+use Sylius\Component\Core\Exception\MissingChannelConfigurationException;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ImagesAwareInterface;
 use Sylius\Component\Core\Model\ProductInterface;
@@ -81,8 +85,12 @@ class ProductVariantItemContext implements ItemContextInterface
         $link = $this->getLink($locale, $productTranslation);
         $imageLink = $this->getImageLink($product);
 
+        [$price, $salePrice] = $this->getPrices($variant, $channel);
+
         $data = new Product($variant->getCode(), $translation->getName(), $productTranslation->getDescription(), $link,
-            $imageLink, $this->getAvailability($variant), $this->getPrice($variant, $channel));
+            $imageLink, $this->getAvailability($variant), $price);
+
+        $data->setSalePrice($salePrice);
 
         $data->setCondition($variant instanceof ConditionAwareInterface ? Condition::fromValue($variant->getCondition()) : Condition::new());
         $data->setItemGroupId($product->getCode());
@@ -95,6 +103,18 @@ class ProductVariantItemContext implements ItemContextInterface
 
         if ($variant instanceof GtinAwareInterface && $variant->getGtin() !== null) {
             $data->setGtin((string) $variant->getGtin());
+        }
+
+        if ($variant instanceof MpnAwareInterface && $variant->getMpn() !== null) {
+            $data->setMpn((string) $variant->getMpn());
+        }
+
+        if ($variant instanceof SizeAwareInterface && $variant->getSize() !== null) {
+            $data->setSize((string) $variant->getSize());
+        }
+
+        if ($variant instanceof ColorAwareInterface && $variant->getColor() !== null) {
+            $data->setColor((string) $variant->getColor());
         }
 
         return new ContextList([$data]);
@@ -129,11 +149,38 @@ class ProductVariantItemContext implements ItemContextInterface
     }
 
     /**
+     * Index 0 equals the price
+     * Index 1 equals the sale price (if set)
+     *
      * @throws StringsException
      */
-    private function getPrice(ProductVariantInterface $variant, ChannelInterface $channel): Price
+    private function getPrices(ProductVariantInterface $variant, ChannelInterface $channel): array
     {
-        $price = $this->productVariantPriceCalculator->calculate($variant, ['channel' => $channel]);
+        $channelPricing = $variant->getChannelPricingForChannel($channel);
+
+        if (null === $channelPricing) {
+            throw new MissingChannelConfigurationException(sprintf(
+                'Channel %s has no price defined for product variant %s',
+                $channel->getName(),
+                $variant->getName()
+            ));
+        }
+
+        $originalPrice = $channelPricing->getOriginalPrice();
+        $price = $channelPricing->getPrice();
+
+        if (null === $originalPrice) {
+            return [$this->createPrice($price, $channel), null];
+        }
+
+        return [$this->createPrice($originalPrice, $channel), $this->createPrice($price, $channel)];
+    }
+
+    /**
+     * @throws StringsException
+     */
+    private function createPrice(int $price, ChannelInterface $channel): Price
+    {
         $baseCurrency = $channel->getBaseCurrency();
         if (null === $baseCurrency) {
             throw new InvalidArgumentException(sprintf('No base currency set on channel %s', $channel->getCode()));
