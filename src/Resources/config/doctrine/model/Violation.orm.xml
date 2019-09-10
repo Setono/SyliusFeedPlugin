@@ -16,6 +16,7 @@
 
         <field name="severity" type="string" />
         <field name="message" type="text" />
+        <field name="data" type="array" nullable="true" />
 
         <many-to-one field="feed" target-entity="Setono\SyliusFeedPlugin\Model\FeedInterface" inversed-by="violations">
             <join-column name="feed_id" referenced-column-name="id" on-delete="CASCADE" nullable="false"/>
