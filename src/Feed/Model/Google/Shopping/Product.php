@@ -5,22 +5,9 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping;
 
 use DateTimeInterface;
-use Webmozart\Assert\Assert;
 
 final class Product
 {
-    public const AVAILABILITY_IN_STOCK = 'in stock';
-
-    public const AVAILABILITY_OUT_OF_STOCK = 'out of stock';
-
-    public const AVAILABILITY_PREORDER = 'preorder';
-
-    public const CONDITION_NEW = 'new';
-
-    public const CONDITION_REFURBISHED = 'refurbished';
-
-    public const CONDITION_USED = 'used';
-
     /** @var string */
     private $id;
 
@@ -39,13 +26,13 @@ final class Product
     /** @var array */
     private $additionalImageLinks = [];
 
-    /** @var string */
+    /** @var Availability */
     private $availability;
 
-    /** @var string */
+    /** @var Price */
     private $price;
 
-    /** @var string|null */
+    /** @var Price|null */
     private $salePrice;
 
     /** @var DateTimeInterface|null */
@@ -63,7 +50,7 @@ final class Product
     /** @var bool|null */
     private $identifierExists;
 
-    /** @var string|null */
+    /** @var Condition|null */
     private $condition;
 
     /** @var string|null */
@@ -75,14 +62,17 @@ final class Product
     /** @var string|null */
     private $productType;
 
+    /** @var string|null */
+    private $shipping;
+
     public function __construct(
         string $id,
         string $title,
         string $description,
         string $link,
         string $imageLink,
-        string $availability,
-        string $price
+        Availability $availability,
+        Price $price
     ) {
         $this->setId($id);
         $this->setTitle($title);
@@ -91,16 +81,6 @@ final class Product
         $this->setImageLink($imageLink);
         $this->setAvailability($availability);
         $this->setPrice($price);
-    }
-
-    public static function getAvailabilityValues(): array
-    {
-        return [self::AVAILABILITY_IN_STOCK, self::AVAILABILITY_OUT_OF_STOCK, self::AVAILABILITY_PREORDER];
-    }
-
-    public static function getConditionValues(): array
-    {
-        return [self::CONDITION_NEW, self::CONDITION_REFURBISHED, self::CONDITION_USED];
     }
 
     public function getId(): string
@@ -173,34 +153,32 @@ final class Product
         return count($this->additionalImageLinks) > 0;
     }
 
-    public function getAvailability(): string
+    public function getAvailability(): Availability
     {
         return $this->availability;
     }
 
-    public function setAvailability(string $availability): void
+    public function setAvailability(Availability $availability): void
     {
-        Assert::oneOf($availability, self::getAvailabilityValues());
-
         $this->availability = $availability;
     }
 
-    public function getPrice(): string
+    public function getPrice(): Price
     {
         return $this->price;
     }
 
-    public function setPrice(string $price): void
+    public function setPrice(Price $price): void
     {
         $this->price = $price;
     }
 
-    public function getSalePrice(): ?string
+    public function getSalePrice(): ?Price
     {
         return $this->salePrice;
     }
 
-    public function setSalePrice(?string $salePrice): void
+    public function setSalePrice(?Price $salePrice): void
     {
         $this->salePrice = $salePrice;
     }
@@ -255,15 +233,13 @@ final class Product
         $this->identifierExists = $identifierExists;
     }
 
-    public function getCondition(): ?string
+    public function getCondition(): ?Condition
     {
         return $this->condition;
     }
 
-    public function setCondition(?string $condition): void
+    public function setCondition(?Condition $condition): void
     {
-        Assert::nullOrOneOf($condition, self::getConditionValues());
-
         $this->condition = $condition;
     }
 
@@ -295,5 +271,15 @@ final class Product
     public function setProductType(?string $productType): void
     {
         $this->productType = $productType;
+    }
+
+    public function getShipping(): ?string
+    {
+        return $this->shipping;
+    }
+
+    public function setShipping(?string $shipping): void
+    {
+        $this->shipping = $shipping;
     }
 }
