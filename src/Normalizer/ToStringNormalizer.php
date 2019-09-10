@@ -14,15 +14,7 @@ final class ToStringNormalizer implements NormalizerInterface
 
     public function supportsNormalization($object, $format = null): bool
     {
-        if(!is_object($object)) {
-            return false;
-        }
-
-        if(!method_exists($object, '__toString')) {
-            return false;
-        }
-
-        return true;
+        return is_object($object) && method_exists($object, '__toString');
     }
 
 }
