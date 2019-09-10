@@ -35,6 +35,11 @@ trait ConstantClassTrait
         return self::$instances[$value] ?? self::$instances[$value] = new self($value);
     }
 
+    public function __toString(): string
+    {
+        return (string) $this->value;
+    }
+
     /**
      * Returns an array of possible values
      */
@@ -46,9 +51,4 @@ trait ConstantClassTrait
      * @param object|string|int $value
      */
     abstract public static function fromValue($value);
-
-    public function __toString(): string
-    {
-        return (string) $this->value;
-    }
 }

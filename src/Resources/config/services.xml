@@ -13,6 +13,7 @@
         <import resource="services/form.xml"/>
         <import resource="services/menu.xml"/>
         <import resource="services/message_handler.xml"/>
+        <import resource="services/normalizer.xml"/>
         <import resource="services/processor.xml"/>
         <import resource="services/registry.xml"/>
         <import resource="services/resolver.xml"/>
