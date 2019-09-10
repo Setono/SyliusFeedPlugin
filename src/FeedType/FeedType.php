@@ -6,7 +6,7 @@ namespace Setono\SyliusFeedPlugin\FeedType;
 
 use Setono\SyliusFeedPlugin\DataProvider\DataProviderInterface;
 use Setono\SyliusFeedPlugin\FeedContext\FeedContextInterface;
-use Setono\SyliusFeedPlugin\Normalizer\NormalizerInterface;
+use Setono\SyliusFeedPlugin\FeedContext\ItemContextInterface;
 
 final class FeedType implements FeedTypeInterface
 {
@@ -22,21 +22,21 @@ final class FeedType implements FeedTypeInterface
     /** @var FeedContextInterface */
     private $feedContext;
 
-    /** @var NormalizerInterface */
-    private $normalizer;
+    /** @var ItemContextInterface */
+    private $itemContext;
 
     public function __construct(
         string $code,
         string $template,
         DataProviderInterface $dataProvider,
         FeedContextInterface $feedContext,
-        NormalizerInterface $normalizer
+        ItemContextInterface $itemContext
     ) {
         $this->code = $code;
         $this->template = $template;
         $this->dataProvider = $dataProvider;
         $this->feedContext = $feedContext;
-        $this->normalizer = $normalizer;
+        $this->itemContext = $itemContext;
     }
 
     public function __toString(): string
@@ -64,8 +64,8 @@ final class FeedType implements FeedTypeInterface
         return $this->feedContext;
     }
 
-    public function getNormalizer(): NormalizerInterface
+    public function getItemContext(): ItemContextInterface
     {
-        return $this->normalizer;
+        return $this->itemContext;
     }
 }

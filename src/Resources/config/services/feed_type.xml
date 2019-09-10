@@ -7,7 +7,7 @@
             <argument>@SetonoSyliusFeedPlugin/Template/Google/Shopping/feed.txt.twig</argument>
             <argument type="service" id="setono_sylius_feed.data_provider.product"/>
             <argument type="service" id="setono_sylius_feed.feed_context.google.shopping"/>
-            <argument type="service" id="setono_sylius_feed.normalizer.google.shopping.product"/>
+            <argument type="service" id="setono_sylius_feed.feed_context.google.shopping.product_item"/>
             <tag name="setono_sylius_feed.feed_type"/>
         </service>
     </services>

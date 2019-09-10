@@ -27,6 +27,13 @@ class Violation implements ViolationInterface
     /** @var string */
     protected $message;
 
+    /**
+     * The data can be anything basically. Just some data that will aid in this specific violation
+     *
+     * @var mixed|null
+     */
+    protected $data;
+
     public function getId(): int
     {
         return $this->id;
@@ -80,5 +87,21 @@ class Violation implements ViolationInterface
     public function setMessage(string $message): void
     {
         $this->message = $message;
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
+
+    /**
+     * @param mixed|null $data
+     */
+    public function setData($data): void
+    {
+        $this->data = $data;
     }
 }

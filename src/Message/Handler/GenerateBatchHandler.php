@@ -102,7 +102,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
 
             $items = $feedType->getDataProvider()->getItems($message->getBatch());
 
-            $normalizer = $feedType->getNormalizer();
+            $itemContext = $feedType->getItemContext();
 
             $template = $this->twig->load($feedType->getTemplate());
 
@@ -112,7 +112,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
                     $stream = $this->openStream();
 
                     foreach ($items as $item) {
-                        $arr = $normalizer->normalize($item, $channel, $locale);
+                        $arr = $itemContext->getContext($item, $channel, $locale);
                         foreach ($arr as $val) {
                             // todo fire event here so the user can hook into this event and change properties
 
@@ -120,7 +120,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
                             if ($constraintViolationList->count() > 0) {
                                 foreach ($constraintViolationList as $constraintViolation) {
                                     $violation = $this->violationFactory->createFromConstraintViolation(
-                                        $constraintViolation, $channel, $locale
+                                        $constraintViolation, $channel, $locale, $val
                                     );
 
                                     $feed->addViolation($violation);

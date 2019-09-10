@@ -2,6 +2,21 @@
 
 <container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <service id="setono_sylius_feed.feed_context.google.shopping" class="Setono\SyliusFeedPlugin\FeedContext\Google\Shopping\GoogleShoppingFeedContext"/>
+        <service id="setono_sylius_feed.feed_context.google.shopping" class="Setono\SyliusFeedPlugin\FeedContext\Google\Shopping\FeedContext"/>
+
+        <service id="setono_sylius_feed.feed_context.google.shopping.product_item" class="Setono\SyliusFeedPlugin\FeedContext\Google\Shopping\ProductItemContext">
+            <argument type="service" id="router"/>
+            <argument type="service" id="liip_imagine.cache.manager"/>
+            <argument type="service" id="sylius.product_variant_resolver.default"/>
+            <argument type="service" id="sylius.calculator.product_variant_price"/>
+            <argument type="service" id="setono_sylius_feed.feed_context.google.shopping.product_variant_item"/>
+        </service>
+
+        <service id="setono_sylius_feed.feed_context.google.shopping.product_variant_item" class="Setono\SyliusFeedPlugin\FeedContext\Google\Shopping\ProductVariantItemContext">
+            <argument type="service" id="sylius.availability_checker"/>
+            <argument type="service" id="liip_imagine.cache.manager"/>
+            <argument type="service" id="router"/>
+            <argument type="service" id="sylius.calculator.product_variant_price"/>
+        </service>
     </services>
 </container>

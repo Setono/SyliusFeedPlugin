@@ -2,17 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Setono\SyliusFeedPlugin\Normalizer\Google\Shopping;
+namespace Setono\SyliusFeedPlugin\FeedContext\Google\Shopping;
 
 use InvalidArgumentException;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Safe\Exceptions\StringsException;
 use function Safe\sprintf;
+use Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Availability;
+use Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Condition;
+use Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Price;
 use Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Product;
+use Setono\SyliusFeedPlugin\FeedContext\ItemContextInterface;
 use Setono\SyliusFeedPlugin\Model\BrandAwareInterface;
 use Setono\SyliusFeedPlugin\Model\ConditionAwareInterface;
 use Setono\SyliusFeedPlugin\Model\GtinAwareInterface;
-use Setono\SyliusFeedPlugin\Normalizer\NormalizerInterface;
 use Sylius\Component\Core\Calculator\ProductVariantPriceCalculatorInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ImagesAwareInterface;
@@ -24,7 +27,7 @@ use Sylius\Component\Product\Resolver\ProductVariantResolverInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
-class ProductNormalizer implements NormalizerInterface
+class ProductItemContext implements ItemContextInterface
 {
     /** @var RouterInterface */
     private $router;
@@ -32,8 +35,8 @@ class ProductNormalizer implements NormalizerInterface
     /** @var CacheManager */
     private $cacheManager;
 
-    /** @var NormalizerInterface */
-    private $variantNormalizer;
+    /** @var ItemContextInterface */
+    private $productVariantItemContext;
 
     /** @var ProductVariantPriceCalculatorInterface */
     private $productVariantPriceCalculator;
@@ -46,11 +49,11 @@ class ProductNormalizer implements NormalizerInterface
         CacheManager $cacheManager,
         ProductVariantResolverInterface $productVariantResolver,
         ProductVariantPriceCalculatorInterface $productVariantPriceCalculator,
-        NormalizerInterface $variantNormalizer
+        ItemContextInterface $productVariantItemContext
     ) {
         $this->router = $router;
         $this->cacheManager = $cacheManager;
-        $this->variantNormalizer = $variantNormalizer;
+        $this->productVariantItemContext = $productVariantItemContext;
         $this->productVariantPriceCalculator = $productVariantPriceCalculator;
         $this->productVariantResolver = $productVariantResolver;
     }
@@ -58,7 +61,7 @@ class ProductNormalizer implements NormalizerInterface
     /**
      * @throws StringsException
      */
-    public function normalize(object $product, ChannelInterface $channel, LocaleInterface $locale): array
+    public function getContext(object $product, ChannelInterface $channel, LocaleInterface $locale): array
     {
         if (!$product instanceof ProductInterface) {
             throw new InvalidArgumentException(sprintf(
@@ -74,9 +77,9 @@ class ProductNormalizer implements NormalizerInterface
         $price = $this->getPrice($product, $channel);
 
         $data = new Product($product->getCode(), $translation->getName(), $translation->getDescription(), $link,
-            $imageLink, Product::AVAILABILITY_OUT_OF_STOCK, $price);
+            $imageLink, Availability::outOfStock(), $price);
 
-        $data->setCondition($product instanceof ConditionAwareInterface ? (string) $product->getCondition() : Product::CONDITION_NEW);
+        $data->setCondition($product instanceof ConditionAwareInterface ? Condition::fromValue($product->getCondition()) : Condition::new());
         $data->setItemGroupId($product->getCode());
 
         if ($product instanceof BrandAwareInterface && $product->getBrand() !== null) {
@@ -90,7 +93,7 @@ class ProductNormalizer implements NormalizerInterface
         $items = [$data];
 
         foreach ($product->getVariants() as $variant) {
-            $normalizedVariants = $this->variantNormalizer->normalize($variant, $channel, $locale);
+            $normalizedVariants = $this->productVariantItemContext->getContext($variant, $channel, $locale);
             foreach ($normalizedVariants as $normalizedVariant) {
                 $items[] = $normalizedVariant;
             }
@@ -127,7 +130,7 @@ class ProductNormalizer implements NormalizerInterface
     /**
      * @throws StringsException
      */
-    private function getPrice(ProductInterface $product, ChannelInterface $channel): string
+    private function getPrice(ProductInterface $product, ChannelInterface $channel): Price
     {
         /** @var ProductVariantInterface|null $variant */
         $variant = $this->productVariantResolver->getVariant($product);
@@ -141,6 +144,6 @@ class ProductNormalizer implements NormalizerInterface
             throw new InvalidArgumentException(sprintf('No base currency set on channel %s', $channel->getCode()));
         }
 
-        return round($price / 100, 2) . ' ' . $baseCurrency->getCode();
+        return new Price($price, $baseCurrency);
     }
 }

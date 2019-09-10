@@ -2,17 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Setono\SyliusFeedPlugin\Normalizer\Google\Shopping;
+namespace Setono\SyliusFeedPlugin\FeedContext\Google\Shopping;
 
 use InvalidArgumentException;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Safe\Exceptions\StringsException;
 use function Safe\sprintf;
+use Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Availability;
+use Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Condition;
+use Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Price;
 use Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Product;
+use Setono\SyliusFeedPlugin\FeedContext\ItemContextInterface;
 use Setono\SyliusFeedPlugin\Model\BrandAwareInterface;
 use Setono\SyliusFeedPlugin\Model\ConditionAwareInterface;
 use Setono\SyliusFeedPlugin\Model\GtinAwareInterface;
-use Setono\SyliusFeedPlugin\Normalizer\NormalizerInterface;
 use Sylius\Component\Core\Calculator\ProductVariantPriceCalculatorInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ImagesAwareInterface;
@@ -24,7 +27,7 @@ use Sylius\Component\Locale\Model\LocaleInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
-class ProductVariantNormalizer implements NormalizerInterface
+class ProductVariantItemContext implements ItemContextInterface
 {
     /** @var AvailabilityCheckerInterface */
     private $availabilityChecker;
@@ -53,7 +56,7 @@ class ProductVariantNormalizer implements NormalizerInterface
     /**
      * @throws StringsException
      */
-    public function normalize(object $variant, ChannelInterface $channel, LocaleInterface $locale): array
+    public function getContext(object $variant, ChannelInterface $channel, LocaleInterface $locale): array
     {
         if (!$variant instanceof ProductVariantInterface) {
             throw new InvalidArgumentException(sprintf('The class %s is not an instance of %s', get_class($variant),
@@ -79,7 +82,7 @@ class ProductVariantNormalizer implements NormalizerInterface
         $data = new Product($variant->getCode(), $translation->getName(), $productTranslation->getDescription(), $link,
             $imageLink, $this->getAvailability($variant), $this->getPrice($variant, $channel));
 
-        $data->setCondition($variant instanceof ConditionAwareInterface ? (string) $variant->getCondition() : Product::CONDITION_NEW);
+        $data->setCondition($variant instanceof ConditionAwareInterface ? Condition::fromValue($variant->getCondition()) : Condition::new());
         $data->setItemGroupId($product->getCode());
 
         if ($variant instanceof BrandAwareInterface && $variant->getBrand() !== null) {
@@ -95,9 +98,9 @@ class ProductVariantNormalizer implements NormalizerInterface
         return [$data];
     }
 
-    private function getAvailability(ProductVariantInterface $product): string
+    private function getAvailability(ProductVariantInterface $product): Availability
     {
-        return $this->availabilityChecker->isStockAvailable($product) ? Product::AVAILABILITY_IN_STOCK : Product::AVAILABILITY_OUT_OF_STOCK;
+        return $this->availabilityChecker->isStockAvailable($product) ? Availability::inStock() : Availability::outOfStock();
     }
 
     private function getImageLink(ImagesAwareInterface $imagesAware): string
@@ -126,7 +129,7 @@ class ProductVariantNormalizer implements NormalizerInterface
     /**
      * @throws StringsException
      */
-    private function getPrice(ProductVariantInterface $variant, ChannelInterface $channel): string
+    private function getPrice(ProductVariantInterface $variant, ChannelInterface $channel): Price
     {
         $price = $this->productVariantPriceCalculator->calculate($variant, ['channel' => $channel]);
         $baseCurrency = $channel->getBaseCurrency();
@@ -134,6 +137,6 @@ class ProductVariantNormalizer implements NormalizerInterface
             throw new InvalidArgumentException(sprintf('No base currency set on channel %s', $channel->getCode()));
         }
 
-        return round($price / 100, 2) . ' ' . $baseCurrency->getCode();
+        return new Price($price, $baseCurrency);
     }
 }

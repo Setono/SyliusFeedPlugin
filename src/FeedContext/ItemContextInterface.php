@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Setono\SyliusFeedPlugin\Normalizer;
+namespace Setono\SyliusFeedPlugin\FeedContext;
 
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Locale\Model\LocaleInterface;
 
-interface NormalizerInterface
+interface ItemContextInterface
 {
     /**
      * NOTICE the array returned should be an array of objects normalized
@@ -20,5 +20,5 @@ interface NormalizerInterface
      * This allows the normalize to add more items to the root which is
      * useful for example in the normalization of products and variants
      */
-    public function normalize(object $object, ChannelInterface $channel, LocaleInterface $locale): array;
+    public function getContext(object $object, ChannelInterface $channel, LocaleInterface $locale): array;
 }

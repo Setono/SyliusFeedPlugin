@@ -35,4 +35,18 @@ interface ViolationInterface extends ResourceInterface
     public function getMessage(): string;
 
     public function setMessage(string $message): void;
+
+    /**
+     * The data can be anything basically. Just some data that will aid in this specific violation
+     *
+     * @return mixed|null
+     */
+    public function getData();
+
+    /**
+     * A clever thing to put in here is the object that was validated and failed
+     *
+     * @param mixed|null $data
+     */
+    public function setData($data): void;
 }

@@ -6,7 +6,7 @@ namespace Setono\SyliusFeedPlugin\FeedType;
 
 use Setono\SyliusFeedPlugin\DataProvider\DataProviderInterface;
 use Setono\SyliusFeedPlugin\FeedContext\FeedContextInterface;
-use Setono\SyliusFeedPlugin\Normalizer\NormalizerInterface;
+use Setono\SyliusFeedPlugin\FeedContext\ItemContextInterface;
 
 interface FeedTypeInterface
 {
@@ -20,5 +20,5 @@ interface FeedTypeInterface
 
     public function getFeedContext(): FeedContextInterface;
 
-    public function getNormalizer(): NormalizerInterface;
+    public function getItemContext(): ItemContextInterface;
 }
