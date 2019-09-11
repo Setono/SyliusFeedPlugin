@@ -20,12 +20,12 @@ final class FeedProcessor implements FeedProcessorInterface
     private $feedRepository;
 
     /** @var MessageBusInterface */
-    private $messageBus;
+    private $commandBus;
 
-    public function __construct(FeedRepositoryInterface $feedRepository, MessageBusInterface $messageBus)
+    public function __construct(FeedRepositoryInterface $feedRepository, MessageBusInterface $commandBus)
     {
         $this->feedRepository = $feedRepository;
-        $this->messageBus = $messageBus;
+        $this->commandBus = $commandBus;
         $this->logger = new NullLogger();
     }
 
@@ -38,7 +38,7 @@ final class FeedProcessor implements FeedProcessorInterface
 
         foreach ($feeds as $feed) {
             $this->logger->info(sprintf('Triggering processing for feed "%s" (id: %s)', $feed->getName(), $feed->getId()));
-            $this->messageBus->dispatch(new ProcessFeed($feed->getId()));
+            $this->commandBus->dispatch(new ProcessFeed($feed->getId()));
         }
     }
 }
