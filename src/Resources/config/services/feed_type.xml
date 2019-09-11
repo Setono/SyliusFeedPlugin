@@ -4,7 +4,7 @@
     <services>
         <service id="setono_sylius_feed.feed_type.google_shopping" class="Setono\SyliusFeedPlugin\FeedType\FeedType">
             <argument>google_shopping</argument>
-            <argument>@SetonoSyliusFeedPlugin/Template/Google/Shopping/feed.txt.twig</argument>
+            <argument>@SetonoSyliusFeedPlugin/Feed/Google/Shopping/feed.txt.twig</argument>
             <argument type="service" id="setono_sylius_feed.data_provider.product"/>
             <argument type="service" id="setono_sylius_feed.feed_context.google.shopping"/>
             <argument type="service" id="setono_sylius_feed.feed_context.google.shopping.product_item"/>

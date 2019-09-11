@@ -1,0 +1,17 @@
+default:
+    suites:
+        processing_feeds:
+            contexts:
+                - sylius.behat.context.hook.doctrine_orm
+                
+                - sylius.behat.context.transform.product
+                
+                - sylius.behat.context.setup.channel
+                - sylius.behat.context.setup.product
+
+                - setono_sylius_feed.behat.context.setup.feed
+                
+                - setono_sylius_feed.behat.context.cli.process_feeds
+
+            filters:
+                tags: "@cli"

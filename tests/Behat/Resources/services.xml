@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <defaults public="true" />
+
+        <!-- Setups -->
+        <service id="setono_sylius_feed.behat.context.setup.feed" class="Tests\Setono\SyliusFeedPlugin\Behat\Context\Setup\FeedContext">
+            <argument type="service" id="setono_sylius_feed.factory.feed"/>
+            <argument type="service" id="setono_sylius_feed.repository.feed"/>
+            <argument type="service" id="sylius.repository.channel"/>
+        </service>
+
+        <!-- Misc -->
+        <service id="setono_sylius_feed.behat.context.cli.process_feeds" class="Tests\Setono\SyliusFeedPlugin\Behat\Context\Cli\ProcessFeedsContext">
+            <argument type="service" id="kernel"/>
+            <argument type="service" id="setono_sylius_feed.storage.feed"/>
+            <argument type="service" id="setono_sylius_feed.processor.feed"/>
+            <argument type="service" id="setono_sylius_feed.generator.feed_path"/>
+            <argument type="service" id="setono_sylius_feed.repository.feed"/>
+        </service>
+    </services>
+</container>

@@ -189,7 +189,7 @@ final class FinishGenerationHandler implements MessageHandlerInterface
         ChannelInterface $channel,
         LocaleInterface $locale
     ): array {
-        $template = $this->twig->load('@SetonoSyliusFeedPlugin/Template/feed.txt.twig');
+        $template = $this->twig->load('@SetonoSyliusFeedPlugin/Feed/feed.txt.twig');
 
         $content = $template->render(
             array_merge(
