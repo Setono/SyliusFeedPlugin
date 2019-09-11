@@ -3,3 +3,7 @@ imports:
 
 services:
     PhpCsFixer\Fixer\ClassNotation\ClassAttributesSeparationFixer: ~
+
+parameters:
+    exclude_files:
+        - '**/tests/Application/**'
