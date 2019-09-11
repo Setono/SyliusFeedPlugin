@@ -21,10 +21,9 @@ $ composer require setono/sylius-feed-plugin
 
 This command requires you to have Composer installed globally, as explained in the [installation chapter](https://getcomposer.org/doc/00-intro.md) of the Composer documentation.
 
-
 ### Step 2: Enable the plugin
 
-Then, enable the plugin by adding it to the list of registered plugins/bundles
+Then, enable the plugin by adding the following to the list of registered plugins/bundles
 in the `config/bundles.php` file of your project:
 
 ```php
@@ -35,6 +34,7 @@ return [
     
     League\FlysystemBundle\FlysystemBundle::class => ['all' => true],
     Setono\SyliusFeedPlugin\SetonoSyliusFeedPlugin::class => ['all' => true],
+    Setono\DoctrineORMBatcherBundle\SetonoDoctrineORMBatcherBundle::class => ['all' => true],
     
     // It is important to add plugin before the grid bundle
     Sylius\Bundle\GridBundle\SyliusGridBundle::class => ['all' => true],
@@ -86,6 +86,18 @@ framework:
             # See docs on how to setup a transport like that: https://symfony.com/doc/current/messenger.html#transports-async-queued-messages
             'Setono\SyliusFeedPlugin\Message\Command\CommandInterface': async
 ```
+
+## Usage
+After setup you want to create a feed. Go to `/admin/feeds/new` and create a new feed. Remember to enable it and select
+one or more channels.
+
+After that go to your console and run this command:
+
+```bash
+$ php bin/console setono:sylius-feed:process
+```
+
+If you haven't changed any configuration, there should be a feed with your products inside the `/var/storage/setono_sylius_feed/feed` directory.
 
 
 [ico-version]: https://poser.pugx.org/setono/sylius-feed-plugin/v/stable
