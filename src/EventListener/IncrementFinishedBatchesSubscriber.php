@@ -20,8 +20,13 @@ final class IncrementFinishedBatchesSubscriber implements EventSubscriberInterfa
 
     public static function getSubscribedEvents(): array
     {
+        /**
+         * The priority is higher on this subscriber because we want the
+         * finished batches count to be present in other subscribers/listeners
+         * @see SendFinishGenerationCommandSubscriber for example
+         */
         return [
-            BatchGeneratedEvent::class => ['increment', 100], // todo explain why we need a priority
+            BatchGeneratedEvent::class => ['increment', 100],
         ];
     }
 
