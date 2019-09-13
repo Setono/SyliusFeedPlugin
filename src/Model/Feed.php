@@ -33,7 +33,7 @@ class Feed implements FeedInterface
     protected $feedType;
 
     /** @var int */
-    protected $batches;
+    protected $batches = 0;
 
     /** @var int */
     protected $finishedBatches = 0;
