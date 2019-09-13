@@ -32,9 +32,6 @@ class DataProvider implements DataProviderInterface
     /** @var string */
     private $class;
 
-    /** @var string */
-    private $code;
-
     /** @var BatcherInterface */
     private $batcher;
 
