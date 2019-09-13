@@ -23,8 +23,7 @@ use Symfony\Component\Workflow\Registry;
 
 final class ProcessFeedHandler implements MessageHandlerInterface
 {
-    /** @var FeedRepositoryInterface */
-    private $feedRepository;
+    use GetFeedTrait;
 
     /** @var ObjectManager */
     private $feedManager;
@@ -78,18 +77,6 @@ final class ProcessFeedHandler implements MessageHandlerInterface
                 $this->commandBus->dispatch(new GenerateFeed($feed->getId(), $channel, $locale));
             }
         }
-    }
-
-    private function getFeed(int $feedId): FeedInterface
-    {
-        /** @var FeedInterface|null $feed */
-        $feed = $this->feedRepository->find($feedId);
-
-        if (null === $feed) {
-            throw new UnrecoverableMessageHandlingException('Feed does not exist');
-        }
-
-        return $feed;
     }
 
     /**
