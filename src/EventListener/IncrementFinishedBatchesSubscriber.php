@@ -23,6 +23,7 @@ final class IncrementFinishedBatchesSubscriber implements EventSubscriberInterfa
         /**
          * The priority is higher on this subscriber because we want the
          * finished batches count to be present in other subscribers/listeners
+         *
          * @see SendFinishGenerationCommandSubscriber for example
          */
         return [

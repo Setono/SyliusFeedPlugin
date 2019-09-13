@@ -25,9 +25,8 @@ final class FeedType implements FeedTypeInterface
 
     /** @var ItemContextInterface */
     private $itemContext;
-    /**
-     * @var array
-     */
+
+    /** @var array */
     private $validationGroups;
 
     public function __construct(
