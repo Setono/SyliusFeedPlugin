@@ -12,6 +12,7 @@ use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Workflow\Event\TransitionEvent;
+use Webmozart\Assert\Assert;
 
 final class DeleteGeneratedFilesSubscriber implements EventSubscriberInterface
 {
@@ -37,11 +38,10 @@ final class DeleteGeneratedFilesSubscriber implements EventSubscriberInterface
 
     public function delete(TransitionEvent $event): void
     {
+        /** @var FeedInterface|object $feed */
         $feed = $event->getSubject();
 
-        if (!$feed instanceof FeedInterface) {
-            return;
-        }
+        Assert::isInstanceOf($feed, FeedInterface::class);
 
         try {
             $this->filesystem->deleteDir($feed->getUuid());
