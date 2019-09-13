@@ -56,7 +56,6 @@ final class GenerateFeedHandler implements MessageHandlerInterface
         $feedType = $this->getFeedType($feed);
         $dataProvider = $feedType->getDataProvider();
 
-        $this->feedRepository->incrementBatches($feed, $dataProvider->getBatchCount($channel, $locale));
         $batches = $dataProvider->getBatches($channel, $locale);
 
         foreach ($batches as $batch) {

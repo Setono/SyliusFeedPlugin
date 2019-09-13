@@ -37,11 +37,19 @@
 
         <service id="setono_sylius_feed.event_listener.start_processing"
                  class="Setono\SyliusFeedPlugin\EventListener\StartProcessingSubscriber">
+            <argument type="service" id="setono_sylius_feed.registry.feed_type"/>
 
             <tag name="kernel.event_subscriber"/>
         </service>
 
         <!-- Filters -->
+        <service id="setono_sylius_feed.event_listener.filter.channel"
+                 class="Setono\SyliusFeedPlugin\EventListener\Filter\ChannelFilterListener">
+            <argument>%sylius.model.product.class%</argument>
+
+            <tag name="kernel.event_listener" event="Setono\SyliusFeedPlugin\Event\QueryBuilderEvent" method="filter"/>
+        </service>
+
         <service id="setono_sylius_feed.event_listener.filter.enabled"
                  class="Setono\SyliusFeedPlugin\EventListener\Filter\EnabledFilterListener">
             <argument>%sylius.model.product.class%</argument>

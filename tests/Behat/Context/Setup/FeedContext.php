@@ -10,7 +10,6 @@ use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
-use Webmozart\Assert\Assert;
 
 final class FeedContext implements Context
 {
@@ -40,16 +39,15 @@ final class FeedContext implements Context
     {
         /** @var ChannelInterface[] $channels */
         $channels = $this->channelRepository->findAll();
-        Assert::count($channels, 1);
-
-        $channel = $channels[0];
 
         /** @var FeedInterface $feed */
         $feed = $this->feedFactory->createNew();
 
         $feed->setName('Feed');
         $feed->setFeedType($feedType);
-        $feed->addChannel($channel);
+        foreach ($channels as $channel) {
+            $feed->addChannel($channel);
+        }
 
         $this->feedRepository->add($feed);
     }

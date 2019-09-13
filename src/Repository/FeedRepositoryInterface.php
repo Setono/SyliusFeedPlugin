@@ -19,11 +19,6 @@ interface FeedRepositoryInterface extends RepositoryInterface
     public function findEnabled(): array;
 
     /**
-     * Increment the batches count with $count
-     */
-    public function incrementBatches(FeedInterface $feed, int $count): void;
-
-    /**
      * Increments the finished batches count by 1
      */
     public function incrementFinishedBatches(FeedInterface $feed): void;
