@@ -19,7 +19,7 @@
         <field name="state" type="string"/>
         <field name="name" type="string"/>
         <field name="feedType" type="string"/>
-        <field name="batches" type="integer" nullable="true"/>
+        <field name="batches" type="integer"/>
         <field name="finishedBatches" type="integer"/>
         <field name="enabled" column="enabled" type="boolean"/>
 

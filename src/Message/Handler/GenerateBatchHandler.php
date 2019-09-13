@@ -24,7 +24,8 @@ use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Registry\FeedTypeRegistryInterface;
 use Setono\SyliusFeedPlugin\Repository\FeedRepositoryInterface;
 use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
-use Sylius\Component\Core\Model\ChannelInterface;
+use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
+use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -36,8 +37,9 @@ use Webmozart\Assert\Assert;
 
 final class GenerateBatchHandler implements MessageHandlerInterface
 {
-    /** @var FeedRepositoryInterface */
-    private $feedRepository;
+    use GetChannelTrait;
+    use GetFeedTrait;
+    use GetLocaleTrait;
 
     /** @var ObjectManager */
     private $feedManager;
@@ -68,6 +70,8 @@ final class GenerateBatchHandler implements MessageHandlerInterface
 
     public function __construct(
         FeedRepositoryInterface $feedRepository,
+        ChannelRepositoryInterface $channelRepository,
+        RepositoryInterface $localeRepository,
         ObjectManager $feedManager,
         FeedTypeRegistryInterface $feedTypeRegistry,
         Environment $twig,
@@ -79,6 +83,8 @@ final class GenerateBatchHandler implements MessageHandlerInterface
         LoggerInterface $logger
     ) {
         $this->feedRepository = $feedRepository;
+        $this->channelRepository = $channelRepository;
+        $this->localeRepository = $localeRepository;
         $this->feedManager = $feedManager;
         $this->feedTypeRegistry = $feedTypeRegistry;
         $this->twig = $twig;
@@ -96,6 +102,8 @@ final class GenerateBatchHandler implements MessageHandlerInterface
     public function __invoke(GenerateBatch $message): void
     {
         $feed = $this->getFeed($message->getFeedId());
+        $channel = $this->getChannel($message->getChannelId());
+        $locale = $this->getLocale($message->getLocaleId());
 
         $workflow = $this->getWorkflow($feed);
 
@@ -108,46 +116,41 @@ final class GenerateBatchHandler implements MessageHandlerInterface
 
             $template = $this->twig->load($feedType->getTemplate());
 
-            /** @var ChannelInterface $channel */
-            foreach ($feed->getChannels() as $channel) {
-                foreach ($channel->getLocales() as $locale) {
-                    $stream = $this->openStream();
+            $stream = $this->openStream();
 
-                    foreach ($items as $item) {
-                        $contextList = $itemContext->getContextList($item, $channel, $locale);
-                        foreach ($contextList as $context) {
-                            $this->eventDispatcher->dispatch(new GenerateBatchItemEvent(
-                                $feed, $feedType, $channel, $locale, $context
-                            ));
+            foreach ($items as $item) {
+                $contextList = $itemContext->getContextList($item, $channel, $locale);
+                foreach ($contextList as $context) {
+                    $this->eventDispatcher->dispatch(new GenerateBatchItemEvent(
+                        $feed, $feedType, $channel, $locale, $context
+                    ));
 
-                            $constraintViolationList = $this->validator->validate(
-                                $context, null, ['setono_sylius_feed'] // todo should be a parameter
+                    $constraintViolationList = $this->validator->validate(
+                        $context, null, ['setono_sylius_feed'] // todo should be a parameter
+                    );
+                    if ($constraintViolationList->count() > 0) {
+                        foreach ($constraintViolationList as $constraintViolation) {
+                            $violation = $this->violationFactory->createFromConstraintViolation(
+                                $constraintViolation, $channel, $locale, $context
                             );
-                            if ($constraintViolationList->count() > 0) {
-                                foreach ($constraintViolationList as $constraintViolation) {
-                                    $violation = $this->violationFactory->createFromConstraintViolation(
-                                        $constraintViolation, $channel, $locale, $context
-                                    );
 
-                                    $feed->addViolation($violation);
-                                }
-
-                                $this->eventDispatcher->dispatch(new GenerateBatchViolationEvent(
-                                    $feed, $feedType, $channel, $locale, $context, $constraintViolationList
-                                ));
-                            }
-                            fwrite($stream, $template->renderBlock('item', ['item' => $context]));
+                            $feed->addViolation($violation);
                         }
+
+                        $this->eventDispatcher->dispatch(new GenerateBatchViolationEvent(
+                            $feed, $feedType, $channel, $locale, $context, $constraintViolationList
+                        ));
                     }
-
-                    $path = $this->getPath($feed, $channel->getCode(), $locale->getCode());
-                    $res = $this->filesystem->writeStream($path, $stream);
-
-                    $this->closeStream($stream);
-
-                    Assert::true($res, 'An error occurred when trying to write a feed item');
+                    fwrite($stream, $template->renderBlock('item', ['item' => $context]));
                 }
             }
+
+            $path = $this->getPath($feed, $channel->getCode(), $locale->getCode());
+            $res = $this->filesystem->writeStream($path, $stream);
+
+            $this->closeStream($stream);
+
+            Assert::true($res, 'An error occurred when trying to write a feed item');
 
             $this->eventDispatcher->dispatch(new BatchGeneratedEvent($feed));
         } catch (Throwable $e) {
@@ -161,25 +164,14 @@ final class GenerateBatchHandler implements MessageHandlerInterface
         }
     }
 
-    private function getFeed(int $feedId): FeedInterface
-    {
-        /** @var FeedInterface|null $feed */
-        $feed = $this->feedRepository->find($feedId);
-
-        if (null === $feed) {
-            throw new UnrecoverableMessageHandlingException('Feed does not exist');
-        }
-
-        return $feed;
-    }
-
     private function getWorkflow(FeedInterface $feed): Workflow
     {
         try {
             $workflow = $this->workflowRegistry->get($feed, FeedGraph::GRAPH);
         } catch (InvalidArgumentException $e) {
-            throw new UnrecoverableMessageHandlingException('An error occurred when trying to get the workflow for the feed',
-                0, $e);
+            throw new UnrecoverableMessageHandlingException(
+                'An error occurred when trying to get the workflow for the feed', 0, $e
+            );
         }
 
         return $workflow;
@@ -228,8 +220,10 @@ final class GenerateBatchHandler implements MessageHandlerInterface
     private function applyErrorTransition(Workflow $workflow, FeedInterface $feed): void
     {
         if (!$workflow->can($feed, FeedGraph::TRANSITION_ERRORED)) {
-            throw new InvalidArgumentException(sprintf('The transition "%s" could not be applied. State was: "%s"',
-                FeedGraph::TRANSITION_ERRORED, $feed->getState()));
+            throw new InvalidArgumentException(sprintf(
+                'The transition "%s" could not be applied. State was: "%s"',
+                FeedGraph::TRANSITION_ERRORED, $feed->getState()
+            ));
         }
 
         $workflow->apply($feed, FeedGraph::TRANSITION_ERRORED);

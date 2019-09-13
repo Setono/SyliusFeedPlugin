@@ -27,9 +27,9 @@ interface FeedInterface extends ResourceInterface, ChannelsAwareInterface, Toggl
 
     public function setFeedType(string $feedType): void;
 
-    public function getBatches(): ?int;
+    public function getBatches(): int;
 
-    public function setBatches(?int $batches): void;
+    public function setBatches(int $batches): void;
 
     public function getFinishedBatches(): int;
 

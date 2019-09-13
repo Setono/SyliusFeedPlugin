@@ -21,7 +21,7 @@ final class IncrementFinishedBatchesSubscriber implements EventSubscriberInterfa
     public static function getSubscribedEvents(): array
     {
         return [
-            BatchGeneratedEvent::class => ['increment', 100],
+            BatchGeneratedEvent::class => ['increment', 100], // todo explain why we need a priority
         ];
     }
 

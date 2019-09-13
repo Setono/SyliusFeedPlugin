@@ -5,6 +5,7 @@
         <service id="setono_sylius_feed.data_provider.product" class="Setono\SyliusFeedPlugin\DataProvider\DataProvider">
             <argument type="service" id="setono_doctrine_orm_batcher.factory.batcher"/>
             <argument type="service" id="setono_doctrine_orm_batcher.query.rebuilder"/>
+            <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="doctrine"/>
             <argument>%sylius.model.product.class%</argument>
 

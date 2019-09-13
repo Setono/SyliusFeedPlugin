@@ -7,21 +7,12 @@ namespace Setono\SyliusFeedPlugin\EventListener;
 use Safe\Exceptions\StringsException;
 use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
-use Setono\SyliusFeedPlugin\Registry\FeedTypeRegistryInterface;
 use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Workflow\Event\TransitionEvent;
 
 final class StartProcessingSubscriber implements EventSubscriberInterface
 {
-    /** @var FeedTypeRegistryInterface */
-    private $feedTypeRegistry;
-
-    public function __construct(FeedTypeRegistryInterface $feedTypeRegistry)
-    {
-        $this->feedTypeRegistry = $feedTypeRegistry;
-    }
-
     /**
      * @throws StringsException
      */
@@ -42,10 +33,7 @@ final class StartProcessingSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $feedType = $this->feedTypeRegistry->get($feed->getFeedType());
-
         $feed->resetBatches();
-        $feed->setBatches($feedType->getDataProvider()->getBatchCount());
         $feed->clearViolations();
     }
 }
