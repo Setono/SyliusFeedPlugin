@@ -69,7 +69,7 @@ final class ShowFeedAction
         $channelCode = $this->channelContext->getChannel()->getCode();
         $localeCode = $this->localeContext->getLocaleCode();
 
-        $feedPath = $this->feedPathGenerator->resolve($feed, $channelCode, $localeCode);
+        $feedPath = $this->feedPathGenerator->generate($feed, $channelCode, $localeCode);
 
         if (!$this->filesystem->has((string) $feedPath)) {
             throw new NotFoundHttpException(sprintf('The feed with id %s has not been generated', $uuid));

@@ -97,7 +97,7 @@ final class ProcessFeedsContext implements Context
         /** @var ChannelInterface $channel */
         foreach ($feed->getChannels() as $channel) {
             foreach ($channel->getLocales() as $locale) {
-                $path = $this->feedPathGenerator->resolve($feed, $channel->getCode(), $locale->getCode());
+                $path = $this->feedPathGenerator->generate($feed, $channel->getCode(), $locale->getCode());
 
                 Assert::true($this->filesystem->has($path));
 

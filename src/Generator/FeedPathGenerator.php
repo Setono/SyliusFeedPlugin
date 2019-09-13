@@ -23,7 +23,7 @@ final class FeedPathGenerator implements FeedPathGeneratorInterface
     /**
      * @throws StringsException
      */
-    public function resolve(FeedInterface $feed, string $channelCode, string $localeCode): SplFileInfo
+    public function generate(FeedInterface $feed, string $channelCode, string $localeCode): SplFileInfo
     {
         $ext = $this->feedExtensionResolver->resolve($feed);
 
