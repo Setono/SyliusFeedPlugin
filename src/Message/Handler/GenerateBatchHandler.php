@@ -133,7 +133,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
                     ));
 
                     $constraintViolationList = $this->validator->validate(
-                        $context, null, ['setono_sylius_feed'] // todo should be a parameter
+                        $context, null, $feedType->getValidationGroups() // todo should be a parameter
                     );
                     if ($constraintViolationList->count() > 0) {
                         foreach ($constraintViolationList as $constraintViolation) {

@@ -21,4 +21,9 @@ interface FeedTypeInterface
     public function getFeedContext(): FeedContextInterface;
 
     public function getItemContext(): ItemContextInterface;
+
+    /**
+     * The validation groups used when validating each item
+     */
+    public function getValidationGroups(): array;
 }

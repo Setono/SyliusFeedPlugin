@@ -7,6 +7,7 @@ namespace Setono\SyliusFeedPlugin\FeedType;
 use Setono\SyliusFeedPlugin\DataProvider\DataProviderInterface;
 use Setono\SyliusFeedPlugin\FeedContext\FeedContextInterface;
 use Setono\SyliusFeedPlugin\FeedContext\ItemContextInterface;
+use Symfony\Component\Validator\Constraint;
 
 final class FeedType implements FeedTypeInterface
 {
@@ -24,19 +25,25 @@ final class FeedType implements FeedTypeInterface
 
     /** @var ItemContextInterface */
     private $itemContext;
+    /**
+     * @var array
+     */
+    private $validationGroups;
 
     public function __construct(
         string $code,
         string $template,
         DataProviderInterface $dataProvider,
         FeedContextInterface $feedContext,
-        ItemContextInterface $itemContext
+        ItemContextInterface $itemContext,
+        array $validationGroups = []
     ) {
         $this->code = $code;
         $this->template = $template;
         $this->dataProvider = $dataProvider;
         $this->feedContext = $feedContext;
         $this->itemContext = $itemContext;
+        $this->validationGroups = count($validationGroups) === 0 ? [Constraint::DEFAULT_GROUP] : $validationGroups;
     }
 
     public function __toString(): string
@@ -67,5 +74,10 @@ final class FeedType implements FeedTypeInterface
     public function getItemContext(): ItemContextInterface
     {
         return $this->itemContext;
+    }
+
+    public function getValidationGroups(): array
+    {
+        return $this->validationGroups;
     }
 }

@@ -12,7 +12,6 @@
         <property name="id">
             <constraint name="NotBlank">
                 <option name="message">setono_sylius_feed.google.shopping.product.id.not_blank</option>
-                <option name="groups">setono_sylius_feed</option>
                 <option name="payload">
                     <value key="severity">error</value>
                 </option>
@@ -30,7 +29,6 @@
         <property name="title">
             <constraint name="NotBlank">
                 <option name="message">setono_sylius_feed.google.shopping.product.title.not_blank</option>
-                <option name="groups">setono_sylius_feed</option>
                 <option name="payload">
                     <value key="severity">error</value>
                 </option>
@@ -48,7 +46,6 @@
         <property name="description">
             <constraint name="NotBlank">
                 <option name="message">setono_sylius_feed.google.shopping.product.description.not_blank</option>
-                <option name="groups">setono_sylius_feed</option>
                 <option name="payload">
                     <value key="severity">error</value>
                 </option>
@@ -66,7 +63,6 @@
         <property name="link">
             <constraint name="NotBlank">
                 <option name="message">setono_sylius_feed.google.shopping.product.link.not_blank</option>
-                <option name="groups">setono_sylius_feed</option>
                 <option name="payload">
                     <value key="severity">error</value>
                 </option>
@@ -75,7 +71,6 @@
         <property name="imageLink">
             <constraint name="NotBlank">
                 <option name="message">setono_sylius_feed.google.shopping.product.image_link.not_blank</option>
-                <option name="groups">setono_sylius_feed</option>
                 <option name="payload">
                     <value key="severity">error</value>
                 </option>
@@ -84,7 +79,6 @@
         <property name="availability">
             <constraint name="NotBlank">
                 <option name="message">setono_sylius_feed.google.shopping.product.availability.not_blank</option>
-                <option name="groups">setono_sylius_feed</option>
                 <option name="payload">
                     <value key="severity">error</value>
                 </option>
@@ -93,7 +87,6 @@
         <property name="price">
             <constraint name="NotBlank">
                 <option name="message">setono_sylius_feed.google.shopping.product.price.not_blank</option>
-                <option name="groups">setono_sylius_feed</option>
                 <option name="payload">
                     <value key="severity">error</value>
                 </option>
@@ -104,7 +97,6 @@
         <property name="brand">
             <constraint name="NotBlank">
                 <option name="message">setono_sylius_feed.google.shopping.product.brand.not_blank</option>
-                <option name="groups">setono_sylius_feed</option>
                 <option name="payload">
                     <value key="severity">warning</value>
                 </option>
@@ -113,7 +105,6 @@
         <property name="gtin">
             <constraint name="NotBlank">
                 <option name="message">setono_sylius_feed.google.shopping.product.gtin.not_blank</option>
-                <option name="groups">setono_sylius_feed</option>
                 <option name="payload">
                     <value key="severity">warning</value>
                 </option>
@@ -124,7 +115,6 @@
         <property name="condition">
             <constraint name="NotBlank">
                 <option name="message">setono_sylius_feed.google.shopping.product.condition.not_blank</option>
-                <option name="groups">setono_sylius_feed</option>
                 <option name="payload">
                     <value key="severity">warning</value>
                 </option>
@@ -133,7 +123,6 @@
         <property name="itemGroupId">
             <constraint name="NotBlank">
                 <option name="message">setono_sylius_feed.google.shopping.product.item_group_id.not_blank</option>
-                <option name="groups">setono_sylius_feed</option>
                 <option name="payload">
                     <value key="severity">warning</value>
                 </option>
@@ -142,7 +131,6 @@
         <property name="shipping">
             <constraint name="NotBlank">
                 <option name="message">setono_sylius_feed.google.shopping.product.shipping.not_blank</option>
-                <option name="groups">setono_sylius_feed</option>
                 <option name="payload">
                     <value key="severity">warning</value>
                 </option>
