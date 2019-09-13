@@ -178,11 +178,8 @@ final class FinishGenerationHandler implements MessageHandlerInterface
      */
     private function getBatchStream()
     {
-        do {
-            $path = sys_get_temp_dir() . '/' . uniqid('batch-', true);
-        } while (file_exists($path));
-
-        return fopen($path, 'wb+'); // needs to be w+ because we use it for reading later
+        // needs to be w+ since we use the same stream later to read from
+        return fopen('php://temp', 'w+b');
     }
 
     /**
