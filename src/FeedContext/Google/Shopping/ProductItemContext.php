@@ -117,8 +117,6 @@ class ProductItemContext implements ItemContextInterface
             }
         }
 
-        // todo fire event
-
         return $contextList;
     }
 
