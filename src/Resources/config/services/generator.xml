@@ -5,5 +5,7 @@
         <service id="setono_sylius_feed.generator.feed_path" class="Setono\SyliusFeedPlugin\Generator\FeedPathGenerator">
             <argument type="service" id="setono_sylius_feed.resolver.feed_extension"/>
         </service>
+
+        <service id="setono_sylius_feed.generator.temporary_feed_path" class="Setono\SyliusFeedPlugin\Generator\TemporaryFeedPathGenerator"/>
     </services>
 </container>

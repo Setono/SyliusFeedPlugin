@@ -9,5 +9,8 @@ use SplFileInfo;
 
 interface FeedPathGeneratorInterface
 {
+    /**
+     * The return file can be a directory or a file
+     */
     public function generate(FeedInterface $feed, string $channelCode, string $localeCode): SplFileInfo;
 }

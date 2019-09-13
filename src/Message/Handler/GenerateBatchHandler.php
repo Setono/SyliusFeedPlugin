@@ -19,6 +19,8 @@ use Setono\SyliusFeedPlugin\Event\BatchGeneratedEvent;
 use Setono\SyliusFeedPlugin\Event\GenerateBatchItemEvent;
 use Setono\SyliusFeedPlugin\Event\GenerateBatchViolationEvent;
 use Setono\SyliusFeedPlugin\Factory\ViolationFactoryInterface;
+use Setono\SyliusFeedPlugin\Generator\FeedPathGeneratorInterface;
+use Setono\SyliusFeedPlugin\Generator\TemporaryFeedPathGenerator;
 use Setono\SyliusFeedPlugin\Message\Command\GenerateBatch;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Registry\FeedTypeRegistryInterface;
@@ -53,6 +55,9 @@ final class GenerateBatchHandler implements MessageHandlerInterface
     /** @var FilesystemInterface */
     private $filesystem;
 
+    /** @var FeedPathGeneratorInterface */
+    private $temporaryFeedPathGenerator;
+
     /** @var EventDispatcherInterface */
     private $eventDispatcher;
 
@@ -76,6 +81,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
         FeedTypeRegistryInterface $feedTypeRegistry,
         Environment $twig,
         FilesystemInterface $filesystem,
+        FeedPathGeneratorInterface $temporaryFeedPathGenerator,
         EventDispatcherInterface $eventDispatcher,
         Registry $workflowRegistry,
         ValidatorInterface $validator,
@@ -89,6 +95,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
         $this->feedTypeRegistry = $feedTypeRegistry;
         $this->twig = $twig;
         $this->filesystem = $filesystem;
+        $this->temporaryFeedPathGenerator = $temporaryFeedPathGenerator;
         $this->eventDispatcher = $eventDispatcher;
         $this->workflowRegistry = $workflowRegistry;
         $this->validator = $validator;
@@ -145,8 +152,10 @@ final class GenerateBatchHandler implements MessageHandlerInterface
                 }
             }
 
-            $path = $this->getPath($feed, $channel->getCode(), $locale->getCode());
-            $res = $this->filesystem->writeStream($path, $stream);
+            $dir = $this->temporaryFeedPathGenerator->generate($feed, $channel->getCode(), $locale->getCode());
+            $path = TemporaryFeedPathGenerator::getPartialFile($dir, $this->filesystem);
+
+            $res = $this->filesystem->writeStream((string) $path, $stream);
 
             $this->closeStream($stream);
 
@@ -175,20 +184,6 @@ final class GenerateBatchHandler implements MessageHandlerInterface
         }
 
         return $workflow;
-    }
-
-    /**
-     * @throws StringsException
-     */
-    private function getPath(FeedInterface $feed, string $channel, string $locale): string
-    {
-        $dir = sprintf('%s/%s/%s', $feed->getUuid(), $channel, $locale);
-
-        do {
-            $path = $dir . '/' . uniqid('partial-', true);
-        } while ($this->filesystem->has($path));
-
-        return $path;
     }
 
     /**

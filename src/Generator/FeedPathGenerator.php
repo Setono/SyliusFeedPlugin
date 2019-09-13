@@ -21,6 +21,8 @@ final class FeedPathGenerator implements FeedPathGeneratorInterface
     }
 
     /**
+     * The returned file is a file (i.e. not a directory)
+     *
      * @throws StringsException
      */
     public function generate(FeedInterface $feed, string $channelCode, string $localeCode): SplFileInfo

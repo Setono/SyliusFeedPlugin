@@ -16,6 +16,8 @@ use function Safe\fread;
 use function Safe\fwrite;
 use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\FeedType\FeedTypeInterface;
+use Setono\SyliusFeedPlugin\Generator\FeedPathGeneratorInterface;
+use Setono\SyliusFeedPlugin\Generator\TemporaryFeedPathGenerator;
 use Setono\SyliusFeedPlugin\Message\Command\FinishGeneration;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Registry\FeedTypeRegistryInterface;
@@ -52,6 +54,9 @@ final class FinishGenerationHandler implements MessageHandlerInterface
     /** @var FeedTypeRegistryInterface */
     private $feedTypeRegistry;
 
+    /** @var FeedPathGeneratorInterface */
+    private $temporaryFeedPathGenerator;
+
     /** @var LoggerInterface */
     private $logger;
 
@@ -62,6 +67,7 @@ final class FinishGenerationHandler implements MessageHandlerInterface
         Registry $workflowRegistry,
         Environment $twig,
         FeedTypeRegistryInterface $feedTypeRegistry,
+        FeedPathGeneratorInterface $temporaryFeedPathGenerator,
         LoggerInterface $logger
     ) {
         $this->feedRepository = $feedRepository;
@@ -70,6 +76,7 @@ final class FinishGenerationHandler implements MessageHandlerInterface
         $this->workflowRegistry = $workflowRegistry;
         $this->twig = $twig;
         $this->feedTypeRegistry = $feedTypeRegistry;
+        $this->temporaryFeedPathGenerator = $temporaryFeedPathGenerator;
         $this->logger = $logger;
     }
 
@@ -97,7 +104,7 @@ final class FinishGenerationHandler implements MessageHandlerInterface
             /** @var ChannelInterface $channel */
             foreach ($feed->getChannels() as $channel) {
                 foreach ($channel->getLocales() as $locale) {
-                    $dir = sprintf('%s/%s/%s', $feed->getUuid(), $channel->getCode(), $locale->getCode());
+                    $dir = $this->temporaryFeedPathGenerator->generate($feed, $channel->getCode(), $locale->getCode());
 
                     $batchStream = $this->getBatchStream();
 
@@ -105,9 +112,9 @@ final class FinishGenerationHandler implements MessageHandlerInterface
 
                     fwrite($batchStream, $feedStart);
 
-                    $files = $this->filesystem->listContents($dir);
+                    $files = $this->filesystem->listContents((string) $dir);
                     foreach ($files as $file) {
-                        if ('_feed' === $file['basename']) {
+                        if (TemporaryFeedPathGenerator::BASE_FILENAME === $file['basename']) {
                             continue;
                         }
 
@@ -130,7 +137,7 @@ final class FinishGenerationHandler implements MessageHandlerInterface
 
                     fwrite($batchStream, $feedEnd);
 
-                    $res = $this->filesystem->writeStream($dir . '/_feed', $batchStream);
+                    $res = $this->filesystem->writeStream((string) TemporaryFeedPathGenerator::getBaseFile($dir), $batchStream);
 
                     try {
                         // tries to close the file pointer although it may already have been closed by flysystem

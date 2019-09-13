@@ -19,10 +19,10 @@
 
         <service id="setono_sylius_feed.event_listener.move_generated_feed"
                  class="Setono\SyliusFeedPlugin\EventListener\MoveGeneratedFeedSubscriber">
-            <argument type="service" id="setono_sylius_feed.registry.feed_type"/>
             <argument type="service" id="setono_sylius_feed.storage.feed_tmp"/>
             <argument type="service" id="setono_sylius_feed.storage.feed"/>
-            <argument type="service" id="twig"/>
+            <argument type="service" id="setono_sylius_feed.generator.temporary_feed_path"/>
+            <argument type="service" id="setono_sylius_feed.generator.feed_path"/>
 
             <tag name="kernel.event_subscriber"/>
         </service>
