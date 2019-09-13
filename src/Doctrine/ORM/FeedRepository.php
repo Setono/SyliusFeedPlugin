@@ -33,6 +33,19 @@ class FeedRepository extends EntityRepository implements FeedRepositoryInterface
         ;
     }
 
+    public function incrementBatches(FeedInterface $feed, int $count): void
+    {
+        $this->createQueryBuilder('o')
+            ->update()
+            ->set('o.batches', 'o.batches + :c')
+            ->andWhere('o.id = :id')
+            ->setParameter('c', $count)
+            ->setParameter('id', $feed->getId())
+            ->getQuery()
+            ->execute()
+        ;
+    }
+
     public function incrementFinishedBatches(FeedInterface $feed): void
     {
         $this->createQueryBuilder('o')

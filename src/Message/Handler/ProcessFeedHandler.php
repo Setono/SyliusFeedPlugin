@@ -8,13 +8,14 @@ use Doctrine\Common\Persistence\ObjectManager;
 use InvalidArgumentException;
 use Safe\Exceptions\StringsException;
 use function Safe\sprintf;
-use Setono\SyliusFeedPlugin\Message\Command\GenerateBatch;
+use Setono\SyliusFeedPlugin\Message\Command\GenerateFeed;
 use Setono\SyliusFeedPlugin\Message\Command\ProcessFeed;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Registry\FeedTypeRegistryInterface;
 use Setono\SyliusFeedPlugin\Repository\FeedRepositoryInterface;
 use Setono\SyliusFeedPlugin\Validator\TemplateValidatorInterface;
 use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
+use Sylius\Component\Core\Model\ChannelInterface;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -71,9 +72,11 @@ final class ProcessFeedHandler implements MessageHandlerInterface
 
         $this->feedManager->flush();
 
-        $dataProvider = $feedType->getDataProvider();
-        foreach ($dataProvider->getBatches() as $batch) {
-            $this->commandBus->dispatch(new GenerateBatch($feed->getId(), $batch));
+        /** @var ChannelInterface $channel */
+        foreach ($feed->getChannels() as $channel) {
+            foreach ($channel->getLocales() as $locale) {
+                $this->commandBus->dispatch(new GenerateFeed($feed->getId(), $channel, $locale));
+            }
         }
     }
 

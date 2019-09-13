@@ -32,8 +32,8 @@ class Feed implements FeedInterface
     /** @var string */
     protected $feedType;
 
-    /** @var int|null */
-    protected $batches;
+    /** @var int */
+    protected $batches = 0;
 
     /** @var int */
     protected $finishedBatches = 0;
@@ -94,12 +94,12 @@ class Feed implements FeedInterface
         $this->feedType = $feedType;
     }
 
-    public function getBatches(): ?int
+    public function getBatches(): int
     {
         return $this->batches;
     }
 
-    public function setBatches(?int $batches): void
+    public function setBatches(int $batches): void
     {
         $this->batches = $batches;
     }
@@ -111,7 +111,7 @@ class Feed implements FeedInterface
 
     public function resetBatches(): void
     {
-        $this->batches = null;
+        $this->batches = 0;
         $this->finishedBatches = 0;
     }
 

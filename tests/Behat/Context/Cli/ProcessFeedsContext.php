@@ -118,10 +118,6 @@ final class ProcessFeedsContext implements Context
 <g:id>COLD_BEER</g:id><title>Cold beer</title><g:description>An ice cold beer</g:description><link>http://localhost/en_US/products/cold-beer</link><g:availability>out of stock</g:availability><g:price>1 USD</g:price><g:condition>new</g:condition><g:item_group_id>COLD_BEER</g:item_group_id></item>
 <item>
 <g:id>COLD_BEER</g:id><title>Cold beer</title><g:description>An ice cold beer</g:description><link>http://localhost/en_US/products/cold-beer</link><g:availability>in stock</g:availability><g:price>1 USD</g:price><g:condition>new</g:condition><g:item_group_id>COLD_BEER</g:item_group_id></item>
-<item>
-<g:id>WARM_BEER</g:id><title>Warm beer</title><g:description>A good warm beer</g:description><link>http://localhost/en_US/products/warm-beer</link><g:availability>out of stock</g:availability><g:price>1 USD</g:price><g:condition>new</g:condition><g:item_group_id>WARM_BEER</g:item_group_id></item>
-<item>
-<g:id>WARM_BEER</g:id><title>Warm beer</title><g:description>A good warm beer</g:description><link>http://localhost/en_US/products/warm-beer</link><g:availability>in stock</g:availability><g:price>1 USD</g:price><g:condition>new</g:condition><g:item_group_id>WARM_BEER</g:item_group_id></item>
 </channel>
 </rss>
 CONTENT;

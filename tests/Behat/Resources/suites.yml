@@ -3,7 +3,8 @@ default:
         processing_feeds:
             contexts:
                 - sylius.behat.context.hook.doctrine_orm
-                
+
+                - sylius.behat.context.transform.shared_storage
                 - sylius.behat.context.transform.product
                 
                 - sylius.behat.context.setup.channel

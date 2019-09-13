@@ -8,6 +8,7 @@ use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use InvalidArgumentException;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Safe\Exceptions\StringsException;
 use function Safe\sprintf;
 use Setono\DoctrineORMBatcher\Batch\BatchInterface;
@@ -15,6 +16,9 @@ use Setono\DoctrineORMBatcher\Batch\CollectionBatchInterface;
 use Setono\DoctrineORMBatcher\Batcher\BatcherInterface;
 use Setono\DoctrineORMBatcher\Factory\BatcherFactoryInterface;
 use Setono\DoctrineORMBatcher\Query\QueryRebuilderInterface;
+use Setono\SyliusFeedPlugin\Event\QueryBuilderEvent;
+use Sylius\Component\Core\Model\ChannelInterface;
+use Sylius\Component\Locale\Model\LocaleInterface;
 
 class DataProvider implements DataProviderInterface
 {
@@ -26,25 +30,35 @@ class DataProvider implements DataProviderInterface
     /** @var QueryRebuilderInterface */
     private $queryRebuilder;
 
+    /** @var EventDispatcherInterface */
+    private $eventDispatcher;
+
     /** @var ManagerRegistry */
     private $managerRegistry;
 
     /** @var string */
     private $class;
 
-    /** @var BatcherInterface */
-    private $batcher;
+    /** @var BatcherInterface[] */
+    private $batchers;
 
     public function __construct(
         BatcherFactoryInterface $batcherFactory,
         QueryRebuilderInterface $queryRebuilder,
+        EventDispatcherInterface $eventDispatcher,
         ManagerRegistry $managerRegistry,
         string $class
     ) {
         $this->batcherFactory = $batcherFactory;
         $this->queryRebuilder = $queryRebuilder;
+        $this->eventDispatcher = $eventDispatcher;
         $this->managerRegistry = $managerRegistry;
         $this->class = $class;
+    }
+
+    public function getClass(): string
+    {
+        return $this->class;
     }
 
     /**
@@ -52,17 +66,17 @@ class DataProvider implements DataProviderInterface
      *
      * @throws StringsException
      */
-    public function getBatches(): iterable
+    public function getBatches(ChannelInterface $channel, LocaleInterface $locale): iterable
     {
-        yield from $this->getBatcher()->getBatches(self::BATCH_SIZE);
+        yield from $this->getBatcher($channel, $locale)->getBatches(self::BATCH_SIZE);
     }
 
     /**
      * @throws StringsException
      */
-    public function getBatchCount(): int
+    public function getBatchCount(ChannelInterface $channel, LocaleInterface $locale): int
     {
-        return $this->getBatcher()->getBatchCount(self::BATCH_SIZE);
+        return $this->getBatcher($channel, $locale)->getBatchCount(self::BATCH_SIZE);
     }
 
     public function getItems(BatchInterface $batch): iterable
@@ -75,14 +89,14 @@ class DataProvider implements DataProviderInterface
     /**
      * @throws StringsException
      */
-    private function getQueryBuilder(): QueryBuilder
+    private function getQueryBuilder(ChannelInterface $channel, LocaleInterface $locale): QueryBuilder
     {
         $manager = $this->getManager();
         $qb = $manager->createQueryBuilder();
         $qb->select('o')
             ->from($this->class, 'o');
 
-        // todo fire event to let users filter the $qb
+        $this->eventDispatcher->dispatch(new QueryBuilderEvent($this, $qb, $channel, $locale));
 
         return $qb;
     }
@@ -105,12 +119,13 @@ class DataProvider implements DataProviderInterface
     /**
      * @throws StringsException
      */
-    private function getBatcher(): BatcherInterface
+    private function getBatcher(ChannelInterface $channel, LocaleInterface $locale): BatcherInterface
     {
-        if (null === $this->batcher) {
-            $this->batcher = $this->batcherFactory->createIdCollectionBatcher($this->getQueryBuilder());
+        $key = $channel->getCode() . $locale->getCode();
+        if (!isset($this->batchers[$key])) {
+            $this->batchers[$key] = $this->batcherFactory->createIdCollectionBatcher($this->getQueryBuilder($channel, $locale));
         }
 
-        return $this->batcher;
+        return $this->batchers[$key];
     }
 }

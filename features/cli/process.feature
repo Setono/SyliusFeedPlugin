@@ -10,6 +10,7 @@ Feature: Process feeds
     And the description of product "Cold beer" is "An ice cold beer"
     And the store also has a product "Warm beer" with code "WARM_BEER"
     And the description of product "Warm beer" is "A good warm beer"
+    And this product has been disabled
 
   Scenario: Processing a feed
     Given there is a feed with feed type "google_shopping"

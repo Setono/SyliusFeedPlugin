@@ -16,6 +16,8 @@
 
         <service id="Setono\SyliusFeedPlugin\Message\Handler\GenerateBatchHandler">
             <argument type="service" id="setono_sylius_feed.repository.feed" />
+            <argument type="service" id="sylius.repository.channel" />
+            <argument type="service" id="sylius.repository.locale" />
             <argument type="service" id="setono_sylius_feed.manager.feed" />
             <argument type="service" id="setono_sylius_feed.registry.feed_type" />
             <argument type="service" id="twig" />
@@ -25,6 +27,16 @@
             <argument type="service" id="validator" />
             <argument type="service" id="setono_sylius_feed.factory.violation" />
             <argument type="service" id="logger" />
+
+            <tag name="messenger.message_handler" />
+        </service>
+
+        <service id="Setono\SyliusFeedPlugin\Message\Handler\GenerateFeedHandler">
+            <argument type="service" id="setono_sylius_feed.repository.feed" />
+            <argument type="service" id="sylius.repository.channel" />
+            <argument type="service" id="sylius.repository.locale" />
+            <argument type="service" id="setono_sylius_feed.registry.feed_type" />
+            <argument type="service" id="setono_sylius_feed.command_bus" />
 
             <tag name="messenger.message_handler" />
         </service>
