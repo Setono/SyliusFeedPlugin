@@ -18,6 +18,7 @@ use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\Event\BatchGeneratedEvent;
 use Setono\SyliusFeedPlugin\Event\GenerateBatchItemEvent;
 use Setono\SyliusFeedPlugin\Event\GenerateBatchViolationEvent;
+use Setono\SyliusFeedPlugin\Exception\GenerateBatchException;
 use Setono\SyliusFeedPlugin\Factory\ViolationFactoryInterface;
 use Setono\SyliusFeedPlugin\Generator\FeedPathGeneratorInterface;
 use Setono\SyliusFeedPlugin\Generator\TemporaryFeedPathGenerator;
@@ -126,29 +127,37 @@ final class GenerateBatchHandler implements MessageHandlerInterface
             $stream = $this->openStream();
 
             foreach ($items as $item) {
-                $contextList = $itemContext->getContextList($item, $channel, $locale);
-                foreach ($contextList as $context) {
-                    $this->eventDispatcher->dispatch(new GenerateBatchItemEvent(
-                        $feed, $feedType, $channel, $locale, $context
-                    ));
-
-                    $constraintViolationList = $this->validator->validate(
-                        $context, null, $feedType->getValidationGroups()
-                    );
-                    if ($constraintViolationList->count() > 0) {
-                        foreach ($constraintViolationList as $constraintViolation) {
-                            $violation = $this->violationFactory->createFromConstraintViolation(
-                                $constraintViolation, $channel, $locale, $context
-                            );
-
-                            $feed->addViolation($violation);
-                        }
-
-                        $this->eventDispatcher->dispatch(new GenerateBatchViolationEvent(
-                            $feed, $feedType, $channel, $locale, $context, $constraintViolationList
+                try {
+                    $contextList = $itemContext->getContextList($item, $channel, $locale);
+                    foreach ($contextList as $context) {
+                        $this->eventDispatcher->dispatch(new GenerateBatchItemEvent(
+                            $feed, $feedType, $channel, $locale, $context
                         ));
+
+                        $constraintViolationList = $this->validator->validate(
+                            $context, null, $feedType->getValidationGroups()
+                        );
+                        if ($constraintViolationList->count() > 0) {
+                            foreach ($constraintViolationList as $constraintViolation) {
+                                $violation = $this->violationFactory->createFromConstraintViolation(
+                                    $constraintViolation, $channel, $locale, $context
+                                );
+
+                                $feed->addViolation($violation);
+                            }
+
+                            $this->eventDispatcher->dispatch(new GenerateBatchViolationEvent(
+                                $feed, $feedType, $channel, $locale, $context, $constraintViolationList
+                            ));
+                        }
+                        fwrite($stream, $template->renderBlock('item', ['item' => $context]));
                     }
-                    fwrite($stream, $template->renderBlock('item', ['item' => $context]));
+                } catch (Throwable $e) {
+                    $newException = new GenerateBatchException($e->getMessage(), $e);
+                    $newException->setChannelCode($channel->getCode());
+                    $newException->setLocaleCode($locale->getCode());
+
+                    throw $newException;
                 }
             }
 
@@ -162,6 +171,20 @@ final class GenerateBatchHandler implements MessageHandlerInterface
             Assert::true($res, 'An error occurred when trying to write a feed item');
 
             $this->eventDispatcher->dispatch(new BatchGeneratedEvent($feed));
+        } catch(GenerateBatchException $e) {
+            $e->setFeedId($feed->getId());
+
+            $this->logger->critical($e->getMessage(), [
+                'feedId' => $feed->getId(),
+                'channelCode' => $e->getChannelCode(),
+                'localeCode' => $e->getLocaleCode(),
+            ]);
+
+            $this->applyErrorTransition($workflow, $feed);
+
+            $this->feedManager->flush();
+
+            throw $e;
         } catch (Throwable $e) {
             $this->logger->critical($e->getMessage(), ['feedId' => $feed->getId()]);
 
