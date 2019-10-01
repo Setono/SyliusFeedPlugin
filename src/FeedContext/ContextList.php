@@ -20,6 +20,8 @@ final class ContextList implements IteratorAggregate, ContextListInterface
     }
 
     /**
+     * todo all contexts should implement an interface and be value objects
+     *
      * @param array|object $context
      */
     public function add($context): void

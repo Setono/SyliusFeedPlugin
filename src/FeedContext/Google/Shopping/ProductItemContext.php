@@ -6,7 +6,6 @@ namespace Setono\SyliusFeedPlugin\FeedContext\Google\Shopping;
 
 use InvalidArgumentException;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
-use RuntimeException;
 use Safe\Exceptions\StringsException;
 use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Availability;
@@ -78,19 +77,17 @@ class ProductItemContext implements ItemContextInterface
 
         $translation = $this->getTranslation($product, $locale->getCode());
 
-        $link = $this->getLink($locale, $translation);
-        $imageLink = $this->getImageLink($product);
-        $price = $this->getPrice($product, $channel);
+        $data = new Product();
+        $data->setId($product->getCode());
+        $data->setImageLink($this->getImageLink($product));
+        $data->setAvailability(Availability::outOfStock());
+        $data->setPrice($this->getPrice($product, $channel));
 
-        $data = new Product(
-            (string) $product->getCode(),
-            (string) $translation->getName(),
-            (string) $translation->getDescription(),
-            $link,
-            $imageLink,
-            Availability::outOfStock(),
-            $price
-        );
+        if (null !== $translation) {
+            $data->setTitle($translation->getName());
+            $data->setDescription($translation->getDescription());
+            $data->setLink($this->getLink($locale, $translation));
+        }
 
         $data->setCondition($product instanceof ConditionAwareInterface ? Condition::fromValue($product->getCondition()) : Condition::new());
         $data->setItemGroupId($product->getCode());
@@ -128,22 +125,24 @@ class ProductItemContext implements ItemContextInterface
         return $contextList;
     }
 
-    /**
-     * @throws StringsException
-     */
-    private function getTranslation(ProductInterface $product, string $locale): ProductTranslationInterface
+    private function getTranslation(ProductInterface $product, string $locale): ?ProductTranslationInterface
     {
+        /** @var ProductTranslationInterface $translation */
         foreach ($product->getTranslations() as $translation) {
-            if($translation->getLocale() === $locale) {
+            if ($translation->getLocale() === $locale) {
                 return $translation;
             }
         }
 
-        throw new RuntimeException(sprintf('The product "%s" does not have a translation for locale "%s"', $product->getCode(), $locale));
+        return null;
     }
 
-    private function getLink(LocaleInterface $locale, ProductTranslationInterface $translation): string
+    private function getLink(LocaleInterface $locale, ProductTranslationInterface $translation): ?string
     {
+        if ($translation->getSlug() === null || $locale->getCode() === null) {
+            return null;
+        }
+
         return $this->router->generate(
             'sylius_shop_product_show',
             ['slug' => $translation->getSlug(), '_locale' => $locale->getCode()],
@@ -151,7 +150,7 @@ class ProductItemContext implements ItemContextInterface
         );
     }
 
-    private function getImageLink(ImagesAwareInterface $imagesAware): string
+    private function getImageLink(ImagesAwareInterface $imagesAware): ?string
     {
         $images = $imagesAware->getImagesByType('main');
         if ($images->count() === 0) {
@@ -159,27 +158,24 @@ class ProductItemContext implements ItemContextInterface
         }
 
         if ($images->count() === 0) {
-            return '';
+            return null;
         }
 
         return $this->cacheManager->getBrowserPath($images[0]->getPath(), 'sylius_shop_product_large_thumbnail');
     }
 
-    /**
-     * @throws StringsException
-     */
-    private function getPrice(ProductInterface $product, ChannelInterface $channel): Price
+    private function getPrice(ProductInterface $product, ChannelInterface $channel): ?Price
     {
         /** @var ProductVariantInterface|null $variant */
         $variant = $this->productVariantResolver->getVariant($product);
         if (null === $variant) {
-            throw new InvalidArgumentException(sprintf('The product %s does not have any variants. This should not be possible', $product->getCode()));
+            return null;
         }
 
         $price = $this->productVariantPriceCalculator->calculate($variant, ['channel' => $channel]);
         $baseCurrency = $channel->getBaseCurrency();
         if (null === $baseCurrency) {
-            throw new InvalidArgumentException(sprintf('No base currency set on channel %s', $channel->getCode()));
+            return null;
         }
 
         return new Price($price, $baseCurrency);

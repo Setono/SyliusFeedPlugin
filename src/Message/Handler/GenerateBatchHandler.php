@@ -137,11 +137,18 @@ final class GenerateBatchHandler implements MessageHandlerInterface
                         $constraintViolationList = $this->validator->validate(
                             $context, null, $feedType->getValidationGroups()
                         );
+
+                        $hasErrorViolation = false;
+
                         if ($constraintViolationList->count() > 0) {
                             foreach ($constraintViolationList as $constraintViolation) {
                                 $violation = $this->violationFactory->createFromConstraintViolation(
                                     $constraintViolation, $channel, $locale, $context
                                 );
+
+                                if ($violation->getSeverity() === 'error') {
+                                    $hasErrorViolation = true;
+                                }
 
                                 $feed->addViolation($violation);
                             }
@@ -150,6 +157,12 @@ final class GenerateBatchHandler implements MessageHandlerInterface
                                 $feed, $feedType, $channel, $locale, $context, $constraintViolationList
                             ));
                         }
+
+                        // do not write the item to the stream if a violation has severity error
+                        if ($hasErrorViolation) {
+                            continue;
+                        }
+
                         fwrite($stream, $template->renderBlock('item', ['item' => $context]));
                     }
                 } catch (Throwable $e) {

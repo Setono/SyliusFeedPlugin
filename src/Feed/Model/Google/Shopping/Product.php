@@ -8,28 +8,28 @@ use Webmozart\Assert\Assert;
 
 final class Product
 {
-    /** @var string */
+    /** @var string|null */
     private $id;
 
-    /** @var string */
+    /** @var string|null */
     private $title;
 
-    /** @var string */
+    /** @var string|null */
     private $description;
 
-    /** @var string */
+    /** @var string|null */
     private $link;
 
-    /** @var string */
+    /** @var string|null */
     private $imageLink;
 
     /** @var array */
     private $additionalImageLinks = [];
 
-    /** @var Availability */
+    /** @var Availability|null */
     private $availability;
 
-    /** @var Price */
+    /** @var Price|null */
     private $price;
 
     /** @var Price|null */
@@ -74,70 +74,52 @@ final class Product
     /** @var array */
     private $customLabels = [];
 
-    public function __construct(
-        string $id,
-        string $title,
-        string $description,
-        string $link,
-        string $imageLink,
-        Availability $availability,
-        Price $price
-    ) {
-        $this->setId($id);
-        $this->setTitle($title);
-        $this->setDescription($description);
-        $this->setLink($link);
-        $this->setImageLink($imageLink);
-        $this->setAvailability($availability);
-        $this->setPrice($price);
-    }
-
-    public function getId(): string
+    public function getId(): ?string
     {
         return $this->id;
     }
 
-    public function setId(string $id): void
+    public function setId(?string $id): void
     {
         $this->id = $id;
     }
 
-    public function getTitle(): string
+    public function getTitle(): ?string
     {
         return $this->title;
     }
 
-    public function setTitle(string $title): void
+    public function setTitle(?string $title): void
     {
         $this->title = $title;
     }
 
-    public function getDescription(): string
+    public function getDescription(): ?string
     {
         return $this->description;
     }
 
-    public function setDescription(string $description): void
+    public function setDescription(?string $description): void
     {
         $this->description = $description;
     }
 
-    public function getLink(): string
+    public function getLink(): ?string
     {
         return $this->link;
     }
 
-    public function setLink(string $link): void
+    public function setLink(?string $link): void
     {
         $this->link = $link;
     }
 
-    public function getImageLink(): string
+    public function getImageLink(): ?string
     {
         return $this->imageLink;
     }
 
-    public function setImageLink(string $imageLink): void
+    public function setImageLink(?string $imageLink): void
     {
         $this->imageLink = $imageLink;
     }
@@ -162,22 +144,22 @@ final class Product
         return count($this->additionalImageLinks) > 0;
     }
 
-    public function getAvailability(): Availability
+    public function getAvailability(): ?Availability
     {
         return $this->availability;
     }
 
-    public function setAvailability(Availability $availability): void
+    public function setAvailability(?Availability $availability): void
     {
         $this->availability = $availability;
     }
 
-    public function getPrice(): Price
+    public function getPrice(): ?Price
     {
         return $this->price;
     }
 
-    public function setPrice(Price $price): void
+    public function setPrice(?Price $price): void
     {
         $this->price = $price;
     }
