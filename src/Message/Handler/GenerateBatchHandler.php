@@ -154,6 +154,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
                     }
                 } catch (Throwable $e) {
                     $newException = new GenerateBatchException($e->getMessage(), $e);
+                    $newException->setResourceId($item->getId());
                     $newException->setChannelCode($channel->getCode());
                     $newException->setLocaleCode($locale->getCode());
 
@@ -171,7 +172,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
             Assert::true($res, 'An error occurred when trying to write a feed item');
 
             $this->eventDispatcher->dispatch(new BatchGeneratedEvent($feed));
-        } catch(GenerateBatchException $e) {
+        } catch (GenerateBatchException $e) {
             $e->setFeedId($feed->getId());
 
             $this->logger->critical($e->getMessage(), [

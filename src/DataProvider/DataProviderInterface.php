@@ -20,7 +20,7 @@ interface DataProviderInterface
     /**
      * Will return an iterable of ids
      *
-     * @return iterable<CollectionBatchInterface>
+     * @return CollectionBatchInterface[]
      */
     public function getBatches(ChannelInterface $channel, LocaleInterface $locale): iterable;
 
@@ -32,7 +32,7 @@ interface DataProviderInterface
     /**
      * This will return the items based on the given batch
      *
-     * @return iterable<ResourceInterface>
+     * @return ResourceInterface[]
      */
     public function getItems(BatchInterface $batch): iterable;
 }

@@ -9,21 +9,16 @@ use Throwable;
 
 final class GenerateBatchException extends RuntimeException implements ExceptionInterface
 {
-    private const DEFAULT_MESSAGE = 'An error occurred';
-
-    /**
-     * @var int
-     */
+    /** @var int */
     private $feedId;
 
-    /**
-     * @var string
-     */
+    /** @var int */
+    private $resourceId;
+
+    /** @var string */
     private $channelCode;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $localeCode;
 
     public function __construct(string $message, Throwable $previous)
@@ -39,6 +34,18 @@ final class GenerateBatchException extends RuntimeException implements Exception
     public function setFeedId(int $feedId): void
     {
         $this->feedId = $feedId;
+
+        $this->updateMessage();
+    }
+
+    public function getResourceId(): int
+    {
+        return $this->resourceId;
+    }
+
+    public function setResourceId(int $resourceId): void
+    {
+        $this->resourceId = $resourceId;
 
         $this->updateMessage();
     }
@@ -69,16 +76,20 @@ final class GenerateBatchException extends RuntimeException implements Exception
 
     private function updateMessage(): void
     {
-        if(null !== $this->feedId) {
-            $this->message .= ' | Feed: '.$this->feedId;
+        if (null !== $this->feedId) {
+            $this->message .= ' | Feed: ' . $this->feedId;
         }
 
-        if(null !== $this->channelCode) {
-            $this->message .= ' | Channel code: '.$this->channelCode;
+        if (null !== $this->resourceId) {
+            $this->message .= ' | Resource id: ' . $this->resourceId;
         }
 
-        if(null !== $this->localeCode) {
-            $this->message .= ' | Locale code: '.$this->localeCode;
+        if (null !== $this->channelCode) {
+            $this->message .= ' | Channel code: ' . $this->channelCode;
+        }
+
+        if (null !== $this->localeCode) {
+            $this->message .= ' | Locale code: ' . $this->localeCode;
         }
     }
 }
