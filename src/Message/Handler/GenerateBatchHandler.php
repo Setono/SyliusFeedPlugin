@@ -110,6 +110,11 @@ final class GenerateBatchHandler implements MessageHandlerInterface
     public function __invoke(GenerateBatch $message): void
     {
         $feed = $this->getFeed($message->getFeedId());
+
+        if($feed->isErrored()) {
+            return;
+        }
+
         $channel = $this->getChannel($message->getChannelId());
         $locale = $this->getLocale($message->getLocaleId());
 

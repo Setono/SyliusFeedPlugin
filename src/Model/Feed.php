@@ -74,6 +74,11 @@ class Feed implements FeedInterface
         $this->state = $state;
     }
 
+    public function isErrored(): bool
+    {
+        return FeedGraph::STATE_ERROR === $this->state;
+    }
+
     public function getName(): ?string
     {
         return $this->name;

@@ -19,6 +19,8 @@ interface FeedInterface extends ResourceInterface, ChannelsAwareInterface, Toggl
 
     public function setState(string $state): void;
 
+    public function isErrored(): bool;
+
     public function getName(): ?string;
 
     public function setName(string $name): void;
