@@ -111,7 +111,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
     {
         $feed = $this->getFeed($message->getFeedId());
 
-        if($feed->isErrored()) {
+        if ($feed->isErrored()) {
             return;
         }
 
