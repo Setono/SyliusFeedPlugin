@@ -256,6 +256,11 @@ final class GenerateBatchHandler implements MessageHandlerInterface
      */
     private function applyErrorTransition(Workflow $workflow, FeedInterface $feed): void
     {
+        // if the feed is already errored we won't want to throw an exception
+        if($feed->isErrored()) {
+            return;
+        }
+
         if (!$workflow->can($feed, FeedGraph::TRANSITION_ERRORED)) {
             throw new InvalidArgumentException(sprintf(
                 'The transition "%s" could not be applied. State was: "%s"',
