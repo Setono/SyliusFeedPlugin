@@ -173,8 +173,6 @@ final class GenerateBatchHandler implements MessageHandlerInterface
                 } catch (Throwable $e) {
                     $newException = new GenerateBatchException($e->getMessage(), $e);
                     $newException->setResourceId($item->getId());
-                    $newException->setChannelCode($channel->getCode());
-                    $newException->setLocaleCode($locale->getCode());
 
                     throw $newException;
                 }
@@ -192,11 +190,13 @@ final class GenerateBatchHandler implements MessageHandlerInterface
             $this->eventDispatcher->dispatch(new BatchGeneratedEvent($feed));
         } catch (GenerateBatchException $e) {
             $e->setFeedId($feed->getId());
+            $e->setChannelCode($channel->getCode());
+            $e->setLocaleCode($locale->getCode());
 
             $this->logger->critical($e->getMessage(), [
                 'feedId' => $feed->getId(),
-                'channelCode' => $e->getChannelCode(),
-                'localeCode' => $e->getLocaleCode(),
+                'channelCode' => $channel->getCode(),
+                'localeCode' => $locale->getCode(),
             ]);
 
             $this->applyErrorTransition($workflow, $feed);
