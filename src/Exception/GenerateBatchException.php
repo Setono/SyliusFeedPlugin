@@ -9,6 +9,9 @@ use Throwable;
 
 final class GenerateBatchException extends RuntimeException implements ExceptionInterface
 {
+    /** @var string */
+    private $originalMessage;
+
     /** @var int */
     private $feedId;
 
@@ -24,6 +27,8 @@ final class GenerateBatchException extends RuntimeException implements Exception
     public function __construct(string $message, Throwable $previous)
     {
         parent::__construct($message, 0, $previous);
+
+        $this->originalMessage = $message;
     }
 
     public function getFeedId(): int
@@ -76,6 +81,8 @@ final class GenerateBatchException extends RuntimeException implements Exception
 
     private function updateMessage(): void
     {
+        $this->message = $this->originalMessage;
+
         if (null !== $this->feedId) {
             $this->message .= ' | Feed: ' . $this->feedId;
         }
