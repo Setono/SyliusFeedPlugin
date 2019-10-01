@@ -6,6 +6,7 @@ namespace Setono\SyliusFeedPlugin\FeedContext\Google\Shopping;
 
 use InvalidArgumentException;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
+use RuntimeException;
 use Safe\Exceptions\StringsException;
 use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Availability;
@@ -75,14 +76,21 @@ class ProductItemContext implements ItemContextInterface
             ));
         }
 
-        $translation = $product->getTranslation($locale->getCode());
+        $translation = $this->getTranslation($product, $locale->getCode());
 
         $link = $this->getLink($locale, $translation);
         $imageLink = $this->getImageLink($product);
         $price = $this->getPrice($product, $channel);
 
-        $data = new Product((string) $product->getCode(), (string) $translation->getName(), (string) $translation->getDescription(), $link,
-            $imageLink, Availability::outOfStock(), $price);
+        $data = new Product(
+            (string) $product->getCode(),
+            (string) $translation->getName(),
+            (string) $translation->getDescription(),
+            $link,
+            $imageLink,
+            Availability::outOfStock(),
+            $price
+        );
 
         $data->setCondition($product instanceof ConditionAwareInterface ? Condition::fromValue($product->getCondition()) : Condition::new());
         $data->setItemGroupId($product->getCode());
@@ -118,6 +126,20 @@ class ProductItemContext implements ItemContextInterface
         }
 
         return $contextList;
+    }
+
+    /**
+     * @throws StringsException
+     */
+    private function getTranslation(ProductInterface $product, string $locale): ProductTranslationInterface
+    {
+        foreach ($product->getTranslations() as $translation) {
+            if($translation->getLocale() === $locale) {
+                return $translation;
+            }
+        }
+
+        throw new RuntimeException(sprintf('The product "%s" does not have a translation for locale "%s"', $product->getCode(), $locale));
     }
 
     private function getLink(LocaleInterface $locale, ProductTranslationInterface $translation): string

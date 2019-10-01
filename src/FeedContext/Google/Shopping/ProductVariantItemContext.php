@@ -6,6 +6,7 @@ namespace Setono\SyliusFeedPlugin\FeedContext\Google\Shopping;
 
 use InvalidArgumentException;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
+use RuntimeException;
 use Safe\Exceptions\StringsException;
 use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Availability;
@@ -29,6 +30,7 @@ use Sylius\Component\Core\Model\ProductTranslationInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Inventory\Checker\AvailabilityCheckerInterface;
 use Sylius\Component\Locale\Model\LocaleInterface;
+use Sylius\Component\Product\Model\ProductVariantTranslationInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -73,16 +75,23 @@ class ProductVariantItemContext implements ItemContextInterface
             ));
         }
 
-        $translation = $variant->getTranslation($locale->getCode());
-        $productTranslation = $product->getTranslation($locale->getCode());
+        $translation = $this->getTranslation($variant, $locale->getCode());
+        $productTranslation = $this->getProductTranslation($product, $locale->getCode());
 
         $link = $this->getLink($locale, $productTranslation);
         $imageLink = $this->getImageLink($product);
 
         [$price, $salePrice] = $this->getPrices($variant, $channel);
 
-        $data = new Product((string) $variant->getCode(), (string) ($translation->getName() ?? $productTranslation->getName()), (string) $productTranslation->getDescription(), $link,
-            $imageLink, $this->getAvailability($variant), $price);
+        $data = new Product(
+            (string) $variant->getCode(),
+            (string) ($translation !== null && $translation->getName() !== null ? $translation->getName() : $productTranslation->getName()),
+            (string) $productTranslation->getDescription(),
+            $link,
+            $imageLink,
+            $this->getAvailability($variant),
+            $price
+        );
 
         $data->setSalePrice($salePrice);
 
@@ -112,6 +121,28 @@ class ProductVariantItemContext implements ItemContextInterface
         }
 
         return new ContextList([$data]);
+    }
+
+    private function getTranslation(ProductVariantInterface $productVariant, string $locale): ?ProductVariantTranslationInterface
+    {
+        foreach ($productVariant->getTranslations() as $translation) {
+            if($translation->getLocale() === $locale) {
+                return $translation;
+            }
+        }
+
+        return null;
+    }
+
+    private function getProductTranslation(ProductInterface $product, string $locale): ProductTranslationInterface
+    {
+        foreach ($product->getTranslations() as $translation) {
+            if($translation->getLocale() === $locale) {
+                return $translation;
+            }
+        }
+
+        throw new RuntimeException(sprintf('The product "%s" does not have a translation for locale "%s"', $product->getCode(), $locale));
     }
 
     private function getAvailability(ProductVariantInterface $product): Availability
