@@ -81,7 +81,7 @@ class ProductItemContext implements ItemContextInterface
         $imageLink = $this->getImageLink($product);
         $price = $this->getPrice($product, $channel);
 
-        $data = new Product($product->getCode(), $translation->getName(), $translation->getDescription(), $link,
+        $data = new Product((string) $product->getCode(), (string) $translation->getName(), (string) $translation->getDescription(), $link,
             $imageLink, Availability::outOfStock(), $price);
 
         $data->setCondition($product instanceof ConditionAwareInterface ? Condition::fromValue($product->getCondition()) : Condition::new());

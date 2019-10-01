@@ -81,7 +81,7 @@ class ProductVariantItemContext implements ItemContextInterface
 
         [$price, $salePrice] = $this->getPrices($variant, $channel);
 
-        $data = new Product($variant->getCode(), $translation->getName() ?? $productTranslation->getName(), $productTranslation->getDescription(), $link,
+        $data = new Product((string) $variant->getCode(), (string) ($translation->getName() ?? $productTranslation->getName()), (string) $productTranslation->getDescription(), $link,
             $imageLink, $this->getAvailability($variant), $price);
 
         $data->setSalePrice($salePrice);
