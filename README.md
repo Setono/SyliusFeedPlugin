@@ -54,6 +54,8 @@ setono_sylius_feed:
     resource: "@SetonoSyliusFeedPlugin/Resources/config/routing.yaml"
 ```
 
+If you don't use localized URLs, use this routing file instead: `@SetonoSyliusFeedPlugin/Resources/config/routing_non_localized.yaml`
+
 ### Step 4: Configure plugin
 
 ```yaml

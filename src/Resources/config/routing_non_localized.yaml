@@ -1,0 +1,7 @@
+# Use this routing file if you don't have locales in your URLs
+shop:
+    resource: "routing/shop.yaml"
+
+admin:
+    resource: "routing/admin.yaml"
+    prefix: /admin
