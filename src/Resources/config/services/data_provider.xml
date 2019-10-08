@@ -1,15 +1,29 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+<container xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://symfony.com/schema/dic/services"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <service id="setono_sylius_feed.data_provider.product" class="Setono\SyliusFeedPlugin\DataProvider\DataProvider">
+        <service id="setono_sylius_feed.data_provider.parent" class="Setono\SyliusFeedPlugin\DataProvider\DataProvider"
+                 abstract="true">
             <argument type="service" id="setono_doctrine_orm_batcher.factory.batcher"/>
             <argument type="service" id="setono_doctrine_orm_batcher.query.rebuilder"/>
             <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="doctrine"/>
+        </service>
+
+        <service id="setono_sylius_feed.data_provider.product" class="Setono\SyliusFeedPlugin\DataProvider\DataProvider"
+                 parent="setono_sylius_feed.data_provider.parent">
             <argument>%sylius.model.product.class%</argument>
 
             <tag name="setono_sylius_feed.data_provider" code="product"/>
+        </service>
+
+        <service id="setono_sylius_feed.data_provider.product_variant"
+                 class="Setono\SyliusFeedPlugin\DataProvider\DataProvider"
+                 parent="setono_sylius_feed.data_provider.parent">
+            <argument>%sylius.model.product_variant.class%</argument>
+
+            <tag name="setono_sylius_feed.data_provider" code="product_variant"/>
         </service>
     </services>
 </container>
