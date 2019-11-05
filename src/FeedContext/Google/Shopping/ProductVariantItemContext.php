@@ -168,7 +168,7 @@ class ProductVariantItemContext implements ItemContextInterface
             return null;
         }
 
-        return $this->cacheManager->getBrowserPath($images[0]->getPath(), 'sylius_shop_product_large_thumbnail');
+        return $this->cacheManager->getBrowserPath($images->first()->getPath(), 'sylius_shop_product_large_thumbnail');
     }
 
     private function getLink(LocaleInterface $locale, ProductTranslationInterface $productTranslation): ?string
