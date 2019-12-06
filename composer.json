@@ -72,6 +72,8 @@
         "analyse": "vendor/bin/phpstan analyse -c phpstan.neon -l max src/",
         "check-style": "vendor/bin/ecs check src/ spec/ tests/",
         "fix-style": "vendor/bin/ecs check src/ spec/ tests/ --fix",
+        "phpspec": "vendor/bin/phpspec run",
+        "phpunit": "vendor/bin/phpunit",
         "test": [
             "vendor/bin/phpunit",
             "vendor/bin/phpspec run"
