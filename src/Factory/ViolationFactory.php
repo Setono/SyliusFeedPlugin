@@ -46,8 +46,9 @@ final class ViolationFactory implements ViolationFactoryInterface
 
         $violation->setChannel($channel);
         $violation->setLocale($locale);
-        $violation->setMessage($constraintViolation->getPropertyPath() . ': ' . sprintf($constraintViolation->getMessage(),
-                $constraintViolation->getInvalidValue()));
+        $violation->setMessage(
+            $constraintViolation->getPropertyPath() . ': ' . sprintf((string) $constraintViolation->getMessage(), $constraintViolation->getInvalidValue())
+        );
         $violation->setData($data);
 
         if ($constraintViolation instanceof ConstraintViolation) {

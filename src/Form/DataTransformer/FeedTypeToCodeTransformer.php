@@ -19,6 +19,9 @@ final class FeedTypeToCodeTransformer implements DataTransformerInterface
         $this->feedTypeRegistry = $feedTypeRegistry;
     }
 
+    /**
+     * @param mixed $code
+     */
     public function transform($code): ?FeedTypeInterface
     {
         if (null === $code || '' === $code) {
@@ -32,6 +35,9 @@ final class FeedTypeToCodeTransformer implements DataTransformerInterface
         return $this->feedTypeRegistry->get($code);
     }
 
+    /**
+     * @param mixed $feedType
+     */
     public function reverseTransform($feedType): ?string
     {
         if (null === $feedType) {

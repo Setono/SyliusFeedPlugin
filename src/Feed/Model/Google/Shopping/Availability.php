@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping;
 
-use Setono\SyliusFeedPlugin\Feed\Model\ConstantClassTrait;
+use Setono\SyliusFeedPlugin\Feed\Model\Enum;
 
-final class Availability
+final class Availability extends Enum
 {
-    use ConstantClassTrait;
-
     private const IN_STOCK = 'in stock';
 
     private const OUT_OF_STOCK = 'out of stock';

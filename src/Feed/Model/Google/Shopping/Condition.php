@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping;
 
-use Setono\SyliusFeedPlugin\Feed\Model\ConstantClassTrait;
+use Setono\SyliusFeedPlugin\Feed\Model\Enum;
 
-final class Condition
+final class Condition extends Enum
 {
-    use ConstantClassTrait;
-
     private const NEW = 'new';
 
     private const REFURBISHED = 'refurbished';

@@ -257,7 +257,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
     private function applyErrorTransition(Workflow $workflow, FeedInterface $feed): void
     {
         // if the feed is already errored we won't want to throw an exception
-        if($feed->isErrored()) {
+        if ($feed->isErrored()) {
             return;
         }
 

@@ -13,9 +13,9 @@ use Webmozart\Assert\Assert;
  *
  * I have extended it to better fit the use of this plugin
  */
-trait ConstantClassTrait
+abstract class Enum
 {
-    /** @var object[] */
+    /** @var Enum[] */
     private static $instances = [];
 
     /** @var string|int */
@@ -24,17 +24,19 @@ trait ConstantClassTrait
     /**
      * @param string|int $value
      */
-    final private function __construct($value)
+    private function __construct($value)
     {
         $this->value = $value;
     }
 
     /**
      * @param string|int $value
+     *
+     * @return static
      */
-    private static function constant($value): self
+    protected static function constant($value): self
     {
-        return self::$instances[$value] ?? self::$instances[$value] = new self($value);
+        return self::$instances[$value] ?? self::$instances[$value] = new static($value);
     }
 
     public function __toString(): string
@@ -46,6 +48,8 @@ trait ConstantClassTrait
      * Will return an instance based on the $value
      *
      * @param object|string|int $value
+     *
+     * @return static
      */
     public static function fromValue($value): self
     {
@@ -53,7 +57,7 @@ trait ConstantClassTrait
             $value = (string) $value;
         }
 
-        Assert::oneOf($value, self::getValues());
+        Assert::oneOf($value, static::getValues());
 
         return self::constant($value);
     }
