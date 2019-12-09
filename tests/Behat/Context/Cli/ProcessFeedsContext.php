@@ -103,6 +103,7 @@ final class ProcessFeedsContext implements Context
 
                 $expectedContent = $this->getExpectedContent($channel->getCode());
                 $actualContent = $this->removeWhitespace($this->filesystem->read($path));
+                $actualContent = $this->normalizeImageLink($actualContent);
 
                 Assert::same($actualContent, $expectedContent);
             }
@@ -118,35 +119,45 @@ final class ProcessFeedsContext implements Context
         switch ($channelCode) {
             case 'denmark':
                 $expectedContent = <<<CONTENT
-<?xml version="1.0"?>
-<rss xmlns:g="http://base.google.com/ns/1.0" version="2.0">
-<channel>
+<?xmlversion="1.0"?>
+<rssxmlns:g="http://base.google.com/ns/1.0"version="2.0"><channel>
 <title>example.dk</title>
 <link>https://example.dk</link>
 <description></description>
 <item>
-<g:id>WARM_BEER</g:id><title>Warm beer</title><g:description>A good warm beer</g:description><link>http://localhost/en_US/products/warm-beer</link><g:availability>out of stock</g:availability><g:price>0 USD</g:price><g:condition>new</g:condition><g:item_group_id>WARM_BEER</g:item_group_id></item>
-<item>
-<g:id>WARM_BEER</g:id><title>Warm beer</title><g:description>A good warm beer</g:description><link>http://localhost/en_US/products/warm-beer</link><g:availability>in stock</g:availability><g:price>0 USD</g:price><g:condition>new</g:condition><g:item_group_id>WARM_BEER</g:item_group_id></item>
-</channel>
-</rss>
+    <g:id>WARM_BEER</g:id>
+    <title>Warmbeer</title>
+    <g:description>Agoodwarmbeer</g:description>
+    <link>http://localhost/en_US/products/warm-beer</link>
+    <g:image_link>http://localhost/media/cache/resolve/sylius_shop_product_large_thumbnail/%image_path%</g:image_link>
+    <g:availability>instock</g:availability>
+    <g:price>0USD</g:price>
+    <g:condition>new</g:condition>
+    <g:item_group_id>WARM_BEER</g:item_group_id>
+</item>
+</channel></rss>
 CONTENT;
 
                 break;
             case 'united_states':
                 $expectedContent = <<<CONTENT
-<?xml version="1.0"?>
-<rss xmlns:g="http://base.google.com/ns/1.0" version="2.0">
-<channel>
+<?xmlversion="1.0"?>
+<rssxmlns:g="http://base.google.com/ns/1.0"version="2.0"><channel>
 <title>example.com</title>
 <link>https://example.com</link>
 <description></description>
 <item>
-<g:id>COLD_BEER</g:id><title>Cold beer</title><g:description>An ice cold beer</g:description><link>http://localhost/en_US/products/cold-beer</link><g:availability>out of stock</g:availability><g:price>0 USD</g:price><g:condition>new</g:condition><g:item_group_id>COLD_BEER</g:item_group_id></item>
-<item>
-<g:id>COLD_BEER</g:id><title>Cold beer</title><g:description>An ice cold beer</g:description><link>http://localhost/en_US/products/cold-beer</link><g:availability>in stock</g:availability><g:price>0 USD</g:price><g:condition>new</g:condition><g:item_group_id>COLD_BEER</g:item_group_id></item>
-</channel>
-</rss>
+    <g:id>COLD_BEER</g:id>
+    <title>Coldbeer</title>
+    <g:description>Anicecoldbeer</g:description>
+    <link>http://localhost/en_US/products/cold-beer</link>
+    <g:image_link>http://localhost/media/cache/resolve/sylius_shop_product_large_thumbnail/%image_path%</g:image_link>
+    <g:availability>instock</g:availability>
+    <g:price>0USD</g:price>
+    <g:condition>new</g:condition>
+    <g:item_group_id>COLD_BEER</g:item_group_id>
+</item>
+</channel></rss>
 CONTENT;
 
                 break;
@@ -163,5 +174,14 @@ CONTENT;
     private function removeWhitespace(string $str): string
     {
         return preg_replace('/\s/', '', $str);
+    }
+
+    private function normalizeImageLink(string $actualContent): ?string
+    {
+        return \preg_replace(
+            '/<g:image_link>http:\/\/localhost\/media\/cache\/resolve\/sylius_shop_product_large_thumbnail\/.*?\.jpeg<\/g:image_link>/m',
+            '<g:image_link>http://localhost/media/cache/resolve/sylius_shop_product_large_thumbnail/%image_path%</g:image_link>',
+            $actualContent
+        );
     }
 }
