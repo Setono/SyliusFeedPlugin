@@ -35,7 +35,7 @@
         </many-to-many>
 
         <one-to-many field="violations" target-entity="Setono\SyliusFeedPlugin\Model\ViolationInterface"
-                     mapped-by="feed" orphan-removal="true">
+                     mapped-by="feed" orphan-removal="true" fetch="EXTRA_LAZY">
             <cascade>
                 <cascade-persist/>
             </cascade>
