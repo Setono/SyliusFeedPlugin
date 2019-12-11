@@ -28,6 +28,7 @@
             <argument type="service" id="workflow.registry" />
             <argument type="service" id="validator" />
             <argument type="service" id="setono_sylius_feed.factory.violation" />
+            <argument type="service" id="serializer" />
             <argument type="service" id="logger" />
 
             <tag name="messenger.message_handler" />

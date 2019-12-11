@@ -6,6 +6,7 @@ namespace Setono\SyliusFeedPlugin\Exception;
 
 use RuntimeException;
 use Throwable;
+use Webmozart\Assert\Assert;
 
 final class GenerateBatchException extends RuntimeException implements ExceptionInterface
 {
@@ -15,7 +16,7 @@ final class GenerateBatchException extends RuntimeException implements Exception
     /** @var int */
     private $feedId;
 
-    /** @var int */
+    /** @var mixed */
     private $resourceId;
 
     /** @var string */
@@ -43,13 +44,21 @@ final class GenerateBatchException extends RuntimeException implements Exception
         $this->updateMessage();
     }
 
-    public function getResourceId(): int
+    /**
+     * @return mixed
+     */
+    public function getResourceId()
     {
         return $this->resourceId;
     }
 
-    public function setResourceId(int $resourceId): void
+    /**
+     * @param mixed $resourceId
+     */
+    public function setResourceId($resourceId): void
     {
+        Assert::scalar($resourceId);
+
         $this->resourceId = $resourceId;
 
         $this->updateMessage();

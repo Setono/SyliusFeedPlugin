@@ -6,6 +6,10 @@ namespace Setono\SyliusFeedPlugin\Message\Handler;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use InvalidArgumentException;
+use const JSON_PRESERVE_ZERO_FRACTION;
+use const JSON_PRETTY_PRINT;
+use const JSON_UNESCAPED_SLASHES;
+use const JSON_UNESCAPED_UNICODE;
 use League\Flysystem\FilesystemInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
@@ -31,6 +35,8 @@ use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
+use Symfony\Component\Serializer\Encoder\JsonEncode;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Component\Workflow\Workflow;
@@ -71,6 +77,9 @@ final class GenerateBatchHandler implements MessageHandlerInterface
     /** @var ViolationFactoryInterface */
     private $violationFactory;
 
+    /** @var SerializerInterface */
+    private $serializer;
+
     /** @var LoggerInterface */
     private $logger;
 
@@ -87,6 +96,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
         Registry $workflowRegistry,
         ValidatorInterface $validator,
         ViolationFactoryInterface $violationFactory,
+        SerializerInterface $serializer,
         LoggerInterface $logger
     ) {
         $this->feedRepository = $feedRepository;
@@ -101,6 +111,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
         $this->workflowRegistry = $workflowRegistry;
         $this->validator = $validator;
         $this->violationFactory = $violationFactory;
+        $this->serializer = $serializer;
         $this->logger = $logger;
     }
 
@@ -148,7 +159,9 @@ final class GenerateBatchHandler implements MessageHandlerInterface
                         if ($constraintViolationList->count() > 0) {
                             foreach ($constraintViolationList as $constraintViolation) {
                                 $violation = $this->violationFactory->createFromConstraintViolation(
-                                    $constraintViolation, $channel, $locale, $context
+                                    $constraintViolation, $channel, $locale, $this->serializer->serialize($context, 'json', [
+                                        JsonEncode::OPTIONS => JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION,
+                                    ])
                                 );
 
                                 if ($violation->getSeverity() === 'error') {
@@ -188,6 +201,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
             Assert::true($res, 'An error occurred when trying to write a feed item');
 
             $this->feedManager->flush();
+            $this->feedManager->clear();
 
             $this->eventDispatcher->dispatch(new BatchGeneratedEvent($feed));
         } catch (GenerateBatchException $e) {
@@ -196,6 +210,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
             $e->setLocaleCode($locale->getCode());
 
             $this->logger->critical($e->getMessage(), [
+                'resourceId' => $e->getResourceId(),
                 'feedId' => $feed->getId(),
                 'channelCode' => $channel->getCode(),
                 'localeCode' => $locale->getCode(),
@@ -207,13 +222,22 @@ final class GenerateBatchHandler implements MessageHandlerInterface
 
             throw $e;
         } catch (Throwable $e) {
-            $this->logger->critical($e->getMessage(), ['feedId' => $feed->getId()]);
+            $this->logger->critical($e->getMessage(), [
+                'feedId' => $feed->getId(),
+                'channelCode' => $channel->getCode(),
+                'localeCode' => $locale->getCode(),
+            ]);
 
             $this->applyErrorTransition($workflow, $feed);
 
             $this->feedManager->flush();
 
-            throw $e;
+            $newException = new GenerateBatchException($e->getMessage(), $e);
+            $newException->setFeedId($feed->getId());
+            $newException->setChannelCode($channel->getCode());
+            $newException->setLocaleCode($locale->getCode());
+
+            throw $newException;
         }
     }
 
