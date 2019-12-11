@@ -160,7 +160,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
                             foreach ($constraintViolationList as $constraintViolation) {
                                 $violation = $this->violationFactory->createFromConstraintViolation(
                                     $constraintViolation, $channel, $locale, $this->serializer->serialize($context, 'json', [
-                                        JsonEncode::OPTIONS => JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION,
+                                        JsonEncode::OPTIONS => JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION | JSON_INVALID_UTF8_IGNORE,
                                     ])
                                 );
 
