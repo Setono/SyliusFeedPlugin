@@ -187,6 +187,8 @@ final class GenerateBatchHandler implements MessageHandlerInterface
 
             Assert::true($res, 'An error occurred when trying to write a feed item');
 
+            $this->feedManager->flush();
+
             $this->eventDispatcher->dispatch(new BatchGeneratedEvent($feed));
         } catch (GenerateBatchException $e) {
             $e->setFeedId($feed->getId());
