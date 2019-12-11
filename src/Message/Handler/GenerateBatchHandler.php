@@ -6,6 +6,7 @@ namespace Setono\SyliusFeedPlugin\Message\Handler;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use InvalidArgumentException;
+use const JSON_INVALID_UTF8_IGNORE;
 use const JSON_PRESERVE_ZERO_FRACTION;
 use const JSON_PRETTY_PRINT;
 use const JSON_UNESCAPED_SLASHES;
