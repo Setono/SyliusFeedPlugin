@@ -12,16 +12,6 @@ use Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository;
 
 class FeedRepository extends EntityRepository implements FeedRepositoryInterface
 {
-    public function findCountsGroupedBySeverity(): array
-    {
-        return $this->createQueryBuilder('o')
-            ->select('NEW Setono\SyliusFeedPlugin\DTO\SeverityCount(o.severity, count(o))')
-            ->groupBy('severity')
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-
     /**
      * @throws NonUniqueResultException
      */
