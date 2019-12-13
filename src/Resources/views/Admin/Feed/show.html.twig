@@ -62,7 +62,7 @@
         </div>
     {% endif %}
 
-    {% if not feed.violations.empty %}
+    {% if feed.violations|length > 0 %}
         <h2 class="ui header">{{ 'setono_sylius_feed.ui.violations'|trans }}</h2>
         <div class="ui segment spaceless">
             <table class="ui basic celled table">
