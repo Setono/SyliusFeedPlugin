@@ -28,3 +28,17 @@ setono_sylius_feed_admin_feed_process:
     defaults:
         _controller: setono_sylius_feed.controller.action.admin.process_feed
 
+setono_sylius_feed_admin_feed_violations_index:
+    path: /feeds/{id}/violations
+    methods: [GET]
+    defaults:
+        _controller: setono_sylius_feed.controller.violation:indexAction
+        _sylius:
+            vars:
+                route:
+                    parameters:
+                        id: $id
+            template: SyliusAdminBundle:Crud:index.html.twig
+            grid: setono_sylius_feed_admin_violation
+            section: admin
+            permission: true

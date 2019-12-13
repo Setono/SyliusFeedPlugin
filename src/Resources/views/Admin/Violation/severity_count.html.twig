@@ -1,0 +1,20 @@
+{# @var \Setono\SyliusFeedPlugin\DTO\SeverityCount[] severityCounts #}
+<div class="ui segment spaceless">
+    <table class="ui basic celled table">
+        <thead>
+            <tr>
+                <th>{{ 'setono_sylius_feed.ui.severity'|trans }}</th>
+                <th>{{ 'setono_sylius_feed.ui.count'|trans }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% set severityMap = {'error': 'negative', 'warning': 'warning', 'notice': ''} %}
+            {% for severityCount in severityCounts %}
+                <tr class="item {{ severityMap[severityCount.severity] }}">
+                    <td>{{ ('setono_sylius_feed.ui.severities.' ~ severityCount.severity)|trans }}</td>
+                    <td>{{ severityCount.count }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
