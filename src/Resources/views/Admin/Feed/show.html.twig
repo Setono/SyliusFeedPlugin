@@ -61,7 +61,7 @@
             </table>
         </div>
     {% endif %}
-    {% if not feed.violations.empty %}
+    {% if feed.violations|length > 0 %}
         <h2 class="ui header">{{ 'setono_sylius_feed.ui.violation_summary'|trans }}</h2>
 
         <p>{{ 'setono_sylius_feed.ui.view_all_violations'|trans({'%path%' : path('setono_sylius_feed_admin_feed_violations_index', {'id' : feed.id})})|raw }}</p>
