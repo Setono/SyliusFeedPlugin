@@ -1,5 +1,6 @@
 imports:
     - { resource: "@SetonoSyliusFeedPlugin/Resources/config/grids/setono_sylius_feed_admin_feed.yaml" }
+    - { resource: "@SetonoSyliusFeedPlugin/Resources/config/grids/setono_sylius_feed_admin_violation.yaml" }
 
 flysystem:
     storages:

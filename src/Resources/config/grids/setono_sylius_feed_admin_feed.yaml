@@ -4,7 +4,7 @@ sylius_grid:
             driver:
                 name: doctrine/orm
                 options:
-                    class: Setono\SyliusFeedPlugin\Model\Feed
+                    class: "%setono_sylius_feed.model.feed.class%"
             fields:
                 name:
                     type: string
