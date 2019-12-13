@@ -11,6 +11,8 @@ use Sylius\Component\Resource\Model\ToggleableInterface;
 
 interface FeedInterface extends ResourceInterface, ChannelsAwareInterface, ToggleableInterface
 {
+    public function __toString(): string;
+
     public function getId(): ?int;
 
     public function getUuid(): string;

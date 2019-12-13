@@ -61,44 +61,12 @@
             </table>
         </div>
     {% endif %}
+    {% if not feed.violations.empty %}
+        <h2 class="ui header">{{ 'setono_sylius_feed.ui.violation_summary'|trans }}</h2>
 
-    {% if feed.violations|length > 0 %}
-        <h2 class="ui header">{{ 'setono_sylius_feed.ui.violations'|trans }}</h2>
-        <div class="ui segment spaceless">
-            <table class="ui basic celled table">
-                <thead>
-                <tr>
-                    <th>{{ 'setono_sylius_feed.ui.severity'|trans }}</th>
-                    <th>{{ 'setono_sylius_feed.ui.message'|trans }}</th>
-                    <th>{{ 'setono_sylius_feed.ui.data'|trans }}</th>
-                </tr>
-                </thead>
-                <tbody>
-                {%
-                    set severityMap = {'error': 'negative', 'warning': 'warning', 'notice': ''}
-                %}
-                {# @var \Setono\SyliusFeedPlugin\Model\ViolationInterface violation #}
-                {% for violation in feed.violations %}
-                    <tr class="item {{ severityMap[violation.severity] }}">
-                        <td>{{ ('setono_sylius_feed.ui.' ~ violation.severity)|trans }}</td>
-                        <td>{{ violation.message }}</td>
-                        <td>
-                            <div class="ui accordion">
-                                <div class="title">
-                                    <i class="dropdown icon"></i>
-                                    {{ 'sylius.ui.view'|trans }}
-                                </div>
-                                <div class="content">
-                                    <pre>{{ violation.data }}</pre>
-                                </div>
-                            </div>
+        <p>{{ 'setono_sylius_feed.ui.view_all_violations'|trans({'%path%' : path('setono_sylius_feed_admin_feed_violations_index', {'id' : feed.id})})|raw }}</p>
 
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
+        {{ render(controller('setono_sylius_feed.controller.action.admin.severity_count')) }}
     {% endif %}
 
     {{ sonata_block_render_event('setono_sylius_feed.admin.feed.show.after_content', {'resource': resource}) }}

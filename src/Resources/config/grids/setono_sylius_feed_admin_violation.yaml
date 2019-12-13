@@ -1,0 +1,24 @@
+sylius_grid:
+    grids:
+        setono_sylius_feed_admin_violation:
+            driver:
+                name: doctrine/orm
+                options:
+                    class: "%setono_sylius_feed.model.violation.class%"
+                    repository:
+                        method: createQueryBuilderByFeed
+                        arguments:
+                            feed: $id
+            limits: [200, 100, 500, 1000]
+            fields:
+                severity:
+                    type: string
+                    label: setono_sylius_feed.ui.severity
+                message:
+                    type: string
+                    label: setono_sylius_feed.ui.message
+                data:
+                    type: twig
+                    label: setono_sylius_feed.ui.data
+                    options:
+                        template: "@SetonoSyliusFeedPlugin/Admin/Violation/Grid/Field/data.html.twig"

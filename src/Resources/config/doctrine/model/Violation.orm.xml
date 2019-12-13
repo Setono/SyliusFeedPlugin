@@ -4,7 +4,6 @@
                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                   xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                                       http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
-
     <mapped-superclass name="Setono\SyliusFeedPlugin\Model\Violation" table="setono_sylius_feed__violation">
         <id name="id" column="id" type="integer">
             <generator strategy="AUTO" />
@@ -16,7 +15,7 @@
 
         <field name="severity" type="string" />
         <field name="message" type="text" />
-        <field name="data" type="array" nullable="true" />
+        <field name="data" type="text" nullable="true" />
 
         <many-to-one field="feed" target-entity="Setono\SyliusFeedPlugin\Model\FeedInterface" inversed-by="violations">
             <join-column name="feed_id" referenced-column-name="id" on-delete="CASCADE" nullable="false"/>
@@ -30,5 +29,4 @@
             <join-column name="locale_id" referenced-column-name="id" on-delete="CASCADE" nullable="false" />
         </many-to-one>
     </mapped-superclass>
-
 </doctrine-mapping>
