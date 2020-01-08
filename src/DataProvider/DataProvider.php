@@ -13,7 +13,7 @@ use Safe\Exceptions\StringsException;
 use function Safe\sprintf;
 use Setono\DoctrineORMBatcher\Batch\BatchInterface;
 use Setono\DoctrineORMBatcher\Batch\CollectionBatchInterface;
-use Setono\DoctrineORMBatcher\Batcher\BatcherInterface;
+use Setono\DoctrineORMBatcher\Batcher\Collection\CollectionBatcherInterface;
 use Setono\DoctrineORMBatcher\Factory\BatcherFactoryInterface;
 use Setono\DoctrineORMBatcher\Query\QueryRebuilderInterface;
 use Setono\SyliusFeedPlugin\Event\QueryBuilderEvent;
@@ -39,7 +39,7 @@ class DataProvider implements DataProviderInterface
     /** @var string */
     private $class;
 
-    /** @var BatcherInterface[] */
+    /** @var CollectionBatcherInterface[] */
     private $batchers;
 
     public function __construct(
@@ -119,7 +119,7 @@ class DataProvider implements DataProviderInterface
     /**
      * @throws StringsException
      */
-    private function getBatcher(ChannelInterface $channel, LocaleInterface $locale): BatcherInterface
+    private function getBatcher(ChannelInterface $channel, LocaleInterface $locale): CollectionBatcherInterface
     {
         $key = $channel->getCode() . $locale->getCode();
         if (!isset($this->batchers[$key])) {

@@ -34,7 +34,7 @@ final class FeedTypeChoiceType extends AbstractType
                 'placeholder' => 'setono_sylius_feed.form.feed.feed_type_placeholder',
                 'label' => 'setono_sylius_feed.form.feed.feed_type',
                 'choices' => $this->feedTypeRegistry->all(),
-                'choice_label' => static function (FeedTypeInterface $choice) {
+                'choice_label' => static function (FeedTypeInterface $choice): string {
                     return 'setono_sylius_feed.feed_type.' . $choice->getCode();
                 },
                 'choice_value' => 'code',

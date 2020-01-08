@@ -84,7 +84,7 @@ final class ShowFeedAction
 
         $response = new StreamedResponse();
         $response->headers->set('Content-Type', $contentType);
-        $response->setCallback(static function () use ($stream) {
+        $response->setCallback(static function () use ($stream): void {
             while (!feof($stream)) {
                 echo fread($stream, 8192);
 
