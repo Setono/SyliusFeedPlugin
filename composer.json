@@ -4,17 +4,17 @@
     "description": "Plugin to generate feeds within the Sylius ecommerce platform",
     "license": "MIT",
     "require": {
-        "php": "^7.2",
+        "php": "^7.3",
         "ext-json": "*",
         "league/flysystem-bundle": "^1.1",
         "psr/event-dispatcher": "^1.0",
         "ramsey/uuid": "^3.7",
         "setono/doctrine-orm-batcher-bundle": "^0.3.1",
         "sylius/sylius": "^1.3",
-        "symfony/event-dispatcher": "^4.3 || ^5.0",
-        "symfony/messenger": "^4.3 || ^5.0",
-        "symfony/serializer": "^4.3 || ^5.0",
-        "symfony/workflow": "^4.3 || ^5.0",
+        "symfony/event-dispatcher": "^4.4 || ^5.0",
+        "symfony/messenger": "^4.4 || ^5.0",
+        "symfony/serializer": "^4.4 || ^5.0",
+        "symfony/workflow": "^4.4 || ^5.0",
         "thecodingmachine/safe": "^1.0",
         "webmozart/assert": "^1.5"
     },
@@ -40,13 +40,13 @@
         "phpunit/phpunit": "^8.0",
         "sensiolabs/security-checker": "^5.0",
         "sylius-labs/coding-standard": "^3.1",
-        "symfony/browser-kit": "^3.4 || ^4.3 || ^5.0",
-        "symfony/debug-bundle": "^3.4 || ^4.3 || ^5.0",
-        "symfony/dotenv": "^4.3 || ^5.0",
-        "symfony/intl": "^3.4 || ^4.3 || ^5.0",
-        "symfony/web-profiler-bundle": "^3.4 || ^4.3 || ^5.0",
-        "symfony/web-server-bundle": "^3.4 || ^4.3 || ^5.0",
-        "thecodingmachine/phpstan-safe-rule": "^1.0@beta"
+        "symfony/browser-kit": "^4.4 || ^5.0",
+        "symfony/debug-bundle": "^4.4 || ^5.0",
+        "symfony/dotenv": "^4.4 || ^5.0",
+        "symfony/intl": "^4.4 || ^5.0",
+        "symfony/web-profiler-bundle": "^4.4 || ^5.0",
+        "symfony/web-server-bundle": "^4.4 || ^5.0",
+        "thecodingmachine/phpstan-safe-rule": "^1.0"
     },
     "config": {
         "sort-packages": true
