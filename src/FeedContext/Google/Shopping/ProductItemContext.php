@@ -171,7 +171,12 @@ class ProductItemContext implements ItemContextInterface
             return null;
         }
 
-        return $this->cacheManager->getBrowserPath($images->first()->getPath(), 'sylius_shop_product_large_thumbnail');
+        $image = $images->first();
+        if (false === $image) {
+            return null;
+        }
+
+        return $this->cacheManager->getBrowserPath($image->getPath(), 'sylius_shop_product_large_thumbnail');
     }
 
     /**
