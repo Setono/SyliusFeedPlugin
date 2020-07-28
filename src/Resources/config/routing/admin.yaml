@@ -5,6 +5,7 @@ setono_sylius_feed_admin_feed:
         templates: SyliusAdminBundle:Crud
         redirect: update
         grid: setono_sylius_feed_admin_feed
+        permission: true
         vars:
             all:
                 subheader: setono_sylius_feed.ui.manage_feeds
