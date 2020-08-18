@@ -4,6 +4,9 @@ on:
     pull_request: ~
     schedule:
         - cron: 5 8 * * 3
+env:
+    APP_ENV: test
+    DATABASE_URL: "mysql://root:root@127.0.0.1/sylius?serverVersion=5.7"
 jobs:
     checks:
         name: PHP ${{ matrix.php-versions }}
@@ -16,17 +19,14 @@ jobs:
         steps:
             -   name: Start MySQL
                 run: sudo /etc/init.d/mysql start
-            -   name: Set environment variables
-                run: |
-                    echo "::set-env name=APP_ENV::test"
-                    echo "::set-env name=DATABASE_URL::mysql://root:root@127.0.0.1/sylius?serverVersion=5.7"
             -   name: Checkout
-                uses: actions/checkout@v1
+                uses: actions/checkout@v2
             -   name: Setup PHP, with composer and extensions
-                uses: shivammathur/setup-php@master
+                uses: shivammathur/setup-php@v2
                 with:
                     php-version: ${{ matrix.php-versions }}
-                    extension-csv: intl
+                    extensions: intl
+                    coverage: none
             -   name: Install Composer dependencies
                 run: composer update --no-progress --no-suggest --prefer-dist --no-interaction
             -   name: Validate composer
@@ -41,11 +41,9 @@ jobs:
                 run: composer phpspec
             -   name: Run phpunit
                 run: composer phpunit
-            -   name: Setup database, assets and cache
+            -   name: Setup database
                 run: |
                     (cd tests/Application && bin/console doctrine:database:create -vvv)
                     (cd tests/Application && bin/console doctrine:schema:create -vvv)
-                    (cd tests/Application && bin/console assets:install public -vvv)
-                    (cd tests/Application && bin/console cache:warmup -vvv)
             -   name: Run behat
                 run: vendor/bin/behat --strict -vvv --no-interaction || vendor/bin/behat --strict -vvv --no-interaction --rerun
