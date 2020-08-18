@@ -6,7 +6,6 @@ namespace Setono\SyliusFeedPlugin\EventListener;
 
 use League\Flysystem\FilesystemInterface;
 use League\Flysystem\RootViolationException;
-use Safe\Exceptions\StringsException;
 use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
@@ -24,9 +23,6 @@ final class DeleteGeneratedFilesSubscriber implements EventSubscriberInterface
         $this->filesystem = $filesystem;
     }
 
-    /**
-     * @throws StringsException
-     */
     public static function getSubscribedEvents(): array
     {
         $event = sprintf('workflow.%s.transition.%s', FeedGraph::GRAPH, FeedGraph::TRANSITION_ERRORED);

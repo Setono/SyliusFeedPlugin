@@ -4,16 +4,12 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\EventListener\Filter;
 
-use Safe\Exceptions\StringsException;
 use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\Event\QueryBuilderEvent;
 use Sylius\Component\Inventory\Model\StockableInterface;
 
 final class InStockFilterListener extends AbstractFilterListener
 {
-    /**
-     * @throws StringsException
-     */
     public function filter(QueryBuilderEvent $event): void
     {
         if (!$this->isEligible($event, [StockableInterface::class])) {

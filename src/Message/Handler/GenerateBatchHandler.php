@@ -15,7 +15,6 @@ use League\Flysystem\FilesystemInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use Safe\Exceptions\FilesystemException;
-use Safe\Exceptions\StringsException;
 use function Safe\fclose;
 use function Safe\fopen;
 use function Safe\fwrite;
@@ -116,9 +115,6 @@ final class GenerateBatchHandler implements MessageHandlerInterface
         $this->logger = $logger;
     }
 
-    /**
-     * @throws Throwable
-     */
     public function __invoke(GenerateBatch $message): void
     {
         $feed = $this->getFeed($message->getFeedId());
@@ -133,7 +129,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
         $workflow = $this->getWorkflow($feed);
 
         try {
-            $feedType = $this->feedTypeRegistry->get($feed->getFeedType());
+            $feedType = $this->feedTypeRegistry->get((string) $feed->getFeedType());
 
             $items = $feedType->getDataProvider()->getItems($message->getBatch());
 
@@ -192,7 +188,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
                 }
             }
 
-            $dir = $this->temporaryFeedPathGenerator->generate($feed, $channel->getCode(), $locale->getCode());
+            $dir = $this->temporaryFeedPathGenerator->generate($feed, (string) $channel->getCode(), (string) $locale->getCode());
             $path = TemporaryFeedPathGenerator::getPartialFile($dir, $this->filesystem);
 
             $res = $this->filesystem->writeStream((string) $path, $stream);
@@ -206,9 +202,9 @@ final class GenerateBatchHandler implements MessageHandlerInterface
 
             $this->eventDispatcher->dispatch(new BatchGeneratedEvent($feed));
         } catch (GenerateBatchException $e) {
-            $e->setFeedId($feed->getId());
-            $e->setChannelCode($channel->getCode());
-            $e->setLocaleCode($locale->getCode());
+            $e->setFeedId((int) $feed->getId());
+            $e->setChannelCode((string) $channel->getCode());
+            $e->setLocaleCode((string) $locale->getCode());
 
             $this->logger->critical($e->getMessage(), [
                 'resourceId' => $e->getResourceId(),
@@ -234,9 +230,9 @@ final class GenerateBatchHandler implements MessageHandlerInterface
             $this->feedManager->flush();
 
             $newException = new GenerateBatchException($e->getMessage(), $e);
-            $newException->setFeedId($feed->getId());
-            $newException->setChannelCode($channel->getCode());
-            $newException->setLocaleCode($locale->getCode());
+            $newException->setFeedId((int) $feed->getId());
+            $newException->setChannelCode((string) $channel->getCode());
+            $newException->setLocaleCode((string) $locale->getCode());
 
             throw $newException;
         }
@@ -257,8 +253,6 @@ final class GenerateBatchHandler implements MessageHandlerInterface
 
     /**
      * @return resource
-     *
-     * @throws FilesystemException
      */
     private function openStream()
     {
@@ -278,9 +272,6 @@ final class GenerateBatchHandler implements MessageHandlerInterface
         }
     }
 
-    /**
-     * @throws StringsException
-     */
     private function applyErrorTransition(Workflow $workflow, FeedInterface $feed): void
     {
         // if the feed is already errored we won't want to throw an exception

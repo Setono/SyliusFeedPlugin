@@ -5,16 +5,12 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\DependencyInjection\Compiler;
 
 use InvalidArgumentException;
-use Safe\Exceptions\StringsException;
 use function Safe\sprintf;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 final class ValidateDataProvidersPass implements CompilerPassInterface
 {
-    /**
-     * @throws StringsException
-     */
     public function process(ContainerBuilder $container): void
     {
         $seen = [];

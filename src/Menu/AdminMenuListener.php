@@ -12,7 +12,7 @@ final class AdminMenuListener
     {
         $menu = $event->getMenu();
         $catalog = $menu->getChild('catalog');
-        if ($catalog) {
+        if (null !== $catalog) {
             $catalog->addChild('feeds', [
                 'route' => 'setono_sylius_feed_admin_feed_index',
             ])

@@ -6,7 +6,6 @@ namespace Setono\SyliusFeedPlugin\FeedContext\Google\Shopping;
 
 use InvalidArgumentException;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
-use Safe\Exceptions\StringsException;
 use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Availability;
 use Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Condition;
@@ -23,6 +22,7 @@ use Setono\SyliusFeedPlugin\Model\MpnAwareInterface;
 use Setono\SyliusFeedPlugin\Model\SizeAwareInterface;
 use Sylius\Component\Core\Calculator\ProductVariantPriceCalculatorInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
+use Sylius\Component\Core\Model\ImageInterface;
 use Sylius\Component\Core\Model\ImagesAwareInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductTranslationInterface;
@@ -65,9 +65,6 @@ class ProductItemContext implements ItemContextInterface
         $this->availabilityChecker = $availabilityChecker;
     }
 
-    /**
-     * @throws StringsException
-     */
     public function getContextList(object $product, ChannelInterface $channel, LocaleInterface $locale): ContextListInterface
     {
         if (!$product instanceof ProductInterface) {
@@ -77,7 +74,7 @@ class ProductItemContext implements ItemContextInterface
             ));
         }
 
-        $translation = $this->getTranslation($product, $locale->getCode());
+        $translation = $this->getTranslation($product, (string) $locale->getCode());
         $contextList = new ContextList();
         foreach ($product->getVariants() as $variant) {
             Assert::isInstanceOf($variant, ProductVariantInterface::class);
@@ -97,7 +94,7 @@ class ProductItemContext implements ItemContextInterface
                 $data->setLink($this->getLink($locale, $translation));
             }
 
-            $data->setCondition($product instanceof ConditionAwareInterface ? Condition::fromValue($product->getCondition()) : Condition::new());
+            $data->setCondition($product instanceof ConditionAwareInterface ? Condition::fromValue((string) $product->getCondition()) : Condition::new());
 
             if ($variant instanceof BrandAwareInterface && $variant->getBrand() !== null) {
                 $data->setBrand((string) $variant->getBrand());
@@ -171,12 +168,13 @@ class ProductItemContext implements ItemContextInterface
             return null;
         }
 
+        /** @var ImageInterface|false $image */
         $image = $images->first();
         if (false === $image) {
             return null;
         }
 
-        return $this->cacheManager->getBrowserPath($image->getPath(), 'sylius_shop_product_large_thumbnail');
+        return $this->cacheManager->getBrowserPath((string) $image->getPath(), 'sylius_shop_product_large_thumbnail');
     }
 
     /**

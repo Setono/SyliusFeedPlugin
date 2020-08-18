@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\Exception;
 
 use InvalidArgumentException;
-use Safe\Exceptions\StringsException;
+use function Safe\sprintf;
 
 final class UndefinedBlockException extends InvalidArgumentException implements ExceptionInterface
 {
@@ -15,12 +15,9 @@ final class UndefinedBlockException extends InvalidArgumentException implements 
     /** @var array */
     private $requiredBlocks;
 
-    /**
-     * @throws StringsException
-     */
     public function __construct(string $block, array $requiredBlocks)
     {
-        $message = \Safe\sprintf('The block %s was not defined. Required blocks are: ["%s"]', $block, implode('", "', $requiredBlocks));
+        $message = sprintf('The block %s was not defined. Required blocks are: ["%s"]', $block, implode('", "', $requiredBlocks));
 
         parent::__construct($message);
 

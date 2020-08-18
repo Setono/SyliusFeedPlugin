@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\EventListener;
 
-use Safe\Exceptions\StringsException;
+use InvalidArgumentException;
 use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Registry\FeedTypeRegistryInterface;
@@ -23,9 +23,6 @@ final class StartProcessingSubscriber implements EventSubscriberInterface
         $this->feedTypeRegistry = $feedTypeRegistry;
     }
 
-    /**
-     * @throws StringsException
-     */
     public static function getSubscribedEvents(): array
     {
         $event = sprintf('workflow.%s.transition.%s', FeedGraph::GRAPH, FeedGraph::TRANSITION_PROCESS);
@@ -40,14 +37,16 @@ final class StartProcessingSubscriber implements EventSubscriberInterface
         $feed = $event->getSubject();
 
         if (!$feed instanceof FeedInterface) {
+            throw new InvalidArgumentException(sprintf(
+                'Unexpected type. Expected %s', FeedInterface::class
+            ));
+        }
+
+        if (!$this->feedTypeRegistry->has((string) $feed->getFeedType())) {
             return;
         }
 
-        if (!$this->feedTypeRegistry->has($feed->getFeedType())) {
-            return;
-        }
-
-        $feedType = $this->feedTypeRegistry->get($feed->getFeedType());
+        $feedType = $this->feedTypeRegistry->get((string) $feed->getFeedType());
         $dataProvider = $feedType->getDataProvider();
 
         $batchCount = 0;

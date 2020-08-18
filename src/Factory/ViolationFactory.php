@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Factory;
 
-use Safe\Exceptions\StringsException;
 use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\Model\ViolationInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
@@ -33,8 +32,6 @@ final class ViolationFactory implements ViolationFactoryInterface
 
     /**
      * @param mixed|null $data
-     *
-     * @throws StringsException
      */
     public function createFromConstraintViolation(
         ConstraintViolationInterface $constraintViolation,

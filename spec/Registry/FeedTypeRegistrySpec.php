@@ -6,7 +6,6 @@ namespace spec\Setono\SyliusFeedPlugin\Registry;
 
 use InvalidArgumentException;
 use PhpSpec\ObjectBehavior;
-use Safe\Exceptions\StringsException;
 use Setono\SyliusFeedPlugin\FeedType\FeedTypeInterface;
 use Setono\SyliusFeedPlugin\Registry\FeedTypeRegistry;
 use Setono\SyliusFeedPlugin\Registry\FeedTypeRegistryInterface;
@@ -36,9 +35,6 @@ class FeedTypeRegistrySpec extends ObjectBehavior
         $this->has('feed_type_1')->shouldReturn(true);
     }
 
-    /**
-     * @throws StringsException
-     */
     public function it_gets_feed_type_1(FeedTypeInterface $feedType1): void
     {
         $this->get('feed_type_1')->shouldReturn($feedType1);

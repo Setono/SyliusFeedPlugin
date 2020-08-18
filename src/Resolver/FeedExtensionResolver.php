@@ -6,11 +6,7 @@ namespace Setono\SyliusFeedPlugin\Resolver;
 
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Registry\FeedTypeRegistryInterface;
-use Throwable;
 use Twig\Environment;
-use Twig\Error\LoaderError;
-use Twig\Error\RuntimeError;
-use Twig\Error\SyntaxError;
 
 final class FeedExtensionResolver implements FeedExtensionResolverInterface
 {
@@ -26,15 +22,9 @@ final class FeedExtensionResolver implements FeedExtensionResolverInterface
         $this->twig = $twig;
     }
 
-    /**
-     * @throws Throwable
-     * @throws LoaderError
-     * @throws RuntimeError
-     * @throws SyntaxError
-     */
     public function resolve(FeedInterface $feed): string
     {
-        $feedType = $this->feedTypeRegistry->get($feed->getFeedType());
+        $feedType = $this->feedTypeRegistry->get((string) $feed->getFeedType());
 
         $template = $this->twig->load($feedType->getTemplate());
 

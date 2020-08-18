@@ -9,7 +9,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use InvalidArgumentException;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use Safe\Exceptions\StringsException;
 use function Safe\sprintf;
 use Setono\DoctrineORMBatcher\Batch\BatchInterface;
 use Setono\DoctrineORMBatcher\Batch\CollectionBatchInterface;
@@ -63,17 +62,12 @@ class DataProvider implements DataProviderInterface
 
     /**
      * @return iterable<CollectionBatchInterface>
-     *
-     * @throws StringsException
      */
     public function getBatches(ChannelInterface $channel, LocaleInterface $locale): iterable
     {
         yield from $this->getBatcher($channel, $locale)->getBatches(self::BATCH_SIZE);
     }
 
-    /**
-     * @throws StringsException
-     */
     public function getBatchCount(ChannelInterface $channel, LocaleInterface $locale): int
     {
         return $this->getBatcher($channel, $locale)->getBatchCount(self::BATCH_SIZE);
@@ -86,9 +80,6 @@ class DataProvider implements DataProviderInterface
         return $q->getResult();
     }
 
-    /**
-     * @throws StringsException
-     */
     private function getQueryBuilder(ChannelInterface $channel, LocaleInterface $locale): QueryBuilder
     {
         $manager = $this->getManager();
@@ -101,9 +92,6 @@ class DataProvider implements DataProviderInterface
         return $qb;
     }
 
-    /**
-     * @throws StringsException
-     */
     private function getManager(): EntityManagerInterface
     {
         /** @var EntityManagerInterface|null $manager */
@@ -116,9 +104,6 @@ class DataProvider implements DataProviderInterface
         return $manager;
     }
 
-    /**
-     * @throws StringsException
-     */
     private function getBatcher(ChannelInterface $channel, LocaleInterface $locale): CollectionBatcherInterface
     {
         $key = $channel->getCode() . $locale->getCode();

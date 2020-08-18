@@ -30,14 +30,10 @@ use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Workflow\Registry;
 use Throwable;
 use Twig\Environment;
-use Twig\Error\LoaderError;
-use Twig\Error\RuntimeError;
-use Twig\Error\SyntaxError;
 
 final class FinishGenerationHandler implements MessageHandlerInterface
 {
-    /** @var FeedRepositoryInterface */
-    private $feedRepository;
+    use GetFeedTrait;
 
     /** @var ObjectManager */
     private $feedManager;
@@ -80,31 +76,25 @@ final class FinishGenerationHandler implements MessageHandlerInterface
         $this->logger = $logger;
     }
 
-    /**
-     * @throws Throwable
-     */
     public function __invoke(FinishGeneration $message): void
     {
-        /** @var FeedInterface|null $feed */
-        $feed = $this->feedRepository->find($message->getFeedId());
-
-        if (null === $feed) {
-            throw new UnrecoverableMessageHandlingException('Feed does not exist');
-        }
+        $feed = $this->getFeed($message->getFeedId());
 
         try {
             $workflow = $this->workflowRegistry->get($feed, FeedGraph::GRAPH);
         } catch (InvalidArgumentException $e) {
-            throw new UnrecoverableMessageHandlingException('An error occurred when trying to get the workflow for the feed', 0, $e);
+            throw new UnrecoverableMessageHandlingException(
+                'An error occurred when trying to get the workflow for the feed', 0, $e
+            );
         }
 
         try {
-            $feedType = $this->feedTypeRegistry->get($feed->getFeedType());
+            $feedType = $this->feedTypeRegistry->get((string) $feed->getFeedType());
 
             /** @var ChannelInterface $channel */
             foreach ($feed->getChannels() as $channel) {
                 foreach ($channel->getLocales() as $locale) {
-                    $dir = $this->temporaryFeedPathGenerator->generate($feed, $channel->getCode(), $locale->getCode());
+                    $dir = $this->temporaryFeedPathGenerator->generate($feed, (string) $channel->getCode(), (string) $locale->getCode());
 
                     $batchStream = $this->getBatchStream();
 
@@ -173,8 +163,6 @@ final class FinishGenerationHandler implements MessageHandlerInterface
 
     /**
      * @return resource
-     *
-     * @throws FilesystemException
      */
     private function getBatchStream()
     {
@@ -182,11 +170,6 @@ final class FinishGenerationHandler implements MessageHandlerInterface
         return fopen('php://temp', 'w+b');
     }
 
-    /**
-     * @throws LoaderError
-     * @throws RuntimeError
-     * @throws SyntaxError
-     */
     private function getFeedParts(
         FeedInterface $feed,
         FeedTypeInterface $feedType,

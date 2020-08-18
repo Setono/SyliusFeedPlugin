@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Message\Handler;
 
-use Safe\Exceptions\StringsException;
+use InvalidArgumentException;
 use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\FeedType\FeedTypeInterface;
 use Setono\SyliusFeedPlugin\Message\Command\GenerateBatch;
@@ -17,7 +17,6 @@ use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Throwable;
 
 final class GenerateFeedHandler implements MessageHandlerInterface
 {
@@ -45,9 +44,6 @@ final class GenerateFeedHandler implements MessageHandlerInterface
         $this->commandBus = $commandBus;
     }
 
-    /**
-     * @throws Throwable
-     */
     public function __invoke(GenerateFeed $message): void
     {
         $feed = $this->getFeed($message->getFeedId());
@@ -63,15 +59,14 @@ final class GenerateFeedHandler implements MessageHandlerInterface
         }
     }
 
-    /**
-     * @throws StringsException
-     */
     private function getFeedType(FeedInterface $feed): FeedTypeInterface
     {
-        if (!$this->feedTypeRegistry->has($feed->getFeedType())) {
-            throw new UnrecoverableMessageHandlingException(sprintf('Feed type with code "%s" does not exist', $feed->getFeedType()));
+        try {
+            return $this->feedTypeRegistry->get((string) $feed->getFeedType());
+        } catch (InvalidArgumentException $e) {
+            throw new UnrecoverableMessageHandlingException(sprintf(
+                'Feed type with code "%s" does not exist', $feed->getFeedType()
+            ), 0, $e);
         }
-
-        return $this->feedTypeRegistry->get($feed->getFeedType());
     }
 }

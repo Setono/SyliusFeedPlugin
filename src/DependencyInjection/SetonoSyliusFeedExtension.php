@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\DependencyInjection;
 
-use Exception;
 use Setono\SyliusFeedPlugin\DataProvider\DataProviderInterface;
 use Setono\SyliusFeedPlugin\FeedType\FeedTypeInterface;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
@@ -17,9 +16,6 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 final class SetonoSyliusFeedExtension extends AbstractResourceExtension implements PrependExtensionInterface
 {
-    /**
-     * @throws Exception
-     */
     public function load(array $config, ContainerBuilder $container): void
     {
         $config = $this->processConfiguration($this->getConfiguration([], $container), $config);

@@ -6,7 +6,6 @@ namespace Setono\SyliusFeedPlugin\Processor;
 
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
-use Safe\Exceptions\StringsException;
 use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\Message\Command\ProcessFeed;
 use Setono\SyliusFeedPlugin\Repository\FeedRepositoryInterface;
@@ -29,16 +28,13 @@ final class FeedProcessor implements FeedProcessorInterface
         $this->logger = new NullLogger();
     }
 
-    /**
-     * @throws StringsException
-     */
     public function process(): void
     {
         $feeds = $this->feedRepository->findEnabled();
 
         foreach ($feeds as $feed) {
             $this->logger->info(sprintf('Triggering processing for feed "%s" (id: %s)', $feed->getName(), $feed->getId()));
-            $this->commandBus->dispatch(new ProcessFeed($feed->getId()));
+            $this->commandBus->dispatch(new ProcessFeed((int) $feed->getId()));
         }
     }
 }

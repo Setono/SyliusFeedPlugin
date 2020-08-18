@@ -7,8 +7,6 @@ namespace Tests\Setono\SyliusFeedPlugin\Behat\Context\Cli;
 use Behat\Behat\Context\Context;
 use InvalidArgumentException;
 use League\Flysystem\FilesystemInterface;
-use Safe\Exceptions\PcreException;
-use Safe\Exceptions\StringsException;
 use function Safe\preg_replace;
 use Setono\SyliusFeedPlugin\Command\ProcessFeedsCommand;
 use Setono\SyliusFeedPlugin\Generator\FeedPathGeneratorInterface;
@@ -110,10 +108,6 @@ final class ProcessFeedsContext implements Context
         }
     }
 
-    /**
-     * @throws PcreException
-     * @throws StringsException
-     */
     private function getExpectedContent(string $channelCode): string
     {
         switch ($channelCode) {
@@ -168,9 +162,6 @@ CONTENT;
         return $this->removeWhitespace($expectedContent);
     }
 
-    /**
-     * @throws PcreException
-     */
     private function removeWhitespace(string $str): string
     {
         return preg_replace('/\s/', '', $str);

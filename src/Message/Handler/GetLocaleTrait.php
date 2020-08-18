@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Message\Handler;
 
-use Safe\Exceptions\StringsException;
 use function Safe\sprintf;
 use Sylius\Component\Locale\Model\LocaleInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
@@ -15,9 +14,6 @@ trait GetLocaleTrait
     /** @var RepositoryInterface */
     private $localeRepository;
 
-    /**
-     * @throws StringsException
-     */
     private function getLocale(int $id): LocaleInterface
     {
         /** @var LocaleInterface|null $obj */

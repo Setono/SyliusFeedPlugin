@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\Registry;
 
 use InvalidArgumentException;
-use Safe\Exceptions\StringsException;
 use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\FeedType\FeedTypeInterface;
 
@@ -14,9 +13,6 @@ final class FeedTypeRegistry implements FeedTypeRegistryInterface
     /** @var FeedTypeInterface[] */
     private $feedTypes = [];
 
-    /**
-     * @throws StringsException
-     */
     public function __construct(FeedTypeInterface ...$feedTypes)
     {
         foreach ($feedTypes as $feedType) {
@@ -24,9 +20,6 @@ final class FeedTypeRegistry implements FeedTypeRegistryInterface
         }
     }
 
-    /**
-     * @throws StringsException
-     */
     private function register(FeedTypeInterface $feedType): void
     {
         $code = $feedType->getCode();
@@ -43,9 +36,6 @@ final class FeedTypeRegistry implements FeedTypeRegistryInterface
         return isset($this->feedTypes[$code]);
     }
 
-    /**
-     * @throws StringsException
-     */
     public function get(string $code): FeedTypeInterface
     {
         if (!$this->has($code)) {

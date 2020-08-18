@@ -6,7 +6,6 @@ namespace Setono\SyliusFeedPlugin\Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Exception;
 use Ramsey\Uuid\Uuid;
 use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
 use Sylius\Component\Channel\Model\ChannelInterface as BaseChannelInterface;
@@ -44,9 +43,6 @@ class Feed implements FeedInterface
     /** @var Collection|ViolationInterface[] */
     protected $violations;
 
-    /**
-     * @throws Exception
-     */
     public function __construct()
     {
         $this->uuid = Uuid::uuid4()->toString();

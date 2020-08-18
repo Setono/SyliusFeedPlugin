@@ -6,19 +6,16 @@ namespace Setono\SyliusFeedPlugin\DependencyInjection\Compiler;
 
 use InvalidArgumentException;
 use League\Flysystem\FilesystemInterface;
-use Safe\Exceptions\StringsException;
 use function Safe\sprintf;
 use Symfony\Component\Config\Definition\Exception\InvalidDefinitionException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Webmozart\Assert\Assert;
 
 final class RegisterFilesystemPass implements CompilerPassInterface
 {
     private const PARAMETERS = ['setono_sylius_feed.storage.feed', 'setono_sylius_feed.storage.feed_tmp'];
 
-    /**
-     * @throws StringsException
-     */
     public function process(ContainerBuilder $container): void
     {
         $hasAny = false;
@@ -39,12 +36,14 @@ final class RegisterFilesystemPass implements CompilerPassInterface
                 throw new InvalidArgumentException(sprintf('No service definition exists with id "%s"', $parameterValue));
             }
 
-            $definition = $container->getDefinition($parameterValue);
-            if (!is_a($definition->getClass(), FilesystemInterface::class, true)) {
+            $definitionClass = $container->getDefinition($parameterValue)->getClass();
+            Assert::notNull($definitionClass);
+
+            if (!is_a($definitionClass, FilesystemInterface::class, true)) {
                 throw new InvalidDefinitionException(sprintf(
                     'The config parameter "%s" references a service %s, which is not an instance of %s. Fix this by creating a valid service that implements %s.',
                     $parameter,
-                    $definition->getClass(),
+                    $definitionClass,
                     FilesystemInterface::class,
                     FilesystemInterface::class
                 ));

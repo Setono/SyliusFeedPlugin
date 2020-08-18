@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Message\Handler;
 
-use Safe\Exceptions\StringsException;
 use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Repository\FeedRepositoryInterface;
@@ -15,9 +14,6 @@ trait GetFeedTrait
     /** @var FeedRepositoryInterface */
     private $feedRepository;
 
-    /**
-     * @throws StringsException
-     */
     private function getFeed(int $id): FeedInterface
     {
         /** @var FeedInterface|null $obj */

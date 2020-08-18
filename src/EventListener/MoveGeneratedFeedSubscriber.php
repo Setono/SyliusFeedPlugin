@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\EventListener;
 
-use League\Flysystem\FileExistsException;
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\FilesystemInterface;
 use RuntimeException;
 use Safe\Exceptions\FilesystemException;
-use Safe\Exceptions\StringsException;
 use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\Generator\FeedPathGeneratorInterface;
 use Setono\SyliusFeedPlugin\Generator\TemporaryFeedPathGenerator;
@@ -18,7 +16,6 @@ use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Workflow\Event\TransitionEvent;
-use Throwable;
 
 final class MoveGeneratedFeedSubscriber implements EventSubscriberInterface
 {
@@ -46,9 +43,6 @@ final class MoveGeneratedFeedSubscriber implements EventSubscriberInterface
         $this->feedPathGenerator = $feedPathGenerator;
     }
 
-    /**
-     * @throws StringsException
-     */
     public static function getSubscribedEvents(): array
     {
         $event = sprintf('workflow.%s.transition.%s', FeedGraph::GRAPH, FeedGraph::TRANSITION_PROCESSED);
@@ -58,13 +52,6 @@ final class MoveGeneratedFeedSubscriber implements EventSubscriberInterface
         ];
     }
 
-    /**
-     * @throws FileNotFoundException
-     * @throws FilesystemException
-     * @throws StringsException
-     * @throws Throwable
-     * @throws FileExistsException
-     */
     public function move(TransitionEvent $event): void
     {
         $feed = $event->getSubject();
@@ -76,15 +63,21 @@ final class MoveGeneratedFeedSubscriber implements EventSubscriberInterface
         /** @var ChannelInterface $channel */
         foreach ($feed->getChannels() as $channel) {
             foreach ($channel->getLocales() as $locale) {
-                $temporaryDir = $this->temporaryFeedPathGenerator->generate($feed, $channel->getCode(), $locale->getCode());
+                $temporaryDir = $this->temporaryFeedPathGenerator->generate(
+                    $feed, (string) $channel->getCode(), (string) $locale->getCode()
+                );
                 $temporaryPath = TemporaryFeedPathGenerator::getBaseFile($temporaryDir);
                 $tempFile = $this->temporaryFilesystem->readStream((string) $temporaryPath);
                 if (false === $tempFile) {
-                    throw new FilesystemException(sprintf('The file with path "%s" could not be found', $temporaryPath));
+                    throw new FilesystemException(sprintf(
+                        'The file with path "%s" could not be found', $temporaryPath
+                    ));
                 }
 
                 // move the file from the temporary location to a temp file in the *not* temporary directory
-                $newPath = $this->feedPathGenerator->generate($feed, $channel->getCode(), $locale->getCode());
+                $newPath = $this->feedPathGenerator->generate(
+                    $feed, (string) $channel->getCode(), (string) $locale->getCode()
+                );
                 $path = sprintf('%s/%s', $newPath->getPath(), uniqid('feed-', true));
                 $res = $this->filesystem->writeStream($path, $tempFile);
 

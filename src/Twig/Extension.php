@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Twig;
 
-use Safe\Exceptions\PcreException;
 use function Safe\preg_replace;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
@@ -45,9 +44,6 @@ final class Extension extends AbstractExtension
         ];
     }
 
-    /**
-     * @throws PcreException
-     */
     public function removeEmptyTags(string $xml): string
     {
         return preg_replace('#<[^/>][^>]*></[^>]+>#', '', $xml);

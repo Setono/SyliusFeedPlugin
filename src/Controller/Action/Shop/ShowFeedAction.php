@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Controller\Action\Shop;
 
-use League\Flysystem\FileNotFoundException;
 use League\Flysystem\FilesystemInterface;
 use RuntimeException;
-use Safe\Exceptions\StringsException;
 use function Safe\fclose;
 use function Safe\fread;
 use function Safe\sprintf;
@@ -55,10 +53,6 @@ final class ShowFeedAction
         $this->mimeTypes = $mimeTypes;
     }
 
-    /**
-     * @throws FileNotFoundException
-     * @throws StringsException
-     */
     public function __invoke(string $uuid): StreamedResponse
     {
         $feed = $this->repository->findOneByUuid($uuid);
@@ -66,7 +60,7 @@ final class ShowFeedAction
             throw new NotFoundHttpException(sprintf('The feed with id %s does not exist', $uuid));
         }
 
-        $channelCode = $this->channelContext->getChannel()->getCode();
+        $channelCode = (string) $this->channelContext->getChannel()->getCode();
         $localeCode = $this->localeContext->getLocaleCode();
 
         $feedPath = $this->feedPathGenerator->generate($feed, $channelCode, $localeCode);

@@ -39,6 +39,6 @@ final class SendFinishGenerationCommandSubscriber implements EventSubscriberInte
             return;
         }
 
-        $this->commandBus->dispatch(new FinishGeneration($feed->getId()));
+        $this->commandBus->dispatch(new FinishGeneration((int) $feed->getId()));
     }
 }

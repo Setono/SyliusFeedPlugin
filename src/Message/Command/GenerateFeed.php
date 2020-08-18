@@ -30,9 +30,9 @@ final class GenerateFeed implements CommandInterface
      */
     public function __construct($feed, $channel, $locale)
     {
-        $this->setFeedId($feed instanceof FeedInterface ? $feed->getId() : $feed);
-        $this->setChannelId($channel instanceof ChannelInterface ? $channel->getId() : $channel);
-        $this->setLocaleId($locale instanceof LocaleInterface ? $locale->getId() : $locale);
+        $this->setFeedId($feed instanceof FeedInterface ? (int) $feed->getId() : $feed);
+        $this->setChannelId($channel instanceof ChannelInterface ? (int) $channel->getId() : $channel);
+        $this->setLocaleId($locale instanceof LocaleInterface ? (int) $locale->getId() : $locale);
     }
 
     public function getFeedId(): int

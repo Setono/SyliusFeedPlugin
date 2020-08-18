@@ -6,7 +6,6 @@ namespace Setono\SyliusFeedPlugin\Message\Handler;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use InvalidArgumentException;
-use Safe\Exceptions\StringsException;
 use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\Message\Command\GenerateFeed;
 use Setono\SyliusFeedPlugin\Message\Command\ProcessFeed;
@@ -56,14 +55,11 @@ final class ProcessFeedHandler implements MessageHandlerInterface
         $this->templateValidator = $templateValidator;
     }
 
-    /**
-     * @throws StringsException
-     */
     public function __invoke(ProcessFeed $message): void
     {
         $feed = $this->getFeed($message->getFeedId());
 
-        $feedType = $this->feedTypeRegistry->get($feed->getFeedType());
+        $feedType = $this->feedTypeRegistry->get((string) $feed->getFeedType());
 
         $this->templateValidator->validate($feedType->getTemplate());
 
@@ -74,14 +70,11 @@ final class ProcessFeedHandler implements MessageHandlerInterface
         /** @var ChannelInterface $channel */
         foreach ($feed->getChannels() as $channel) {
             foreach ($channel->getLocales() as $locale) {
-                $this->commandBus->dispatch(new GenerateFeed($feed->getId(), $channel, $locale));
+                $this->commandBus->dispatch(new GenerateFeed((int) $feed->getId(), $channel, $locale));
             }
         }
     }
 
-    /**
-     * @throws StringsException
-     */
     private function applyProcessTransition(FeedInterface $feed): void
     {
         try {

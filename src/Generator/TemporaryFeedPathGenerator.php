@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\Generator;
 
 use League\Flysystem\FilesystemInterface;
-use Safe\Exceptions\StringsException;
 use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use SplFileInfo;
+use Webmozart\Assert\Assert;
 
 final class TemporaryFeedPathGenerator implements FeedPathGeneratorInterface
 {
@@ -16,11 +16,12 @@ final class TemporaryFeedPathGenerator implements FeedPathGeneratorInterface
 
     /**
      * The returned file is a directory
-     *
-     * @throws StringsException
      */
     public function generate(FeedInterface $feed, string $channelCode, string $localeCode): SplFileInfo
     {
+        Assert::notEmpty($channelCode);
+        Assert::notEmpty($localeCode);
+
         return new SplFileInfo(sprintf('%s/%s/%s', $feed->getUuid(), $channelCode, $localeCode));
     }
 
