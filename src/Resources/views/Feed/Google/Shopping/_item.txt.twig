@@ -1,6 +1,6 @@
 {# @var item \Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Product #}
 <item>
-{% spaceless %}
+{% apply spaceless %}
 {% apply setono_sylius_feed_remove_empty_tags %}
     <g:id>{{ item.id|e }}</g:id>
     <title>{{ item.title|e }}</title>
@@ -29,5 +29,5 @@
         <g:custom_label_{{ idx }}>{{ customLabel|e }}</g:custom_label_{{ idx }}>
     {% endfor %}
 {% endapply %}
-{% endspaceless %}
+{% endapply %}
 </item>
