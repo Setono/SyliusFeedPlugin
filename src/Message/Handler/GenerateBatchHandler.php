@@ -28,13 +28,17 @@ use Setono\SyliusFeedPlugin\Generator\FeedPathGeneratorInterface;
 use Setono\SyliusFeedPlugin\Generator\TemporaryFeedPathGenerator;
 use Setono\SyliusFeedPlugin\Message\Command\GenerateBatch;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
+use Setono\SyliusFeedPlugin\Model\ViolationInterface;
 use Setono\SyliusFeedPlugin\Registry\FeedTypeRegistryInterface;
 use Setono\SyliusFeedPlugin\Repository\FeedRepositoryInterface;
 use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
+use Sylius\Component\Channel\Model\ChannelInterface;
 use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -49,6 +53,9 @@ final class GenerateBatchHandler implements MessageHandlerInterface
     use GetChannelTrait;
     use GetFeedTrait;
     use GetLocaleTrait;
+
+    /** @var RequestContext */
+    private $initialRequestContext;
 
     /** @var ObjectManager */
     private $feedManager;
@@ -80,6 +87,9 @@ final class GenerateBatchHandler implements MessageHandlerInterface
     /** @var SerializerInterface */
     private $serializer;
 
+    /** @var UrlGeneratorInterface */
+    private $urlGenerator;
+
     /** @var LoggerInterface */
     private $logger;
 
@@ -97,6 +107,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
         ValidatorInterface $validator,
         ViolationFactoryInterface $violationFactory,
         SerializerInterface $serializer,
+        UrlGeneratorInterface $urlGenerator,
         LoggerInterface $logger
     ) {
         $this->feedRepository = $feedRepository;
@@ -112,6 +123,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
         $this->validator = $validator;
         $this->violationFactory = $violationFactory;
         $this->serializer = $serializer;
+        $this->urlGenerator = $urlGenerator;
         $this->logger = $logger;
     }
 
@@ -125,6 +137,8 @@ final class GenerateBatchHandler implements MessageHandlerInterface
 
         $channel = $this->getChannel($message->getChannelId());
         $locale = $this->getLocale($message->getLocaleId());
+
+        $this->setTemporaryRequestContext($channel);
 
         $workflow = $this->getWorkflow($feed);
 
@@ -161,7 +175,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
                                     ])
                                 );
 
-                                if ($violation->getSeverity() === 'error') {
+                                if ($violation->getSeverity() === ViolationInterface::SEVERITY_ERROR) {
                                     $hasErrorViolation = true;
                                 }
 
@@ -235,7 +249,25 @@ final class GenerateBatchHandler implements MessageHandlerInterface
             $newException->setLocaleCode((string) $locale->getCode());
 
             throw $newException;
+        } finally {
+            $this->resetRequestContext();
         }
+    }
+
+    private function setTemporaryRequestContext(ChannelInterface $channel): void
+    {
+        $this->initialRequestContext = $this->urlGenerator->getContext();
+
+        $requestContext = new RequestContext();
+        $requestContext->setScheme('https')
+            ->setHost((string) $channel->getHostname())
+        ;
+        $this->urlGenerator->setContext($requestContext);
+    }
+
+    private function resetRequestContext(): void
+    {
+        $this->urlGenerator->setContext($this->initialRequestContext);
     }
 
     private function getWorkflow(FeedInterface $feed): Workflow
