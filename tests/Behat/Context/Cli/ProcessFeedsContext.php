@@ -122,8 +122,8 @@ final class ProcessFeedsContext implements Context
     <g:id>WARM_BEER</g:id>
     <title>Warmbeer</title>
     <g:description>Agoodwarmbeer</g:description>
-    <link>http://localhost/en_US/products/warm-beer</link>
-    <g:image_link>http://localhost/media/cache/resolve/sylius_shop_product_large_thumbnail/%image_path%</g:image_link>
+    <link>https://example.dk/en_US/products/warm-beer</link>
+    <g:image_link>https://example.dk/media/cache/resolve/sylius_shop_product_large_thumbnail/%image_path%</g:image_link>
     <g:availability>instock</g:availability>
     <g:price>0USD</g:price>
     <g:condition>new</g:condition>
@@ -144,8 +144,8 @@ CONTENT;
     <g:id>COLD_BEER</g:id>
     <title>Coldbeer</title>
     <g:description>Anicecoldbeer</g:description>
-    <link>http://localhost/en_US/products/cold-beer</link>
-    <g:image_link>http://localhost/media/cache/resolve/sylius_shop_product_large_thumbnail/%image_path%</g:image_link>
+    <link>https://example.com/en_US/products/cold-beer</link>
+    <g:image_link>https://example.com/media/cache/resolve/sylius_shop_product_large_thumbnail/%image_path%</g:image_link>
     <g:availability>instock</g:availability>
     <g:price>0USD</g:price>
     <g:condition>new</g:condition>
@@ -170,8 +170,8 @@ CONTENT;
     private function normalizeImageLink(string $actualContent): ?string
     {
         return \preg_replace(
-            '/<g:image_link>http:\/\/localhost\/media\/cache\/resolve\/sylius_shop_product_large_thumbnail\/.*?\.jpeg<\/g:image_link>/m',
-            '<g:image_link>http://localhost/media/cache/resolve/sylius_shop_product_large_thumbnail/%image_path%</g:image_link>',
+            '/sylius_shop_product_large_thumbnail\/.*?\.jpeg/',
+            'sylius_shop_product_large_thumbnail/%image_path%',
             $actualContent
         );
     }
