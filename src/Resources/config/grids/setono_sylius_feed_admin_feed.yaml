@@ -9,9 +9,11 @@ sylius_grid:
                 name:
                     type: string
                     label: setono_sylius_feed.ui.name
-                uuid:
-                    type: string
-                    label: setono_sylius_feed.ui.uuid
+                state:
+                    type: twig
+                    label: setono_sylius_feed.ui.state
+                    options:
+                        template: "@SetonoSyliusFeedPlugin/Admin/Feed/Grid/Field/state.html.twig"
             actions:
                 main:
                     create:

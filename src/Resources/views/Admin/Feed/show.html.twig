@@ -22,7 +22,7 @@
 
     {{ sonata_block_render_event('setono_sylius_feed.admin.feed.show.after_breadcrumb', {'resource': resource}) }}
 
-    {% if workflow_has_marked_place(feed, constant('Setono\\SyliusFeedPlugin\\Workflow\\FeedGraph::STATE_READY')) %}
+    {% if workflow_has_marked_place(feed, constant('Setono\\SyliusFeedPlugin\\Workflow\\FeedGraph::STATE_READY')) or workflow_has_marked_place(feed, constant('Setono\\SyliusFeedPlugin\\Workflow\\FeedGraph::STATE_PROCESSING')) %}
         <div class="ui segment spaceless">
             <table class="ui basic celled table">
                 <thead>
@@ -60,13 +60,22 @@
                 </tbody>
             </table>
         </div>
+    {% else %}
+        <div class="ui segment">
+            <div class="ui info message">
+                <div class="header">
+                    {{ 'setono_sylius_feed.ui.unprocessed_feed_header'|trans }}
+                </div>
+                <p>{{ 'setono_sylius_feed.ui.unprocessed_feed_body'|trans }}</p>
+            </div>
+        </div>
     {% endif %}
     {% if feed.violations|length > 0 %}
         <h2 class="ui header">{{ 'setono_sylius_feed.ui.violation_summary'|trans }}</h2>
 
         <p>{{ 'setono_sylius_feed.ui.view_all_violations'|trans({'%path%' : path('setono_sylius_feed_admin_feed_violations_index', {'id' : feed.id})})|raw }}</p>
 
-        {{ render(controller('setono_sylius_feed.controller.action.admin.severity_count')) }}
+        {{ render(controller('setono_sylius_feed.controller.action.admin.severity_count', {'feed': feed.id})) }}
     {% endif %}
 
     {{ sonata_block_render_event('setono_sylius_feed.admin.feed.show.after_content', {'resource': resource}) }}
