@@ -22,9 +22,9 @@ final class SeverityCountAction
         $this->twig = $twig;
     }
 
-    public function __invoke(): Response
+    public function __invoke(int $feed = null): Response
     {
-        $severityCounts = $this->violationRepository->findCountsGroupedBySeverity();
+        $severityCounts = $this->violationRepository->findCountsGroupedBySeverity($feed);
 
         $content = $this->twig->render('@SetonoSyliusFeedPlugin/Admin/Violation/severity_count.html.twig', [
             'severityCounts' => $severityCounts,
