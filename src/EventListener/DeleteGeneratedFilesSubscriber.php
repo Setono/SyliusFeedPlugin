@@ -40,7 +40,7 @@ final class DeleteGeneratedFilesSubscriber implements EventSubscriberInterface
         Assert::isInstanceOf($feed, FeedInterface::class);
 
         try {
-            $this->filesystem->deleteDir($feed->getUuid());
+            $this->filesystem->deleteDir($feed->getCode());
         } catch (RootViolationException $e) {
         }
     }

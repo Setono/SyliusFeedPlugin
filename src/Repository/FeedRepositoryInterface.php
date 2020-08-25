@@ -9,7 +9,7 @@ use Sylius\Component\Resource\Repository\RepositoryInterface;
 
 interface FeedRepositoryInterface extends RepositoryInterface
 {
-    public function findOneByUuid(string $uuid): ?FeedInterface;
+    public function findOneByCode(string $code): ?FeedInterface;
 
     /**
      * Returns all enabled feeds

@@ -30,6 +30,6 @@ final class FeedPathGenerator implements FeedPathGeneratorInterface
 
         $ext = $this->feedExtensionResolver->resolve($feed);
 
-        return new SplFileInfo(sprintf('%s/%s/%s.%s', $channelCode, $localeCode, $feed->getUuid(), $ext));
+        return new SplFileInfo(sprintf('%s/%s/%s.%s', $channelCode, $localeCode, $feed->getCode(), $ext));
     }
 }

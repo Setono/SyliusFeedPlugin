@@ -6,16 +6,17 @@ namespace Setono\SyliusFeedPlugin\Model;
 
 use Doctrine\Common\Collections\Collection;
 use Sylius\Component\Channel\Model\ChannelsAwareInterface;
+use Sylius\Component\Resource\Model\CodeAwareInterface;
 use Sylius\Component\Resource\Model\ResourceInterface;
 use Sylius\Component\Resource\Model\ToggleableInterface;
 
-interface FeedInterface extends ResourceInterface, ChannelsAwareInterface, ToggleableInterface
+interface FeedInterface extends ChannelsAwareInterface, CodeAwareInterface, ResourceInterface, ToggleableInterface
 {
     public function __toString(): string;
 
     public function getId(): ?int;
 
-    public function getUuid(): string;
+    public function getCode(): string;
 
     public function getState(): string;
 

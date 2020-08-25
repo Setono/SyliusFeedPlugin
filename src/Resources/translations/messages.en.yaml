@@ -32,7 +32,6 @@ setono_sylius_feed:
         unprocessed: Unprocessed
         unprocessed_feed_header: Feed is not ready
         unprocessed_feed_body: The feed has either errored or hasn't been processed yet. Please press the generate button to trigger the processing
-        uuid: UUID
         view_all_violations: View all violations by clicking <a href="%path%">here</a>.
         violation_summary: Violation summary
         violations: Violations

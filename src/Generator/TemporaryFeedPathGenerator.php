@@ -22,7 +22,7 @@ final class TemporaryFeedPathGenerator implements FeedPathGeneratorInterface
         Assert::notEmpty($channelCode);
         Assert::notEmpty($localeCode);
 
-        return new SplFileInfo(sprintf('%s/%s/%s', $feed->getUuid(), $channelCode, $localeCode));
+        return new SplFileInfo(sprintf('%s/%s/%s', $feed->getCode(), $channelCode, $localeCode));
     }
 
     public static function getBaseFile(SplFileInfo $dir): SplFileInfo

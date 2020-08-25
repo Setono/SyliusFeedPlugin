@@ -53,11 +53,11 @@ final class ShowFeedAction
         $this->mimeTypes = $mimeTypes;
     }
 
-    public function __invoke(string $uuid): StreamedResponse
+    public function __invoke(string $code): StreamedResponse
     {
-        $feed = $this->repository->findOneByUuid($uuid);
+        $feed = $this->repository->findOneByCode($code);
         if (null === $feed) {
-            throw new NotFoundHttpException(sprintf('The feed with id %s does not exist', $uuid));
+            throw new NotFoundHttpException(sprintf('The feed with id %s does not exist', $code));
         }
 
         $channelCode = (string) $this->channelContext->getChannel()->getCode();
@@ -66,7 +66,7 @@ final class ShowFeedAction
         $feedPath = $this->feedPathGenerator->generate($feed, $channelCode, $localeCode);
 
         if (!$this->filesystem->has((string) $feedPath)) {
-            throw new NotFoundHttpException(sprintf('The feed with id %s has not been generated', $uuid));
+            throw new NotFoundHttpException(sprintf('The feed with id %s has not been generated', $code));
         }
 
         $stream = $this->filesystem->readStream((string) $feedPath);

@@ -53,9 +53,10 @@ final class Extension extends AbstractExtension
     {
         $path = $this->urlGenerator->generate('setono_sylius_feed_shop_feed_show', [
             '_locale' => $locale->getCode(),
-            'uuid' => $feed->getUuid(),
+            'code' => $feed->getCode(),
         ]);
 
+        // todo maybe inject request context into router instead to 'make it right'
         return $this->getScheme() . '://' . $channel->getHostname() . $path;
     }
 

@@ -20,7 +20,7 @@ class Feed implements FeedInterface
     protected $id;
 
     /** @var string */
-    protected $uuid;
+    protected $code;
 
     /** @var string */
     protected $state = FeedGraph::STATE_UNPROCESSED;
@@ -45,7 +45,7 @@ class Feed implements FeedInterface
 
     public function __construct()
     {
-        $this->uuid = Uuid::uuid4()->toString();
+        $this->code = Uuid::uuid4()->toString();
         $this->channels = new ArrayCollection();
         $this->violations = new ArrayCollection();
     }
@@ -60,9 +60,14 @@ class Feed implements FeedInterface
         return $this->id;
     }
 
-    public function getUuid(): string
+    public function getCode(): string
     {
-        return $this->uuid;
+        return $this->code;
+    }
+
+    public function setCode(?string $code): void
+    {
+        $this->code = (string) $code;
     }
 
     public function getState(): string

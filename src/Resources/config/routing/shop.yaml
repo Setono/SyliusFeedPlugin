@@ -1,5 +1,5 @@
 setono_sylius_feed_shop_feed_show:
-    path: /feed/{uuid}
+    path: /feed/{code}
     methods: [GET]
     defaults:
         _controller: setono_sylius_feed.controller.action.shop.show_feed

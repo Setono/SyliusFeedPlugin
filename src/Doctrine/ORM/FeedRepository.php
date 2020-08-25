@@ -10,11 +10,11 @@ use Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository;
 
 class FeedRepository extends EntityRepository implements FeedRepositoryInterface
 {
-    public function findOneByUuid(string $uuid): ?FeedInterface
+    public function findOneByCode(string $code): ?FeedInterface
     {
         return $this->createQueryBuilder('o')
-            ->where('o.uuid = :uuid')
-            ->setParameter('uuid', $uuid)
+            ->where('o.code = :code')
+            ->setParameter('code', $code)
             ->getQuery()
             ->getOneOrNullResult()
         ;

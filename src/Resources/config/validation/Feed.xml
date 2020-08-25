@@ -5,13 +5,13 @@
                     xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping http://symfony.com/schema/dic/services/constraint-mapping-1.0.xsd">
     <class name="Setono\SyliusFeedPlugin\Model\Feed">
         <constraint name="Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity">
-            <option name="fields">uuid</option>
-            <option name="message">setono_sylius_feed.feed.uuid.unique</option>
+            <option name="fields">code</option>
+            <option name="message">setono_sylius_feed.feed.code.unique</option>
             <option name="groups">setono_sylius_feed</option>
         </constraint>
-        <property name="uuid">
+        <property name="code">
             <constraint name="NotBlank">
-                <option name="message">setono_sylius_feed.feed.uuid.not_blank</option>
+                <option name="message">setono_sylius_feed.feed.code.not_blank</option>
                 <option name="groups">setono_sylius_feed</option>
             </constraint>
         </property>

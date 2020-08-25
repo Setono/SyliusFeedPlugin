@@ -15,7 +15,7 @@
             <index columns="enabled"/>
         </indexes>
 
-        <field name="uuid" type="string" unique="true"/>
+        <field name="code" type="string" unique="true"/>
         <field name="state" type="string"/>
         <field name="name" type="string"/>
         <field name="feedType" type="string"/>
