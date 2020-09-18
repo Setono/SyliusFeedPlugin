@@ -1,0 +1,20 @@
+setono_sylius_feed:
+    google:
+        shopping:
+            product:
+                brand:
+                    not_blank: The brand is blank
+                gtin:
+                    not_blank: The GTIN is blank
+                shipping:
+                    not_blank: The shipping is blank
+                title:
+                    not_blank: The title should not be blank
+    feed:
+        code:
+            not_blank: The code cannot be blank
+            unique: The code must be unique
+        name:
+            not_blank: The name cannot be blank
+        feed_type:
+            not_blank: The feed type cannot be blank
