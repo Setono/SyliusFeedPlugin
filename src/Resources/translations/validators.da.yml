@@ -3,18 +3,18 @@ setono_sylius_feed:
         shopping:
             product:
                 brand:
-                    not_blank: The brand is blank
+                    not_blank: Brandet er blank
                 gtin:
-                    not_blank: The GTIN is blank
+                    not_blank: GTIN er blank
                 shipping:
-                    not_blank: The shipping is blank
+                    not_blank: Forsendelsen er blank
                 title:
-                    not_blank: The title should not be blank
+                    not_blank: Titlen skal udfyldes
     feed:
         code:
-            not_blank: The code cannot be blank
+            not_blank: Koden skal udfyldes 
             unique: The code must be unique
         name:
-            not_blank: The name cannot be blank
+            not_blank: Navnet skal udfyldes
         feed_type:
-            not_blank: The feed type cannot be blank
+            not_blank: Feedtypen skal udfyldes
