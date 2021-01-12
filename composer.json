@@ -28,7 +28,7 @@
         "friends-of-behat/symfony-extension": "^2.0",
         "friends-of-behat/variadic-extension": "^1.1",
         "kalessil/production-dependencies-guard": "dev-master",
-        "lakion/mink-debug-extension": "^1.2.3",
+        "lakion/mink-debug-extension": "^2.0.0",
         "phpspec/phpspec": "^6.2",
         "phpunit/phpunit": "^9.3",
         "roave/security-advisories": "dev-master",
