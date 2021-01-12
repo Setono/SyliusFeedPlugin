@@ -8,7 +8,7 @@ use Symfony\Component\Serializer\Normalizer\ContextAwareNormalizerInterface;
 
 final class ToStringNormalizer implements ContextAwareNormalizerInterface
 {
-    public function normalize($object, string $format = null, array $context = []): string
+    public function normalize($object, $format = null, array $context = []): string
     {
         return (string) $object;
     }
@@ -19,7 +19,7 @@ final class ToStringNormalizer implements ContextAwareNormalizerInterface
      *
      * @param mixed|object $object
      */
-    public function supportsNormalization($object, string $format = null, array $context = []): bool
+    public function supportsNormalization($object, $format = null, array $context = []): bool
     {
         if (!isset($context['setono_sylius_feed_data'])) {
             return false;
