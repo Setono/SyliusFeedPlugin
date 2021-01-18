@@ -6,7 +6,7 @@
     "require": {
         "php": "^7.3",
         "ext-json": "*",
-        "league/flysystem-bundle": "^1.1",
+        "league/flysystem-bundle": "^2.0",
         "psr/event-dispatcher": "^1.0",
         "ramsey/uuid": "^3.7",
         "setono/doctrine-orm-batcher-bundle": "^0.3.1",
