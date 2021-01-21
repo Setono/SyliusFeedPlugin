@@ -43,23 +43,6 @@
                 </option>
             </constraint>
         </property>
-        <property name="description">
-            <constraint name="NotBlank">
-                <option name="message">setono_sylius_feed.google.shopping.product.description.not_blank</option>
-                <option name="payload">
-                    <value key="severity">error</value>
-                </option>
-            </constraint>
-            <constraint name="Length">
-                <option name="min">1</option>
-                <option name="max">5000</option>
-                <option name="minMessage">setono_sylius_feed.google.shopping.product.description.length_min</option>
-                <option name="maxMessage">setono_sylius_feed.google.shopping.product.description.length_max</option>
-                <option name="payload">
-                    <value key="severity">error</value>
-                </option>
-            </constraint>
-        </property>
         <property name="link">
             <constraint name="NotBlank">
                 <option name="message">setono_sylius_feed.google.shopping.product.link.not_blank</option>
@@ -94,6 +77,23 @@
         </property>
 
         <!-- Required in some (or most) cases -->
+        <property name="description">
+            <constraint name="NotBlank">
+                <option name="message">setono_sylius_feed.google.shopping.product.description.not_blank</option>
+                <option name="payload">
+                    <value key="severity">warning</value>
+                </option>
+            </constraint>
+            <constraint name="Length">
+                <option name="min">1</option>
+                <option name="max">5000</option>
+                <option name="minMessage">setono_sylius_feed.google.shopping.product.description.length_min</option>
+                <option name="maxMessage">setono_sylius_feed.google.shopping.product.description.length_max</option>
+                <option name="payload">
+                    <value key="severity">warning</value>
+                </option>
+            </constraint>
+        </property>
         <property name="brand">
             <constraint name="NotBlank">
                 <option name="message">setono_sylius_feed.google.shopping.product.brand.not_blank</option>
