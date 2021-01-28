@@ -6,7 +6,7 @@ namespace Setono\SyliusFeedPlugin\FeedContext\Google\Shopping;
 
 use InvalidArgumentException;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
-use Sylius\Component\Taxonomy\Model\TaxonInterface;
+use Sylius\Component\Core\Model\TaxonInterface;
 use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Availability;
 use Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Condition;
@@ -102,7 +102,7 @@ class ProductItemContext implements ItemContextInterface
                     Condition::fromValue((string) $product->getCondition()) : Condition::new()
             );
 
-            if(null !== $productType) {
+            if (null !== $productType) {
                 $data->setProductType($productType);
             }
 
@@ -230,9 +230,10 @@ class ProductItemContext implements ItemContextInterface
 
     private function getProductType(ProductInterface $product): ?string
     {
-        if($product->getMainTaxon() !== null) {
+        if ($product->getMainTaxon() !== null) {
             $taxon = $product->getMainTaxon();
-        } elseif(count($product->getTaxons()) > 0) {
+        } elseif (count($product->getTaxons()) > 0) {
+            /** @var TaxonInterface $taxon */
             $taxon = $product->getTaxons()->first();
         } else {
             return null;
