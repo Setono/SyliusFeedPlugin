@@ -6,7 +6,6 @@ namespace Setono\SyliusFeedPlugin\FeedContext\Google\Shopping;
 
 use InvalidArgumentException;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
-use Sylius\Component\Core\Model\TaxonInterface;
 use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Availability;
 use Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Condition;
@@ -28,6 +27,7 @@ use Sylius\Component\Core\Model\ImagesAwareInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductTranslationInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
+use Sylius\Component\Core\Model\TaxonInterface;
 use Sylius\Component\Inventory\Checker\AvailabilityCheckerInterface;
 use Sylius\Component\Locale\Model\LocaleInterface;
 use Sylius\Component\Product\Resolver\ProductVariantResolverInterface;
