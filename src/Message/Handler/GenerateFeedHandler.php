@@ -24,11 +24,9 @@ final class GenerateFeedHandler implements MessageHandlerInterface
     use GetFeedTrait;
     use GetLocaleTrait;
 
-    /** @var FeedTypeRegistryInterface */
-    private $feedTypeRegistry;
+    private FeedTypeRegistryInterface $feedTypeRegistry;
 
-    /** @var MessageBusInterface */
-    private $commandBus;
+    private MessageBusInterface $commandBus;
 
     public function __construct(
         FeedRepositoryInterface $feedRepository,

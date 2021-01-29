@@ -19,23 +19,17 @@ use Symfony\Component\Mime\MimeTypesInterface;
 
 final class ShowFeedAction
 {
-    /** @var FeedRepositoryInterface */
-    private $repository;
+    private FeedRepositoryInterface $repository;
 
-    /** @var ChannelContextInterface */
-    private $channelContext;
+    private ChannelContextInterface $channelContext;
 
-    /** @var LocaleContextInterface */
-    private $localeContext;
+    private LocaleContextInterface $localeContext;
 
-    /** @var FeedPathGeneratorInterface */
-    private $feedPathGenerator;
+    private FeedPathGeneratorInterface $feedPathGenerator;
 
-    /** @var FilesystemInterface */
-    private $filesystem;
+    private FilesystemInterface $filesystem;
 
-    /** @var MimeTypesInterface */
-    private $mimeTypes;
+    private MimeTypesInterface $mimeTypes;
 
     public function __construct(
         FeedRepositoryInterface $repository,

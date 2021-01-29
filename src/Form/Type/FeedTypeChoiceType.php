@@ -14,8 +14,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 final class FeedTypeChoiceType extends AbstractType
 {
-    /** @var FeedTypeRegistryInterface */
-    private $feedTypeRegistry;
+    private FeedTypeRegistryInterface $feedTypeRegistry;
 
     public function __construct(FeedTypeRegistryInterface $feedTypeRegistry)
     {

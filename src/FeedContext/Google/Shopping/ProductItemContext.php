@@ -37,20 +37,15 @@ use Webmozart\Assert\Assert;
 
 class ProductItemContext implements ItemContextInterface
 {
-    /** @var RouterInterface */
-    private $router;
+    private RouterInterface $router;
 
-    /** @var CacheManager */
-    private $cacheManager;
+    private CacheManager $cacheManager;
 
-    /** @var ProductVariantPriceCalculatorInterface */
-    private $productVariantPriceCalculator;
+    private ProductVariantPriceCalculatorInterface $productVariantPriceCalculator;
 
-    /** @var ProductVariantResolverInterface */
-    private $productVariantResolver;
+    private ProductVariantResolverInterface $productVariantResolver;
 
-    /** @var AvailabilityCheckerInterface */
-    private $availabilityChecker;
+    private AvailabilityCheckerInterface $availabilityChecker;
 
     public function __construct(
         RouterInterface $router,

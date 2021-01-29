@@ -16,11 +16,9 @@ use Twig\TwigFunction;
 
 final class Extension extends AbstractExtension
 {
-    /** @var RequestStack */
-    private $requestStack;
+    private RequestStack $requestStack;
 
-    /** @var UrlGeneratorInterface */
-    private $urlGenerator;
+    private UrlGeneratorInterface $urlGenerator;
 
     public function __construct(
         RequestStack $requestStack,

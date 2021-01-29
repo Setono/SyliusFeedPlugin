@@ -35,26 +35,19 @@ final class FinishGenerationHandler implements MessageHandlerInterface
 {
     use GetFeedTrait;
 
-    /** @var ObjectManager */
-    private $feedManager;
+    private ObjectManager $feedManager;
 
-    /** @var FilesystemInterface */
-    private $filesystem;
+    private FilesystemInterface $filesystem;
 
-    /** @var Registry */
-    private $workflowRegistry;
+    private Registry $workflowRegistry;
 
-    /** @var Environment */
-    private $twig;
+    private Environment $twig;
 
-    /** @var FeedTypeRegistryInterface */
-    private $feedTypeRegistry;
+    private FeedTypeRegistryInterface $feedTypeRegistry;
 
-    /** @var FeedPathGeneratorInterface */
-    private $temporaryFeedPathGenerator;
+    private FeedPathGeneratorInterface $temporaryFeedPathGenerator;
 
-    /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
         FeedRepositoryInterface $feedRepository,

@@ -10,8 +10,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 final class IncrementFinishedBatchesSubscriber implements EventSubscriberInterface
 {
-    /** @var FeedRepositoryInterface */
-    private $feedRepository;
+    private FeedRepositoryInterface $feedRepository;
 
     public function __construct(FeedRepositoryInterface $feedRepository)
     {

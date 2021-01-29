@@ -11,7 +11,7 @@ use Setono\SyliusFeedPlugin\FeedType\FeedTypeInterface;
 final class FeedTypeRegistry implements FeedTypeRegistryInterface
 {
     /** @var FeedTypeInterface[] */
-    private $feedTypes = [];
+    private array $feedTypes = [];
 
     public function __construct(FeedTypeInterface ...$feedTypes)
     {

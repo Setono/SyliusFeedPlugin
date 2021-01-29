@@ -14,14 +14,11 @@ use Symfony\Component\Workflow\Registry;
 
 final class FeedShowMenuBuilder
 {
-    /** @var FactoryInterface */
-    private $factory;
+    private FactoryInterface $factory;
 
-    /** @var EventDispatcherInterface */
-    private $eventDispatcher;
+    private EventDispatcherInterface $eventDispatcher;
 
-    /** @var Registry */
-    private $workflowRegistry;
+    private Registry $workflowRegistry;
 
     public function __construct(
         FactoryInterface $factory,

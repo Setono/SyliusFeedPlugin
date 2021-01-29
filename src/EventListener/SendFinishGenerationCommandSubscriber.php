@@ -12,11 +12,9 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 final class SendFinishGenerationCommandSubscriber implements EventSubscriberInterface
 {
-    /** @var FeedRepositoryInterface */
-    private $feedRepository;
+    private FeedRepositoryInterface $feedRepository;
 
-    /** @var MessageBusInterface */
-    private $commandBus;
+    private MessageBusInterface $commandBus;
 
     public function __construct(FeedRepositoryInterface $feedRepository, MessageBusInterface $commandBus)
     {

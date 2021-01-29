@@ -16,26 +16,19 @@ class Feed implements FeedInterface
 {
     use ToggleableTrait;
 
-    /** @var int */
-    protected $id;
+    protected int $id;
 
-    /** @var string */
-    protected $code;
+    protected string $code;
 
-    /** @var string */
-    protected $state = FeedGraph::STATE_UNPROCESSED;
+    protected string $state = FeedGraph::STATE_UNPROCESSED;
 
-    /** @var string */
-    protected $name;
+    protected string $name;
 
-    /** @var string */
-    protected $feedType;
+    protected string $feedType;
 
-    /** @var int */
-    protected $batches = 0;
+    protected int $batches = 0;
 
-    /** @var int */
-    protected $finishedBatches = 0;
+    protected int $finishedBatches = 0;
 
     /** @var Collection|ChannelInterface[] */
     protected $channels;

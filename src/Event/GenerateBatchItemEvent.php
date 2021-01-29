@@ -12,17 +12,13 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 final class GenerateBatchItemEvent extends Event
 {
-    /** @var FeedInterface */
-    private $feed;
+    private FeedInterface $feed;
 
-    /** @var FeedTypeInterface */
-    private $feedType;
+    private FeedTypeInterface $feedType;
 
-    /** @var ChannelInterface */
-    private $channel;
+    private ChannelInterface $channel;
 
-    /** @var LocaleInterface */
-    private $locale;
+    private LocaleInterface $locale;
 
     /** @var object|array */
     private $item;

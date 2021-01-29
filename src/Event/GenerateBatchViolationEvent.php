@@ -13,23 +13,18 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 final class GenerateBatchViolationEvent extends Event
 {
-    /** @var FeedInterface */
-    private $feed;
+    private FeedInterface $feed;
 
-    /** @var FeedTypeInterface */
-    private $feedType;
+    private FeedTypeInterface $feedType;
 
-    /** @var ChannelInterface */
-    private $channel;
+    private ChannelInterface $channel;
 
-    /** @var LocaleInterface */
-    private $locale;
+    private LocaleInterface $locale;
 
     /** @var object|array */
     private $item;
 
-    /** @var ConstraintViolationListInterface */
-    private $constraintViolationList;
+    private ConstraintViolationListInterface $constraintViolationList;
 
     /**
      * @param object|array $item

@@ -12,17 +12,13 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 final class QueryBuilderEvent extends Event
 {
-    /** @var DataProviderInterface */
-    private $dataProvider;
+    private DataProviderInterface $dataProvider;
 
-    /** @var QueryBuilder */
-    private $queryBuilder;
+    private QueryBuilder $queryBuilder;
 
-    /** @var ChannelInterface */
-    private $channel;
+    private ChannelInterface $channel;
 
-    /** @var LocaleInterface */
-    private $locale;
+    private LocaleInterface $locale;
 
     public function __construct(
         DataProviderInterface $dataProvider,

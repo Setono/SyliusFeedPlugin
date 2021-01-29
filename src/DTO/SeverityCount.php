@@ -6,11 +6,9 @@ namespace Setono\SyliusFeedPlugin\DTO;
 
 final class SeverityCount
 {
-    /** @var string */
-    private $severity;
+    private string $severity;
 
-    /** @var int */
-    private $count;
+    private int $count;
 
     public function __construct(string $severity, int $count)
     {

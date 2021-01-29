@@ -9,8 +9,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 final class BatchGeneratedEvent extends Event
 {
-    /** @var FeedInterface */
-    private $feed;
+    private FeedInterface $feed;
 
     public function __construct(FeedInterface $feed)
     {

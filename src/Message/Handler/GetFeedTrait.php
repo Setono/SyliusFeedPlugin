@@ -11,8 +11,7 @@ use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 
 trait GetFeedTrait
 {
-    /** @var FeedRepositoryInterface */
-    private $feedRepository;
+    private FeedRepositoryInterface $feedRepository;
 
     private function getFeed(int $id): FeedInterface
     {

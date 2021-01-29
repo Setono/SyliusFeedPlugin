@@ -6,8 +6,7 @@ namespace Setono\SyliusFeedPlugin\Message\Command;
 
 final class FinishGeneration implements CommandInterface
 {
-    /** @var int */
-    private $feedId;
+    private int $feedId;
 
     public function __construct(int $feedId)
     {

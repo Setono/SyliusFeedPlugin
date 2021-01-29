@@ -24,20 +24,15 @@ final class ProcessFeedHandler implements MessageHandlerInterface
 {
     use GetFeedTrait;
 
-    /** @var ObjectManager */
-    private $feedManager;
+    private ObjectManager $feedManager;
 
-    /** @var FeedTypeRegistryInterface */
-    private $feedTypeRegistry;
+    private FeedTypeRegistryInterface $feedTypeRegistry;
 
-    /** @var MessageBusInterface */
-    private $commandBus;
+    private MessageBusInterface $commandBus;
 
-    /** @var Registry */
-    private $workflowRegistry;
+    private Registry $workflowRegistry;
 
-    /** @var TemplateValidatorInterface */
-    private $templateValidator;
+    private TemplateValidatorInterface $templateValidator;
 
     public function __construct(
         FeedRepositoryInterface $feedRepository,

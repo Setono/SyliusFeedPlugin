@@ -8,11 +8,9 @@ use Webmozart\Assert\Assert;
 
 final class Price
 {
-    /** @var int */
-    private $amount;
+    private int $amount;
 
-    /** @var string */
-    private $currency;
+    private string $currency;
 
     /**
      * @param object|string $currency

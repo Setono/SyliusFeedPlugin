@@ -9,8 +9,7 @@ use IteratorAggregate;
 
 final class ContextList implements IteratorAggregate, ContextListInterface
 {
-    /** @var array */
-    private $contexts = [];
+    private array $contexts = [];
 
     public function __construct(array $contexts = [])
     {

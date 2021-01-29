@@ -11,8 +11,7 @@ use Sylius\Bundle\UiBundle\Menu\Event\MenuBuilderEvent;
 
 final class FeedShowMenuBuilderEvent extends MenuBuilderEvent
 {
-    /** @var FeedInterface */
-    private $feed;
+    private FeedInterface $feed;
 
     public function __construct(FactoryInterface $factory, ItemInterface $menu, FeedInterface $feed)
     {

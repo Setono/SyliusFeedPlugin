@@ -8,71 +8,49 @@ use Webmozart\Assert\Assert;
 
 final class Product
 {
-    /** @var string|null */
-    private $id;
+    private ?string $id;
 
-    /** @var string|null */
-    private $title;
+    private ?string $title;
 
-    /** @var string|null */
-    private $description;
+    private ?string $description;
 
-    /** @var string|null */
-    private $link;
+    private ?string $link;
 
-    /** @var string|null */
-    private $imageLink;
+    private ?string $imageLink;
 
-    /** @var array */
-    private $additionalImageLinks = [];
+    private array $additionalImageLinks = [];
 
-    /** @var Availability|null */
-    private $availability;
+    private ?Availability $availability;
 
-    /** @var Price|null */
-    private $price;
+    private ?Price $price;
 
-    /** @var Price|null */
-    private $salePrice;
+    private ?Price $salePrice;
 
-    /** @var DateRange|null */
-    private $salePriceEffectiveDate;
+    private ?DateRange $salePriceEffectiveDate;
 
-    /** @var string|null */
-    private $brand;
+    private ?string $brand;
 
-    /** @var string|null */
-    private $gtin;
+    private ?string $gtin;
 
-    /** @var string|null */
-    private $mpn;
+    private ?string $mpn;
 
-    /** @var bool|null */
-    private $identifierExists;
+    private ?bool $identifierExists;
 
-    /** @var Condition|null */
-    private $condition;
+    private ?Condition $condition;
 
-    /** @var string|null */
-    private $itemGroupId;
+    private ?string $itemGroupId;
 
-    /** @var string|null */
-    private $googleProductCategory;
+    private ?string $googleProductCategory;
 
-    /** @var string|null */
-    private $productType;
+    private ?string $productType;
 
-    /** @var string|null */
-    private $shipping;
+    private ?string $shipping;
 
-    /** @var string|null */
-    private $size;
+    private ?string $size;
 
-    /** @var string|null */
-    private $color;
+    private ?string $color;
 
-    /** @var array */
-    private $customLabels = [];
+    private array $customLabels = [];
 
     public function getId(): ?string
     {
