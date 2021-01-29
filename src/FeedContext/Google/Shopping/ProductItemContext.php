@@ -20,7 +20,6 @@ use Setono\SyliusFeedPlugin\Model\ConditionAwareInterface;
 use Setono\SyliusFeedPlugin\Model\GtinAwareInterface;
 use Setono\SyliusFeedPlugin\Model\MpnAwareInterface;
 use Setono\SyliusFeedPlugin\Model\SizeAwareInterface;
-use Sylius\Component\Core\Calculator\ProductVariantPriceCalculatorInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ImageInterface;
 use Sylius\Component\Core\Model\ImagesAwareInterface;
@@ -30,7 +29,6 @@ use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Core\Model\TaxonInterface;
 use Sylius\Component\Inventory\Checker\AvailabilityCheckerInterface;
 use Sylius\Component\Locale\Model\LocaleInterface;
-use Sylius\Component\Product\Resolver\ProductVariantResolverInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Webmozart\Assert\Assert;
@@ -41,23 +39,15 @@ class ProductItemContext implements ItemContextInterface
 
     private CacheManager $cacheManager;
 
-    private ProductVariantPriceCalculatorInterface $productVariantPriceCalculator;
-
-    private ProductVariantResolverInterface $productVariantResolver;
-
     private AvailabilityCheckerInterface $availabilityChecker;
 
     public function __construct(
         RouterInterface $router,
         CacheManager $cacheManager,
-        ProductVariantResolverInterface $productVariantResolver,
-        ProductVariantPriceCalculatorInterface $productVariantPriceCalculator,
         AvailabilityCheckerInterface $availabilityChecker
     ) {
         $this->router = $router;
         $this->cacheManager = $cacheManager;
-        $this->productVariantPriceCalculator = $productVariantPriceCalculator;
-        $this->productVariantResolver = $productVariantResolver;
         $this->availabilityChecker = $availabilityChecker;
     }
 
@@ -94,7 +84,7 @@ class ProductItemContext implements ItemContextInterface
 
             $data->setCondition(
                 $product instanceof ConditionAwareInterface ?
-                    Condition::fromValue((string) $product->getCondition()) : Condition::new()
+                    new Condition((string) $product->getCondition()) : Condition::new()
             );
 
             if (null !== $productType) {
