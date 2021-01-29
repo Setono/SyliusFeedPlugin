@@ -27,6 +27,7 @@ use Sylius\Component\Core\Model\ImagesAwareInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductTranslationInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
+use Sylius\Component\Core\Model\TaxonInterface;
 use Sylius\Component\Inventory\Checker\AvailabilityCheckerInterface;
 use Sylius\Component\Locale\Model\LocaleInterface;
 use Sylius\Component\Product\Resolver\ProductVariantResolverInterface;
@@ -74,6 +75,8 @@ class ProductItemContext implements ItemContextInterface
             ));
         }
 
+        $productType = $this->getProductType($product);
+
         $translation = $this->getTranslation($product, (string) $locale->getCode());
         $contextList = new ContextList();
         foreach ($product->getVariants() as $variant) {
@@ -94,7 +97,14 @@ class ProductItemContext implements ItemContextInterface
                 $data->setLink($this->getLink($locale, $translation));
             }
 
-            $data->setCondition($product instanceof ConditionAwareInterface ? Condition::fromValue((string) $product->getCondition()) : Condition::new());
+            $data->setCondition(
+                $product instanceof ConditionAwareInterface ?
+                    Condition::fromValue((string) $product->getCondition()) : Condition::new()
+            );
+
+            if (null !== $productType) {
+                $data->setProductType($productType);
+            }
 
             if ($variant instanceof BrandAwareInterface && $variant->getBrand() !== null) {
                 $data->setBrand((string) $variant->getBrand());
@@ -216,5 +226,27 @@ class ProductItemContext implements ItemContextInterface
         }
 
         return new Price($price, $baseCurrency);
+    }
+
+    private function getProductType(ProductInterface $product): ?string
+    {
+        if ($product->getMainTaxon() !== null) {
+            $taxon = $product->getMainTaxon();
+        } elseif (count($product->getTaxons()) > 0) {
+            /** @var TaxonInterface $taxon */
+            $taxon = $product->getTaxons()->first();
+        } else {
+            return null;
+        }
+
+        $productType = '';
+
+        $ancestors = array_reverse($taxon->getAncestors()->toArray());
+
+        foreach ($ancestors as $ancestor) {
+            $productType .= $ancestor->getName() . ' > ';
+        }
+
+        return rtrim($productType, ' >');
     }
 }
