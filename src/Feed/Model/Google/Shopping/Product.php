@@ -8,47 +8,47 @@ use Webmozart\Assert\Assert;
 
 final class Product
 {
-    private ?string $id;
+    private ?string $id = null;
 
-    private ?string $title;
+    private ?string $title = null;
 
-    private ?string $description;
+    private ?string $description = null;
 
-    private ?string $link;
+    private ?string $link = null;
 
-    private ?string $imageLink;
+    private ?string $imageLink = null;
 
     private array $additionalImageLinks = [];
 
-    private ?Availability $availability;
+    private ?Availability $availability = null;
 
-    private ?Price $price;
+    private ?Price $price = null;
 
-    private ?Price $salePrice;
+    private ?Price $salePrice = null;
 
-    private ?DateRange $salePriceEffectiveDate;
+    private ?DateRange $salePriceEffectiveDate = null;
 
-    private ?string $brand;
+    private ?string $brand = null;
 
-    private ?string $gtin;
+    private ?string $gtin = null;
 
-    private ?string $mpn;
+    private ?string $mpn = null;
 
-    private ?bool $identifierExists;
+    private ?bool $identifierExists = null;
 
-    private ?Condition $condition;
+    private ?Condition $condition = null;
 
-    private ?string $itemGroupId;
+    private ?string $itemGroupId = null;
 
-    private ?string $googleProductCategory;
+    private ?string $googleProductCategory = null;
 
-    private ?string $productType;
+    private ?string $productType = null;
 
-    private ?string $shipping;
+    private ?string $shipping = null;
 
-    private ?string $size;
+    private ?string $size = null;
 
-    private ?string $color;
+    private ?string $color = null;
 
     private array $customLabels = [];
 
