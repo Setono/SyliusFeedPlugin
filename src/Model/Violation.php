@@ -9,23 +9,17 @@ use Sylius\Component\Locale\Model\LocaleInterface;
 
 class Violation implements ViolationInterface
 {
-    /** @var int */
-    protected $id;
+    protected int $id;
 
-    /** @var FeedInterface|null */
-    protected $feed;
+    protected ?FeedInterface $feed = null;
 
-    /** @var ChannelInterface */
-    protected $channel;
+    protected ChannelInterface $channel;
 
-    /** @var LocaleInterface */
-    protected $locale;
+    protected LocaleInterface $locale;
 
-    /** @var string */
-    protected $severity = self::SEVERITY_NOTICE;
+    protected string $severity = self::SEVERITY_NOTICE;
 
-    /** @var string */
-    protected $message;
+    protected string $message;
 
     /**
      * The data can be anything basically. Just some data that will aid in this specific violation

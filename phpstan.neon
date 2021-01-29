@@ -1,14 +1,14 @@
+includes:
+	- phpstan-baseline.neon
+
 parameters:
-    reportUnmatchedIgnoredErrors: true
-    checkMissingIterableValueType: false
-    checkGenericClassInNonGenericObjectType: false
-    treatPhpDocTypesAsCertain: false
+	checkGenericClassInNonGenericObjectType: false
+	checkMissingIterableValueType: false
 
-    excludes_analyse:
-        # Makes PHPStan crash
-        - 'src/DependencyInjection/Configuration.php'
+	level: max
 
-    ignoreErrors:
-        - '/Parameter #1 \$configuration of method Symfony\\Component\\DependencyInjection\\Extension\\Extension::processConfiguration\(\) expects Symfony\\Component\\Config\\Definition\\ConfigurationInterface, Symfony\\Component\\Config\\Definition\\ConfigurationInterface\|null given\./'
-        - '/Method Setono\\SyliusFeedPlugin\\Feed\\Model\\Enum\:\:constant\(\) should return static\(Setono\\SyliusFeedPlugin\\Feed\\Model\\Enum\) but returns Setono\\SyliusFeedPlugin\\Feed\\Model\\Enum\./'
-        - '/Unsafe usage of new static\(\)/'
+	paths:
+		- src/
+
+	reportUnmatchedIgnoredErrors: true
+	treatPhpDocTypesAsCertain: false

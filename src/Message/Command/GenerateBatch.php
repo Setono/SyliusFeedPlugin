@@ -11,17 +11,13 @@ use Sylius\Component\Locale\Model\LocaleInterface;
 
 final class GenerateBatch implements CommandInterface
 {
-    /** @var int */
-    private $feedId;
+    private int $feedId;
 
-    /** @var int */
-    private $channelId;
+    private int $channelId;
 
-    /** @var int */
-    private $localeId;
+    private int $localeId;
 
-    /** @var BatchInterface */
-    private $batch;
+    private BatchInterface $batch;
 
     /**
      * @param int|FeedInterface $feed

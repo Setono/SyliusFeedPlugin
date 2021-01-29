@@ -15,8 +15,7 @@ use Webmozart\Assert\Assert;
 
 final class DeleteGeneratedFilesSubscriber implements EventSubscriberInterface
 {
-    /** @var FilesystemInterface */
-    private $filesystem;
+    private FilesystemInterface $filesystem;
 
     public function __construct(FilesystemInterface $filesystem)
     {

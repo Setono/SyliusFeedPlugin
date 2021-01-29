@@ -8,21 +8,16 @@ use Doctrine\ORM\QueryBuilder;
 use Setono\SyliusFeedPlugin\DataProvider\DataProviderInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Locale\Model\LocaleInterface;
-use Symfony\Contracts\EventDispatcher\Event;
 
-final class QueryBuilderEvent extends Event
+final class QueryBuilderEvent
 {
-    /** @var DataProviderInterface */
-    private $dataProvider;
+    private DataProviderInterface $dataProvider;
 
-    /** @var QueryBuilder */
-    private $queryBuilder;
+    private QueryBuilder $queryBuilder;
 
-    /** @var ChannelInterface */
-    private $channel;
+    private ChannelInterface $channel;
 
-    /** @var LocaleInterface */
-    private $locale;
+    private LocaleInterface $locale;
 
     public function __construct(
         DataProviderInterface $dataProvider,

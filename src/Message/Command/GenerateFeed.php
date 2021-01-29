@@ -14,14 +14,11 @@ use Sylius\Component\Locale\Model\LocaleInterface;
  */
 final class GenerateFeed implements CommandInterface
 {
-    /** @var int */
-    private $feedId;
+    private int $feedId;
 
-    /** @var int */
-    private $channelId;
+    private int $channelId;
 
-    /** @var int */
-    private $localeId;
+    private int $localeId;
 
     /**
      * @param int|FeedInterface $feed

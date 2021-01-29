@@ -14,8 +14,7 @@ final class ProcessFeedsCommand extends Command
 {
     protected static $defaultName = 'setono:sylius-feed:process';
 
-    /** @var FeedProcessorInterface */
-    private $feedProcessor;
+    private FeedProcessorInterface $feedProcessor;
 
     public function __construct(FeedProcessorInterface $feedProcessor)
     {

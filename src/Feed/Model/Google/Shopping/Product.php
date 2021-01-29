@@ -8,71 +8,49 @@ use Webmozart\Assert\Assert;
 
 final class Product
 {
-    /** @var string|null */
-    private $id;
+    private ?string $id = null;
 
-    /** @var string|null */
-    private $title;
+    private ?string $title = null;
 
-    /** @var string|null */
-    private $description;
+    private ?string $description = null;
 
-    /** @var string|null */
-    private $link;
+    private ?string $link = null;
 
-    /** @var string|null */
-    private $imageLink;
+    private ?string $imageLink = null;
 
-    /** @var array */
-    private $additionalImageLinks = [];
+    private array $additionalImageLinks = [];
 
-    /** @var Availability|null */
-    private $availability;
+    private ?Availability $availability = null;
 
-    /** @var Price|null */
-    private $price;
+    private ?Price $price = null;
 
-    /** @var Price|null */
-    private $salePrice;
+    private ?Price $salePrice = null;
 
-    /** @var DateRange|null */
-    private $salePriceEffectiveDate;
+    private ?DateRange $salePriceEffectiveDate = null;
 
-    /** @var string|null */
-    private $brand;
+    private ?string $brand = null;
 
-    /** @var string|null */
-    private $gtin;
+    private ?string $gtin = null;
 
-    /** @var string|null */
-    private $mpn;
+    private ?string $mpn = null;
 
-    /** @var bool|null */
-    private $identifierExists;
+    private ?bool $identifierExists = null;
 
-    /** @var Condition|null */
-    private $condition;
+    private ?Condition $condition = null;
 
-    /** @var string|null */
-    private $itemGroupId;
+    private ?string $itemGroupId = null;
 
-    /** @var string|null */
-    private $googleProductCategory;
+    private ?string $googleProductCategory = null;
 
-    /** @var string|null */
-    private $productType;
+    private ?string $productType = null;
 
-    /** @var string|null */
-    private $shipping;
+    private ?string $shipping = null;
 
-    /** @var string|null */
-    private $size;
+    private ?string $size = null;
 
-    /** @var string|null */
-    private $color;
+    private ?string $color = null;
 
-    /** @var array */
-    private $customLabels = [];
+    private array $customLabels = [];
 
     public function getId(): ?string
     {

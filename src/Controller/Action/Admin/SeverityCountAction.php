@@ -10,11 +10,9 @@ use Twig\Environment;
 
 final class SeverityCountAction
 {
-    /** @var ViolationRepositoryInterface */
-    private $violationRepository;
+    private ViolationRepositoryInterface $violationRepository;
 
-    /** @var Environment */
-    private $twig;
+    private Environment $twig;
 
     public function __construct(ViolationRepositoryInterface $violationRepository, Environment $twig)
     {

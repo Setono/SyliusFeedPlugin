@@ -10,11 +10,9 @@ use Twig\Environment;
 
 final class FeedExtensionResolver implements FeedExtensionResolverInterface
 {
-    /** @var FeedTypeRegistryInterface */
-    private $feedTypeRegistry;
+    private FeedTypeRegistryInterface $feedTypeRegistry;
 
-    /** @var Environment */
-    private $twig;
+    private Environment $twig;
 
     public function __construct(FeedTypeRegistryInterface $feedTypeRegistry, Environment $twig)
     {

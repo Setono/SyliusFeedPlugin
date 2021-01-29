@@ -19,17 +19,13 @@ use Symfony\Component\Workflow\Event\TransitionEvent;
 
 final class MoveGeneratedFeedSubscriber implements EventSubscriberInterface
 {
-    /** @var FilesystemInterface */
-    private $temporaryFilesystem;
+    private FilesystemInterface $temporaryFilesystem;
 
-    /** @var FilesystemInterface */
-    private $filesystem;
+    private FilesystemInterface $filesystem;
 
-    /** @var FeedPathGeneratorInterface */
-    private $temporaryFeedPathGenerator;
+    private FeedPathGeneratorInterface $temporaryFeedPathGenerator;
 
-    /** @var FeedPathGeneratorInterface */
-    private $feedPathGenerator;
+    private FeedPathGeneratorInterface $feedPathGenerator;
 
     public function __construct(
         FilesystemInterface $temporaryFilesystem,

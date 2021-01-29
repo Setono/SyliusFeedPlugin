@@ -11,8 +11,7 @@ use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 
 trait GetLocaleTrait
 {
-    /** @var RepositoryInterface */
-    private $localeRepository;
+    private RepositoryInterface $localeRepository;
 
     private function getLocale(int $id): LocaleInterface
     {

@@ -11,8 +11,7 @@ use Setono\SyliusFeedPlugin\Event\QueryBuilderEvent;
 
 abstract class AbstractFilterListener
 {
-    /** @var string */
-    private $class;
+    private string $class;
 
     public function __construct(string $class)
     {

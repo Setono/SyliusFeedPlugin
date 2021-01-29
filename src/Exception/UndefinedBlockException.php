@@ -9,11 +9,9 @@ use function Safe\sprintf;
 
 final class UndefinedBlockException extends InvalidArgumentException implements ExceptionInterface
 {
-    /** @var string */
-    private $block;
+    private string $block;
 
-    /** @var array */
-    private $requiredBlocks;
+    private array $requiredBlocks;
 
     public function __construct(string $block, array $requiredBlocks)
     {

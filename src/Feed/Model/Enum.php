@@ -16,7 +16,7 @@ use Webmozart\Assert\Assert;
 abstract class Enum
 {
     /** @var Enum[] */
-    private static $instances = [];
+    private static array $instances = [];
 
     /** @var string|int */
     private $value;

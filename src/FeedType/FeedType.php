@@ -11,23 +11,17 @@ use Symfony\Component\Validator\Constraint;
 
 final class FeedType implements FeedTypeInterface
 {
-    /** @var string */
-    private $code;
+    private string $code;
 
-    /** @var string */
-    private $template;
+    private string $template;
 
-    /** @var DataProviderInterface */
-    private $dataProvider;
+    private DataProviderInterface $dataProvider;
 
-    /** @var FeedContextInterface */
-    private $feedContext;
+    private FeedContextInterface $feedContext;
 
-    /** @var ItemContextInterface */
-    private $itemContext;
+    private ItemContextInterface $itemContext;
 
-    /** @var array */
-    private $validationGroups;
+    private array $validationGroups;
 
     public function __construct(
         string $code,

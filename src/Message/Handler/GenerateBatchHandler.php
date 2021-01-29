@@ -54,44 +54,31 @@ final class GenerateBatchHandler implements MessageHandlerInterface
     use GetFeedTrait;
     use GetLocaleTrait;
 
-    /** @var RequestContext */
-    private $initialRequestContext;
+    private RequestContext $initialRequestContext;
 
-    /** @var ObjectManager */
-    private $feedManager;
+    private ObjectManager $feedManager;
 
-    /** @var FeedTypeRegistryInterface */
-    private $feedTypeRegistry;
+    private FeedTypeRegistryInterface $feedTypeRegistry;
 
-    /** @var Environment */
-    private $twig;
+    private Environment $twig;
 
-    /** @var FilesystemInterface */
-    private $filesystem;
+    private FilesystemInterface $filesystem;
 
-    /** @var FeedPathGeneratorInterface */
-    private $temporaryFeedPathGenerator;
+    private FeedPathGeneratorInterface $temporaryFeedPathGenerator;
 
-    /** @var EventDispatcherInterface */
-    private $eventDispatcher;
+    private EventDispatcherInterface $eventDispatcher;
 
-    /** @var Registry */
-    private $workflowRegistry;
+    private Registry $workflowRegistry;
 
-    /** @var ValidatorInterface */
-    private $validator;
+    private ValidatorInterface $validator;
 
-    /** @var ViolationFactoryInterface */
-    private $violationFactory;
+    private ViolationFactoryInterface $violationFactory;
 
-    /** @var SerializerInterface */
-    private $serializer;
+    private SerializerInterface $serializer;
 
-    /** @var UrlGeneratorInterface */
-    private $urlGenerator;
+    private UrlGeneratorInterface $urlGenerator;
 
-    /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
     public function __construct(
         FeedRepositoryInterface $feedRepository,

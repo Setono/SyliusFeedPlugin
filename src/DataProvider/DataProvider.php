@@ -23,23 +23,18 @@ class DataProvider implements DataProviderInterface
 {
     private const BATCH_SIZE = 100;
 
-    /** @var BatcherFactoryInterface */
-    private $batcherFactory;
+    private BatcherFactoryInterface $batcherFactory;
 
-    /** @var QueryRebuilderInterface */
-    private $queryRebuilder;
+    private QueryRebuilderInterface $queryRebuilder;
 
-    /** @var EventDispatcherInterface */
-    private $eventDispatcher;
+    private EventDispatcherInterface $eventDispatcher;
 
-    /** @var ManagerRegistry */
-    private $managerRegistry;
+    private ManagerRegistry $managerRegistry;
 
-    /** @var string */
-    private $class;
+    private string $class;
 
     /** @var CollectionBatcherInterface[] */
-    private $batchers;
+    private array $batchers = [];
 
     public function __construct(
         BatcherFactoryInterface $batcherFactory,

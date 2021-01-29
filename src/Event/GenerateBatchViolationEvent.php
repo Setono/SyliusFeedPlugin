@@ -9,27 +9,21 @@ use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Locale\Model\LocaleInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
-use Symfony\Contracts\EventDispatcher\Event;
 
-final class GenerateBatchViolationEvent extends Event
+final class GenerateBatchViolationEvent
 {
-    /** @var FeedInterface */
-    private $feed;
+    private FeedInterface $feed;
 
-    /** @var FeedTypeInterface */
-    private $feedType;
+    private FeedTypeInterface $feedType;
 
-    /** @var ChannelInterface */
-    private $channel;
+    private ChannelInterface $channel;
 
-    /** @var LocaleInterface */
-    private $locale;
+    private LocaleInterface $locale;
 
     /** @var object|array */
     private $item;
 
-    /** @var ConstraintViolationListInterface */
-    private $constraintViolationList;
+    private ConstraintViolationListInterface $constraintViolationList;
 
     /**
      * @param object|array $item

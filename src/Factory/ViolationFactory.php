@@ -14,8 +14,7 @@ use Symfony\Component\Validator\ConstraintViolationInterface;
 
 final class ViolationFactory implements ViolationFactoryInterface
 {
-    /** @var FactoryInterface */
-    private $decoratedFactory;
+    private FactoryInterface $decoratedFactory;
 
     public function __construct(FactoryInterface $decoratedFactory)
     {

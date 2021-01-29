@@ -6,36 +6,29 @@ namespace Setono\SyliusFeedPlugin\Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Ramsey\Uuid\Uuid;
 use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
 use Sylius\Component\Channel\Model\ChannelInterface as BaseChannelInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Resource\Model\ToggleableTrait;
+use Symfony\Component\Uid\Uuid;
 
 class Feed implements FeedInterface
 {
     use ToggleableTrait;
 
-    /** @var int */
-    protected $id;
+    protected ?int $id = null;
 
-    /** @var string */
-    protected $code;
+    protected string $code;
 
-    /** @var string */
-    protected $state = FeedGraph::STATE_UNPROCESSED;
+    protected string $state = FeedGraph::STATE_UNPROCESSED;
 
-    /** @var string */
-    protected $name;
+    protected ?string $name = null;
 
-    /** @var string */
-    protected $feedType;
+    protected ?string $feedType = null;
 
-    /** @var int */
-    protected $batches = 0;
+    protected int $batches = 0;
 
-    /** @var int */
-    protected $finishedBatches = 0;
+    protected int $finishedBatches = 0;
 
     /** @var Collection|ChannelInterface[] */
     protected $channels;
@@ -45,7 +38,7 @@ class Feed implements FeedInterface
 
     public function __construct()
     {
-        $this->code = Uuid::uuid4()->toString();
+        $this->code = (string) Uuid::v4();
         $this->channels = new ArrayCollection();
         $this->violations = new ArrayCollection();
     }

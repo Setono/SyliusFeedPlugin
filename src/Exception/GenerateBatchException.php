@@ -10,20 +10,16 @@ use Webmozart\Assert\Assert;
 
 final class GenerateBatchException extends RuntimeException implements ExceptionInterface
 {
-    /** @var string */
-    private $originalMessage;
+    private string $originalMessage;
 
-    /** @var int */
-    private $feedId;
+    private ?int $feedId = null;
 
     /** @var mixed */
     private $resourceId;
 
-    /** @var string */
-    private $channelCode;
+    private ?string $channelCode = null;
 
-    /** @var string */
-    private $localeCode;
+    private ?string $localeCode = null;
 
     public function __construct(string $message, Throwable $previous)
     {
@@ -32,7 +28,7 @@ final class GenerateBatchException extends RuntimeException implements Exception
         $this->originalMessage = $message;
     }
 
-    public function getFeedId(): int
+    public function getFeedId(): ?int
     {
         return $this->feedId;
     }
@@ -64,7 +60,7 @@ final class GenerateBatchException extends RuntimeException implements Exception
         $this->updateMessage();
     }
 
-    public function getChannelCode(): string
+    public function getChannelCode(): ?string
     {
         return $this->channelCode;
     }
@@ -76,7 +72,7 @@ final class GenerateBatchException extends RuntimeException implements Exception
         $this->updateMessage();
     }
 
-    public function getLocaleCode(): string
+    public function getLocaleCode(): ?string
     {
         return $this->localeCode;
     }
