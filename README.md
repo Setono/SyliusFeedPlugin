@@ -4,7 +4,6 @@
 [![Latest Unstable Version][ico-unstable-version]][link-packagist]
 [![Software License][ico-license]](LICENSE)
 [![Build Status][ico-github-actions]][link-github-actions]
-[![Quality Score][ico-code-quality]][link-code-quality]
 
 A plugin for creating all kinds of feeds to any given service. Do you want to create product feeds for
 your Google Merchant center? Then this is the right plugin for you.
@@ -106,8 +105,6 @@ If you haven't changed any configuration, there should be a feed with your produ
 [ico-unstable-version]: https://poser.pugx.org/setono/sylius-feed-plugin/v/unstable
 [ico-license]: https://poser.pugx.org/setono/sylius-feed-plugin/license
 [ico-github-actions]: https://github.com/Setono/SyliusFeedPlugin/workflows/build/badge.svg
-[ico-code-quality]: https://img.shields.io/scrutinizer/g/Setono/SyliusFeedPlugin.svg
 
 [link-packagist]: https://packagist.org/packages/setono/sylius-feed-plugin
 [link-github-actions]: https://github.com/Setono/SyliusFeedPlugin/actions
-[link-code-quality]: https://scrutinizer-ci.com/g/Setono/SyliusFeedPlugin
