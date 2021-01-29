@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping;
 
+use JsonSerializable;
 use Webmozart\Assert\Assert;
 
-final class Price
+final class Price implements JsonSerializable
 {
     private int $amount;
 
@@ -26,5 +27,10 @@ final class Price
     public function __toString(): string
     {
         return round($this->amount / 100, 2) . ' ' . $this->currency;
+    }
+
+    public function jsonSerialize(): string
+    {
+        return (string) $this;
     }
 }
