@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Message\Handler;
 
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 use InvalidArgumentException;
 use League\Flysystem\FilesystemInterface;
 use Psr\Log\LoggerInterface;

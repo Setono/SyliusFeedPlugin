@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Message\Handler;
 
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 use InvalidArgumentException;
 use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\Message\Command\GenerateFeed;
