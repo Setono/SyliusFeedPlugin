@@ -40,14 +40,14 @@
         "webmozart/assert": "^1.1"
     },
     "require-dev": {
-        "phpspec/phpspec": "^6.2",
-        "phpunit/phpunit": "^9.3",
+        "phpspec/phpspec": "^6.3",
+        "phpunit/phpunit": "^9.5",
         "roave/security-advisories": "dev-master",
         "setono/code-quality-pack": "^1.5.1",
         "setono/sylius-behat-pack": "^0.1",
         "sylius/sylius": "~1.7.0",
         "symfony/debug-bundle": "^5.1",
-        "symfony/dotenv": "^5.1",
+        "symfony/dotenv": "^5.2",
         "symfony/intl": "^4.4 || ^5.0",
         "symfony/web-profiler-bundle": "^5.0"
     },
