@@ -110,6 +110,16 @@ final class ProcessFeedsContext implements Context
 
     private function getExpectedContent(string $channelCode): string
     {
+        $test = <<<TEST
+<?xmlversion="1.0"?>
+<rssxmlns:g="http://base.google.com/ns/1.0"version="2.0">
+<channel>
+<title>example.com</title>
+<link>https://example.com</link>
+<description></description>
+<item><g:id>COLD_BEER</g:id><title>Coldbeer</title><g:description>Anicecoldbeer</g:description><link>https://example.com/en_US/products/cold-beer</link><g:image_link>https://example.com/media/cache/resolve/sylius_shop_product_large_thumbnail/%image_path%</g:image_link><g:availability>instock</g:availability><g:price>0USD</g:price><g:condition>new</g:condition><g:item_group_id>COLD_BEER</g:item_group_id></item></channel></rss>
+TEST;
+
         switch ($channelCode) {
             case 'denmark':
                 $expectedContent = <<<CONTENT
@@ -170,7 +180,7 @@ CONTENT;
     private function normalizeImageLink(string $actualContent): ?string
     {
         return \preg_replace(
-            '/sylius_shop_product_large_thumbnail\/.*?\.jpeg/',
+            '/sylius_shop_product_large_thumbnail\/.*?\.jpe?g/',
             'sylius_shop_product_large_thumbnail/%image_path%',
             $actualContent
         );
