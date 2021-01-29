@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\Event;
 
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
-use Symfony\Contracts\EventDispatcher\Event;
 
-final class BatchGeneratedEvent extends Event
+final class BatchGeneratedEvent
 {
     private FeedInterface $feed;
 

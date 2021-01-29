@@ -11,7 +11,7 @@ class Violation implements ViolationInterface
 {
     protected int $id;
 
-    protected ?FeedInterface $feed;
+    protected ?FeedInterface $feed = null;
 
     protected ChannelInterface $channel;
 

@@ -34,7 +34,7 @@ class DataProvider implements DataProviderInterface
     private string $class;
 
     /** @var CollectionBatcherInterface[] */
-    private array $batchers;
+    private array $batchers = [];
 
     public function __construct(
         BatcherFactoryInterface $batcherFactory,

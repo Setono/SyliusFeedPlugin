@@ -8,9 +8,8 @@ use Setono\SyliusFeedPlugin\FeedType\FeedTypeInterface;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Locale\Model\LocaleInterface;
-use Symfony\Contracts\EventDispatcher\Event;
 
-final class GenerateBatchItemEvent extends Event
+final class GenerateBatchItemEvent
 {
     private FeedInterface $feed;
 
