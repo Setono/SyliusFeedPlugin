@@ -9,29 +9,3 @@ parameters:
 			message: "#^Parameter \\#1 \\$configuration of method Symfony\\\\Component\\\\DependencyInjection\\\\Extension\\\\Extension\\:\\:processConfiguration\\(\\) expects Symfony\\\\Component\\\\Config\\\\Definition\\\\ConfigurationInterface, Symfony\\\\Component\\\\Config\\\\Definition\\\\ConfigurationInterface\\|null given\\.$#"
 			count: 1
 			path: src/DependencyInjection/SetonoSyliusFeedExtension.php
-
-		-
-			message: "#^Method Setono\\\\SyliusFeedPlugin\\\\Feed\\\\Model\\\\Enum\\:\\:constant\\(\\) should return static\\(Setono\\\\SyliusFeedPlugin\\\\Feed\\\\Model\\\\Enum\\) but returns Setono\\\\SyliusFeedPlugin\\\\Feed\\\\Model\\\\Enum\\.$#"
-			count: 1
-			path: src/Feed/Model/Enum.php
-
-		-
-			message: "#^Unsafe usage of new static\\(\\)\\.$#"
-			count: 1
-			path: src/Feed/Model/Enum.php
-
-		-
-			message: "#^Parameter \\#2 \\$format \\(string\\) of method Setono\\\\SyliusFeedPlugin\\\\Normalizer\\\\ToStringNormalizer\\:\\:normalize\\(\\) should be contravariant with parameter \\$format \\(string\\|null\\) of method Symfony\\\\Component\\\\Serializer\\\\Normalizer\\\\NormalizerInterface\\:\\:normalize\\(\\)$#"
-			count: 2
-			path: src/Normalizer/ToStringNormalizer.php
-
-		-
-			message: "#^Parameter \\#2 \\$format \\(string\\) of method Setono\\\\SyliusFeedPlugin\\\\Normalizer\\\\ToStringNormalizer\\:\\:supportsNormalization\\(\\) should be contravariant with parameter \\$format \\(string\\|null\\) of method Symfony\\\\Component\\\\Serializer\\\\Normalizer\\\\ContextAwareNormalizerInterface\\:\\:supportsNormalization\\(\\)$#"
-			count: 1
-			path: src/Normalizer/ToStringNormalizer.php
-
-		-
-			message: "#^Parameter \\#2 \\$format \\(string\\) of method Setono\\\\SyliusFeedPlugin\\\\Normalizer\\\\ToStringNormalizer\\:\\:supportsNormalization\\(\\) should be contravariant with parameter \\$format \\(string\\|null\\) of method Symfony\\\\Component\\\\Serializer\\\\Normalizer\\\\NormalizerInterface\\:\\:supportsNormalization\\(\\)$#"
-			count: 1
-			path: src/Normalizer/ToStringNormalizer.php
-

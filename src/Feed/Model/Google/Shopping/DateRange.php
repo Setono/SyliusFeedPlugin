@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping;
 
-final class DateRange
+use JsonSerializable;
+
+final class DateRange implements JsonSerializable
 {
     private DateTime $start;
 
@@ -19,5 +21,10 @@ final class DateRange
     public function __toString(): string
     {
         return $this->start . '/' . $this->end;
+    }
+
+    public function jsonSerialize(): string
+    {
+        return (string) $this;
     }
 }

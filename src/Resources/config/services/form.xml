@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+<container xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://symfony.com/schema/dic/services"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <parameters>
         <parameter key="setono_sylius_feed.form.type.feed.validation_groups" type="collection">
             <parameter>setono_sylius_feed</parameter>
@@ -13,7 +14,8 @@
             <tag name="form.type"/>
         </service>
 
-        <service id="setono_sylius_feed.form.type.feed_type_choice" class="Setono\SyliusFeedPlugin\Form\Type\FeedTypeChoiceType">
+        <service id="setono_sylius_feed.form.type.feed_type_choice"
+                 class="Setono\SyliusFeedPlugin\Form\Type\FeedTypeChoiceType">
             <argument type="service" id="setono_sylius_feed.registry.feed_type"/>
             <tag name="form.type"/>
         </service>
