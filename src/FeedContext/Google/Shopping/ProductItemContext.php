@@ -217,7 +217,7 @@ class ProductItemContext implements ItemContextInterface
         return new Price($price, $baseCurrency);
     }
 
-    private function getProductType(ProductInterface $product, LocaleInterface $locale): ?string
+    private function getProductType(ProductInterface $product, LocaleInterface $locale, bool $excludeRoot = false): ?string
     {
         if ($product->getMainTaxon() !== null) {
             $taxon = $product->getMainTaxon();
@@ -232,6 +232,12 @@ class ProductItemContext implements ItemContextInterface
         array_unshift($breadcrumbs, $taxon);
         for ($breadcrumb = $taxon->getParent(); null !== $breadcrumb; $breadcrumb = $breadcrumb->getParent()) {
             array_unshift($breadcrumbs, $breadcrumb);
+        }
+
+        if ($excludeRoot) {
+            // In cases when some root taxon assigned to channel's menuTaxon,
+            // we don't want to display root taxon - remove first item
+            array_shift($breadcrumbs);
         }
 
         return implode(' > ', array_map(function (TaxonInterface $breadcrumb) use ($locale): string {
