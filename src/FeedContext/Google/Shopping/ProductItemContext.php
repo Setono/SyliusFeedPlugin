@@ -224,14 +224,15 @@ class ProductItemContext implements ItemContextInterface
             return null;
         }
 
-        $productType = '';
-
-        $ancestors = array_reverse($taxon->getAncestors()->toArray());
-
-        foreach ($ancestors as $ancestor) {
-            $productType .= $ancestor->getName() . ' > ';
+        $breadcrumbs = [];
+        array_unshift($breadcrumbs, $taxon);
+        for ($breadcrumb = $taxon->getParent(); null !== $breadcrumb; $breadcrumb = $breadcrumb->getParent()) {
+            array_unshift($breadcrumbs, $breadcrumb);
         }
 
-        return rtrim($productType, ' >');
+        return implode(' > ', array_map(function(TaxonInterface $breadcrumb): string {
+            // @todo Use right locale here from some context?
+            return $breadcrumb->getName();
+        }, $breadcrumbs));
     }
 }
