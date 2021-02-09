@@ -29,6 +29,9 @@ use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Core\Model\TaxonInterface;
 use Sylius\Component\Inventory\Checker\AvailabilityCheckerInterface;
 use Sylius\Component\Locale\Model\LocaleInterface;
+use Sylius\Component\Resource\Model\TranslatableInterface;
+use Sylius\Component\Resource\Model\TranslationInterface;
+use Sylius\Component\Taxonomy\Model\TaxonTranslationInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Webmozart\Assert\Assert;
@@ -60,8 +63,9 @@ class ProductItemContext implements ItemContextInterface
             ));
         }
 
-        $productType = $this->getProductType($product);
+        $productType = $this->getProductType($product, $locale);
 
+        /** @var ProductTranslationInterface|null $translation */
         $translation = $this->getTranslation($product, (string) $locale->getCode());
         $contextList = new ContextList();
         foreach ($product->getVariants() as $variant) {
@@ -127,10 +131,10 @@ class ProductItemContext implements ItemContextInterface
         return $contextList;
     }
 
-    private function getTranslation(ProductInterface $product, string $locale): ?ProductTranslationInterface
+    private function getTranslation(TranslatableInterface $translatable, string $locale): ?TranslationInterface
     {
-        /** @var ProductTranslationInterface $translation */
-        foreach ($product->getTranslations() as $translation) {
+        /** @var TranslationInterface $translation */
+        foreach ($translatable->getTranslations() as $translation) {
             if ($translation->getLocale() === $locale) {
                 return $translation;
             }
@@ -213,7 +217,7 @@ class ProductItemContext implements ItemContextInterface
         return new Price($price, $baseCurrency);
     }
 
-    private function getProductType(ProductInterface $product): ?string
+    private function getProductType(ProductInterface $product, LocaleInterface $locale): ?string
     {
         if ($product->getMainTaxon() !== null) {
             $taxon = $product->getMainTaxon();
@@ -230,9 +234,12 @@ class ProductItemContext implements ItemContextInterface
             array_unshift($breadcrumbs, $breadcrumb);
         }
 
-        return implode(' > ', array_map(function(TaxonInterface $breadcrumb): string {
-            // @todo Use right locale here from some context?
-            return $breadcrumb->getName();
+        return implode(' > ', array_map(function (TaxonInterface $breadcrumb) use ($locale): string {
+            /** @var TaxonTranslationInterface|null $translation */
+            $translation = $this->getTranslation($breadcrumb, (string) $locale->getCode());
+
+            // Fallback to default locale
+            return null !== $translation ? $translation->getName() : $breadcrumb->getName();
         }, $breadcrumbs));
     }
 }
