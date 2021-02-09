@@ -20,6 +20,7 @@ use Setono\SyliusFeedPlugin\Model\ConditionAwareInterface;
 use Setono\SyliusFeedPlugin\Model\GtinAwareInterface;
 use Setono\SyliusFeedPlugin\Model\MpnAwareInterface;
 use Setono\SyliusFeedPlugin\Model\SizeAwareInterface;
+use Setono\SyliusFeedPlugin\Model\TaxonPathAwareInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ImageInterface;
 use Sylius\Component\Core\Model\ImagesAwareInterface;
@@ -63,7 +64,12 @@ class ProductItemContext implements ItemContextInterface
             ));
         }
 
-        $productType = $this->getProductType($product, $locale);
+        $excludeRootTaxon = false; // @todo Make it configurable
+        if ($product instanceof TaxonPathAwareInterface) {
+            $productType = $product->getTaxonPath($locale, $excludeRootTaxon);
+        } else {
+            $productType = $this->getProductType($product, $locale, $excludeRootTaxon);
+        }
 
         /** @var ProductTranslationInterface|null $translation */
         $translation = $this->getTranslation($product, (string) $locale->getCode());
@@ -245,7 +251,7 @@ class ProductItemContext implements ItemContextInterface
             $translation = $this->getTranslation($breadcrumb, (string) $locale->getCode());
 
             // Fallback to default locale
-            return null !== $translation ? $translation->getName() : $breadcrumb->getName();
+            return null !== $translation ? (string) $translation->getName() : (string) $breadcrumb->getName();
         }, $breadcrumbs));
     }
 }
