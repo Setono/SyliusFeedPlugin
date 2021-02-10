@@ -20,6 +20,7 @@ use Setono\SyliusFeedPlugin\Model\ConditionAwareInterface;
 use Setono\SyliusFeedPlugin\Model\GtinAwareInterface;
 use Setono\SyliusFeedPlugin\Model\MpnAwareInterface;
 use Setono\SyliusFeedPlugin\Model\SizeAwareInterface;
+use Setono\SyliusFeedPlugin\Model\TaxonPathAwareInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ImageInterface;
 use Sylius\Component\Core\Model\ImagesAwareInterface;
@@ -29,6 +30,9 @@ use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Core\Model\TaxonInterface;
 use Sylius\Component\Inventory\Checker\AvailabilityCheckerInterface;
 use Sylius\Component\Locale\Model\LocaleInterface;
+use Sylius\Component\Resource\Model\TranslatableInterface;
+use Sylius\Component\Resource\Model\TranslationInterface;
+use Sylius\Component\Taxonomy\Model\TaxonTranslationInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Webmozart\Assert\Assert;
@@ -60,8 +64,14 @@ class ProductItemContext implements ItemContextInterface
             ));
         }
 
-        $productType = $this->getProductType($product);
+        $excludeRootTaxon = false; // @todo Make it configurable
+        if ($product instanceof TaxonPathAwareInterface) {
+            $productType = $product->getTaxonPath($locale, $excludeRootTaxon);
+        } else {
+            $productType = $this->getProductType($product, $locale, $excludeRootTaxon);
+        }
 
+        /** @var ProductTranslationInterface|null $translation */
         $translation = $this->getTranslation($product, (string) $locale->getCode());
         $contextList = new ContextList();
         foreach ($product->getVariants() as $variant) {
@@ -127,10 +137,10 @@ class ProductItemContext implements ItemContextInterface
         return $contextList;
     }
 
-    private function getTranslation(ProductInterface $product, string $locale): ?ProductTranslationInterface
+    private function getTranslation(TranslatableInterface $translatable, string $locale): ?TranslationInterface
     {
-        /** @var ProductTranslationInterface $translation */
-        foreach ($product->getTranslations() as $translation) {
+        /** @var TranslationInterface $translation */
+        foreach ($translatable->getTranslations() as $translation) {
             if ($translation->getLocale() === $locale) {
                 return $translation;
             }
@@ -213,7 +223,7 @@ class ProductItemContext implements ItemContextInterface
         return new Price($price, $baseCurrency);
     }
 
-    private function getProductType(ProductInterface $product): ?string
+    private function getProductType(ProductInterface $product, LocaleInterface $locale, bool $excludeRoot = false): ?string
     {
         if ($product->getMainTaxon() !== null) {
             $taxon = $product->getMainTaxon();
@@ -224,14 +234,24 @@ class ProductItemContext implements ItemContextInterface
             return null;
         }
 
-        $productType = '';
-
-        $ancestors = array_reverse($taxon->getAncestors()->toArray());
-
-        foreach ($ancestors as $ancestor) {
-            $productType .= $ancestor->getName() . ' > ';
+        $breadcrumbs = [];
+        array_unshift($breadcrumbs, $taxon);
+        for ($breadcrumb = $taxon->getParent(); null !== $breadcrumb; $breadcrumb = $breadcrumb->getParent()) {
+            array_unshift($breadcrumbs, $breadcrumb);
         }
 
-        return rtrim($productType, ' >');
+        if ($excludeRoot) {
+            // In cases when some root taxon assigned to channel's menuTaxon,
+            // we don't want to display root taxon - remove first item
+            array_shift($breadcrumbs);
+        }
+
+        return implode(' > ', array_map(function (TaxonInterface $breadcrumb) use ($locale): string {
+            /** @var TaxonTranslationInterface|null $translation */
+            $translation = $this->getTranslation($breadcrumb, (string) $locale->getCode());
+
+            // Fallback to default locale
+            return null !== $translation ? (string) $translation->getName() : (string) $breadcrumb->getName();
+        }, $breadcrumbs));
     }
 }
