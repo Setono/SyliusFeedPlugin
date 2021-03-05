@@ -73,6 +73,12 @@
             "tests/Application/Kernel.php"
         ]
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@github.com:oxyshop/DoctrineORMBatcherBundle.git"
+        }
+    ],
     "prefer-stable": true,
     "scripts": {
         "analyse": "phpstan analyse",
