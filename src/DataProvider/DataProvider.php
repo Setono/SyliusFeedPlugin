@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\DataProvider;
 
-use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\Persistence\ManagerRegistry;
 use InvalidArgumentException;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use function Safe\sprintf;
