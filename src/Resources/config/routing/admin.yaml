@@ -2,7 +2,7 @@ setono_sylius_feed_admin_feed:
     resource: |
         alias: setono_sylius_feed.feed
         section: admin
-        templates: SyliusAdminBundle:Crud
+        templates: '@SyliusAdmin/Crud'
         redirect: show
         grid: setono_sylius_feed_admin_feed
         vars:
@@ -38,7 +38,7 @@ setono_sylius_feed_admin_feed_violations_index:
                 route:
                     parameters:
                         id: $id
-            template: SyliusAdminBundle:Crud:index.html.twig
+            template: '@SyliusAdmin/Crud/index.html.twig'
             grid: setono_sylius_feed_admin_violation
             section: admin
             permission: true
