@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Message\Handler;
 
-use Doctrine\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 use const JSON_INVALID_UTF8_IGNORE;
 use const JSON_PRESERVE_ZERO_FRACTION;
@@ -56,7 +56,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
 
     private RequestContext $initialRequestContext;
 
-    private ObjectManager $feedManager;
+    private EntityManagerInterface $feedManager;
 
     private FeedTypeRegistryInterface $feedTypeRegistry;
 
@@ -84,7 +84,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
         FeedRepositoryInterface $feedRepository,
         ChannelRepositoryInterface $channelRepository,
         RepositoryInterface $localeRepository,
-        ObjectManager $feedManager,
+        EntityManagerInterface $feedManager,
         FeedTypeRegistryInterface $feedTypeRegistry,
         Environment $twig,
         FilesystemInterface $filesystem,

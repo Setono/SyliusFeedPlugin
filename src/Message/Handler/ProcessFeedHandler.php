@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Message\Handler;
 
-use Doctrine\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 use InvalidArgumentException;
 use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\Message\Command\GenerateFeed;
@@ -24,7 +24,7 @@ final class ProcessFeedHandler implements MessageHandlerInterface
 {
     use GetFeedTrait;
 
-    private ObjectManager $feedManager;
+    private EntityManagerInterface $feedManager;
 
     private FeedTypeRegistryInterface $feedTypeRegistry;
 
@@ -36,7 +36,7 @@ final class ProcessFeedHandler implements MessageHandlerInterface
 
     public function __construct(
         FeedRepositoryInterface $feedRepository,
-        ObjectManager $feedManager,
+        EntityManagerInterface $feedManager,
         FeedTypeRegistryInterface $feedTypeRegistry,
         MessageBusInterface $commandBus,
         Registry $workflowRegistry,
