@@ -73,6 +73,7 @@
             "tests/Application/Kernel.php"
         ]
     },
+    "minimum-stability": "dev",
     "prefer-stable": true,
     "scripts": {
         "analyse": "phpstan analyse",
@@ -84,6 +85,5 @@
             "@phpunit",
             "@phpspec"
         ]
-    },
-    "minimum-stability": "dev"
+    }
 }
