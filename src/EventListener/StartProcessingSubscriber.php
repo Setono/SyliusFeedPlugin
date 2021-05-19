@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\EventListener;
 
 use InvalidArgumentException;
-use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Registry\FeedTypeRegistryInterface;
 use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
@@ -37,7 +36,8 @@ final class StartProcessingSubscriber implements EventSubscriberInterface
 
         if (!$feed instanceof FeedInterface) {
             throw new InvalidArgumentException(sprintf(
-                'Unexpected type. Expected %s', FeedInterface::class
+                'Unexpected type. Expected %s',
+                FeedInterface::class
             ));
         }
 

@@ -9,17 +9,17 @@ use Sylius\Component\Locale\Model\LocaleInterface;
 
 class Violation implements ViolationInterface
 {
-    protected int $id;
+    protected ?int $id = null;
 
     protected ?FeedInterface $feed = null;
 
-    protected ChannelInterface $channel;
+    protected ?ChannelInterface $channel = null;
 
-    protected LocaleInterface $locale;
+    protected ?LocaleInterface $locale = null;
 
     protected string $severity = self::SEVERITY_NOTICE;
 
-    protected string $message;
+    protected ?string $message = null;
 
     /**
      * The data can be anything basically. Just some data that will aid in this specific violation
@@ -28,7 +28,7 @@ class Violation implements ViolationInterface
      */
     protected $data;
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -43,7 +43,7 @@ class Violation implements ViolationInterface
         $this->feed = $feed;
     }
 
-    public function getChannel(): ChannelInterface
+    public function getChannel(): ?ChannelInterface
     {
         return $this->channel;
     }
@@ -53,7 +53,7 @@ class Violation implements ViolationInterface
         $this->channel = $channel;
     }
 
-    public function getLocale(): LocaleInterface
+    public function getLocale(): ?LocaleInterface
     {
         return $this->locale;
     }
@@ -73,7 +73,7 @@ class Violation implements ViolationInterface
         $this->severity = $severity;
     }
 
-    public function getMessage(): string
+    public function getMessage(): ?string
     {
         return $this->message;
     }

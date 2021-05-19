@@ -9,7 +9,6 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use InvalidArgumentException;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use function Safe\sprintf;
 use Setono\DoctrineORMBatcher\Batch\BatchInterface;
 use Setono\DoctrineORMBatcher\Batch\CollectionBatchInterface;
 use Setono\DoctrineORMBatcher\Batcher\Collection\CollectionBatcherInterface;

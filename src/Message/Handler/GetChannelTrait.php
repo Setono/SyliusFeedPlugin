@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Message\Handler;
 
-use function Safe\sprintf;
 use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;

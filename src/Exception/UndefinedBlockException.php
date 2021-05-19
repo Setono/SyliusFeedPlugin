@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\Exception;
 
 use InvalidArgumentException;
-use function Safe\sprintf;
 
 final class UndefinedBlockException extends InvalidArgumentException implements ExceptionInterface
 {

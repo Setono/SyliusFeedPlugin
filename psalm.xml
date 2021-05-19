@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<psalm
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    totallyTyped="true"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+    errorBaseline="psalm-baseline.xml"
+>
+    <projectFiles>
+        <directory name="src"/>
+<!--        todo readd this -->
+<!--        <directory name="tests"/>-->
+        <ignoreFiles>
+            <directory name="tests/Application"/>
+            <directory name="vendor"/>
+        </ignoreFiles>
+    </projectFiles>
+    <plugins>
+        <pluginClass class="Psalm\SymfonyPsalmPlugin\Plugin">
+            <containerXml>tests/Application/var/cache/test/ApplicationTests_Setono_SyliusFeedPlugin_Application_KernelTestDebugContainer.xml</containerXml>
+        </pluginClass>
+        <pluginClass class="Psalm\PhpUnitPlugin\Plugin"/>
+        <pluginClass class="Weirdan\DoctrinePsalmPlugin\Plugin"/>
+    </plugins>
+    <issueHandlers>
+        <PluginIssue name="QueryBuilderSetParameter" errorLevel="info"/>
+    </issueHandlers>
+    <forbiddenFunctions>
+        <function name="dd"/>
+        <function name="dump"/>
+    </forbiddenFunctions>
+</psalm>

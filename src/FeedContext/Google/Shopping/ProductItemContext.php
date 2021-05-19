@@ -6,7 +6,6 @@ namespace Setono\SyliusFeedPlugin\FeedContext\Google\Shopping;
 
 use InvalidArgumentException;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
-use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Availability;
 use Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Condition;
 use Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Price;
@@ -59,7 +58,8 @@ class ProductItemContext implements ItemContextInterface
     {
         if (!$product instanceof ProductInterface) {
             throw new InvalidArgumentException(sprintf(
-                'The class %s is not an instance of %s', get_class($product),
+                'The class %s is not an instance of %s',
+                get_class($product),
                 ProductInterface::class
             ));
         }

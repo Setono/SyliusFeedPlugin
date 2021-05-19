@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\DependencyInjection\Compiler;
 
 use InvalidArgumentException;
-use function Safe\sprintf;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 

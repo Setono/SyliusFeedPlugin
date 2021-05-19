@@ -20,7 +20,7 @@ interface DataProviderInterface
     /**
      * Will return an iterable of ids
      *
-     * @return CollectionBatchInterface[]
+     * @return iterable<CollectionBatchInterface>
      */
     public function getBatches(ChannelInterface $channel, LocaleInterface $locale): iterable;
 
