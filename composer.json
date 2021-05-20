@@ -79,7 +79,7 @@
     "scripts": {
         "analyse": [
             "@ensure-test-container-exists",
-            "psalm --threads=10"
+            "psalm --debug"
         ],
         "check-style": "ecs check",
         "ensure-test-container-exists": "[[ -f tests/Application/var/cache/test/ApplicationTests_Setono_SyliusFeedPlugin_Application_KernelTestDebugContainer.xml ]] || tests/Application/bin/console cache:warmup --env=test",
