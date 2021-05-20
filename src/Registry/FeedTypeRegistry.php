@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\Registry;
 
 use InvalidArgumentException;
-use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\FeedType\FeedTypeInterface;
 
 final class FeedTypeRegistry implements FeedTypeRegistryInterface

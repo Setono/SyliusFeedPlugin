@@ -6,7 +6,6 @@ namespace Setono\SyliusFeedPlugin\EventListener;
 
 use League\Flysystem\FilesystemInterface;
 use League\Flysystem\RootViolationException;
-use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;

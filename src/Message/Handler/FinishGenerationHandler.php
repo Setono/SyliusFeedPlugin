@@ -9,12 +9,6 @@ use InvalidArgumentException;
 use League\Flysystem\FilesystemInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
-use Safe\Exceptions\FilesystemException;
-use function Safe\fclose;
-use function Safe\fopen;
-use function Safe\fread;
-use function Safe\fwrite;
-use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\FeedType\FeedTypeInterface;
 use Setono\SyliusFeedPlugin\Generator\FeedPathGeneratorInterface;
 use Setono\SyliusFeedPlugin\Generator\TemporaryFeedPathGenerator;
@@ -30,6 +24,7 @@ use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Workflow\Registry;
 use Throwable;
 use Twig\Environment;
+use Webmozart\Assert\Assert;
 
 final class FinishGenerationHandler implements MessageHandlerInterface
 {
@@ -77,7 +72,9 @@ final class FinishGenerationHandler implements MessageHandlerInterface
             $workflow = $this->workflowRegistry->get($feed, FeedGraph::GRAPH);
         } catch (InvalidArgumentException $e) {
             throw new UnrecoverableMessageHandlingException(
-                'An error occurred when trying to get the workflow for the feed', 0, $e
+                'An error occurred when trying to get the workflow for the feed',
+                0,
+                $e
             );
         }
 
@@ -96,14 +93,19 @@ final class FinishGenerationHandler implements MessageHandlerInterface
                     fwrite($batchStream, $feedStart);
 
                     $files = $this->filesystem->listContents((string) $dir);
+                    /** @var array{basename: string, path: string} $file */
                     foreach ($files as $file) {
+                        Assert::isArray($file);
+                        Assert::keyExists($file, 'basename');
+                        Assert::keyExists($file, 'path');
+
                         if (TemporaryFeedPathGenerator::BASE_FILENAME === $file['basename']) {
                             continue;
                         }
 
                         $fp = $this->filesystem->readStream($file['path']);
                         if (false === $fp) {
-                            throw new FilesystemException(sprintf(
+                            throw new \RuntimeException(sprintf(
                                 'The file "%s" could not be opened as a resource',
                                 $file['path']
                             ));
@@ -122,11 +124,8 @@ final class FinishGenerationHandler implements MessageHandlerInterface
 
                     $res = $this->filesystem->writeStream((string) TemporaryFeedPathGenerator::getBaseFile($dir), $batchStream);
 
-                    try {
-                        // tries to close the file pointer although it may already have been closed by flysystem
-                        fclose($batchStream);
-                    } catch (FilesystemException $e) {
-                    }
+                    // tries to close the file pointer although it may already have been closed by flysystem
+                    fclose($batchStream);
 
                     if (false === $res) {
                         throw new RuntimeException('An error occurred when trying to write the finished feed write');
@@ -136,8 +135,9 @@ final class FinishGenerationHandler implements MessageHandlerInterface
 
             if (!$workflow->can($feed, FeedGraph::TRANSITION_PROCESSED)) {
                 throw new RuntimeException(sprintf(
-                    'The feed %s can not be marked as ready because the feed is in a wrong state (%s)',
-                    $feed->getId(), $feed->getState()
+                    'The feed with id: %d can not be marked as ready because the feed is in a wrong state (%s)',
+                    (int) $feed->getId(),
+                    $feed->getState()
                 ));
             }
 

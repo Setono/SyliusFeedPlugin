@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="4.7.2@83a0325c0a95c0ab531d6b90c877068b464377b5">
+  <file src="src/Controller/Action/Shop/ShowFeedAction.php">
+    <ImplicitToStringCast occurrences="1">
+      <code>$feedPath</code>
+    </ImplicitToStringCast>
+  </file>
+  <file src="src/DataProvider/DataProvider.php">
+    <MixedInferredReturnType occurrences="1">
+      <code>iterable</code>
+    </MixedInferredReturnType>
+    <MixedReturnStatement occurrences="1">
+      <code>$q-&gt;getResult()</code>
+    </MixedReturnStatement>
+    <PossiblyNullOperand occurrences="2">
+      <code>$channel-&gt;getCode()</code>
+      <code>$locale-&gt;getCode()</code>
+    </PossiblyNullOperand>
+  </file>
+  <file src="src/DependencyInjection/Compiler/RegisterFeedTypesPass.php">
+    <MixedArgumentTypeCoercion occurrences="1">
+      <code>$id</code>
+    </MixedArgumentTypeCoercion>
+    <MixedAssignment occurrences="1">
+      <code>$attributes</code>
+    </MixedAssignment>
+    <UnusedVariable occurrences="1">
+      <code>$attributes</code>
+    </UnusedVariable>
+  </file>
+  <file src="src/DependencyInjection/Compiler/RegisterFilesystemPass.php">
+    <MixedArgument occurrences="4">
+      <code>$parameterValue</code>
+      <code>$parameterValue</code>
+      <code>$parameterValue</code>
+      <code>$parameterValue</code>
+    </MixedArgument>
+    <MixedAssignment occurrences="1">
+      <code>$parameterValue</code>
+    </MixedAssignment>
+  </file>
+  <file src="src/DependencyInjection/Compiler/ValidateDataProvidersPass.php">
+    <MixedArgument occurrences="2">
+      <code>$code</code>
+      <code>$tagged</code>
+    </MixedArgument>
+    <MixedArrayAccess occurrences="1">
+      <code>$attributes['code']</code>
+    </MixedArrayAccess>
+    <MixedArrayOffset occurrences="2">
+      <code>$seen[$code]</code>
+      <code>$seen[$code]</code>
+    </MixedArrayOffset>
+    <MixedAssignment occurrences="3">
+      <code>$attributes</code>
+      <code>$code</code>
+      <code>$tagged</code>
+    </MixedAssignment>
+  </file>
+  <file src="src/DependencyInjection/Configuration.php">
+    <PossiblyNullReference occurrences="2">
+      <code>arrayNode</code>
+      <code>arrayNode</code>
+    </PossiblyNullReference>
+    <PossiblyUndefinedMethod occurrences="2">
+      <code>arrayNode</code>
+      <code>arrayNode</code>
+    </PossiblyUndefinedMethod>
+    <UnnecessaryVarAnnotation occurrences="1">
+      <code>ArrayNodeDefinition</code>
+    </UnnecessaryVarAnnotation>
+  </file>
+  <file src="src/DependencyInjection/SetonoSyliusFeedExtension.php">
+    <MixedArgument occurrences="2">
+      <code>$config['driver']</code>
+      <code>$config['resources']</code>
+    </MixedArgument>
+    <MixedArrayAccess occurrences="2">
+      <code>$config['storage']['feed']</code>
+      <code>$config['storage']['feed_tmp']</code>
+    </MixedArrayAccess>
+    <PossiblyNullArgument occurrences="1">
+      <code>$this-&gt;getConfiguration([], $container)</code>
+    </PossiblyNullArgument>
+  </file>
+  <file src="src/Doctrine/ORM/FeedRepository.php">
+    <MixedInferredReturnType occurrences="2">
+      <code>?FeedInterface</code>
+      <code>array</code>
+    </MixedInferredReturnType>
+    <MixedReturnStatement occurrences="2"/>
+  </file>
+  <file src="src/Doctrine/ORM/ViolationRepository.php">
+    <MixedInferredReturnType occurrences="1">
+      <code>array</code>
+    </MixedInferredReturnType>
+    <MixedReturnStatement occurrences="1">
+      <code>$qb-&gt;getQuery()-&gt;getResult()</code>
+    </MixedReturnStatement>
+  </file>
+  <file src="src/EventListener/Filter/AbstractFilterListener.php">
+    <MixedArgument occurrences="1">
+      <code>$additionalInstanceCheck</code>
+    </MixedArgument>
+    <MixedAssignment occurrences="1">
+      <code>$additionalInstanceCheck</code>
+    </MixedAssignment>
+    <MixedInferredReturnType occurrences="1">
+      <code>string</code>
+    </MixedInferredReturnType>
+    <MixedReturnStatement occurrences="1">
+      <code>$aliases[0]</code>
+    </MixedReturnStatement>
+  </file>
+  <file src="src/EventListener/MoveGeneratedFeedSubscriber.php">
+    <ImplicitToStringCast occurrences="1">
+      <code>$temporaryPath</code>
+    </ImplicitToStringCast>
+  </file>
+  <file src="src/Exception/GenerateBatchException.php">
+    <MixedOperand occurrences="1">
+      <code>$this-&gt;resourceId</code>
+    </MixedOperand>
+  </file>
+  <file src="src/Factory/ViolationFactory.php">
+    <MixedArgument occurrences="2">
+      <code>$constraint-&gt;payload['severity']</code>
+      <code>$constraintViolation-&gt;getInvalidValue()</code>
+    </MixedArgument>
+  </file>
+  <file src="src/Feed/Model/Google/Shopping/Price.php">
+    <PossiblyInvalidCast occurrences="1">
+      <code>$currency</code>
+    </PossiblyInvalidCast>
+  </file>
+  <file src="src/FeedContext/ContextList.php">
+    <MixedArgument occurrences="1">
+      <code>$context</code>
+    </MixedArgument>
+    <MixedAssignment occurrences="1">
+      <code>$context</code>
+    </MixedAssignment>
+  </file>
+  <file src="src/FeedContext/Google/Shopping/FeedContext.php">
+    <InvalidNullableReturnType occurrences="1">
+      <code>string</code>
+    </InvalidNullableReturnType>
+    <NullableReturnStatement occurrences="1">
+      <code>$billingData-&gt;getCompany()</code>
+    </NullableReturnStatement>
+    <PossiblyNullOperand occurrences="1">
+      <code>$channel-&gt;getHostname()</code>
+    </PossiblyNullOperand>
+  </file>
+  <file src="src/Message/Handler/FinishGenerationHandler.php">
+    <MixedArgument occurrences="2">
+      <code>$feedEnd</code>
+      <code>$feedStart</code>
+    </MixedArgument>
+    <RedundantConditionGivenDocblockType occurrences="1">
+      <code>isArray</code>
+    </RedundantConditionGivenDocblockType>
+  </file>
+  <file src="src/Message/Handler/GenerateBatchHandler.php">
+    <MixedArgumentTypeCoercion occurrences="1">
+      <code>$feedType-&gt;getValidationGroups()</code>
+    </MixedArgumentTypeCoercion>
+    <PropertyNotSetInConstructor occurrences="1">
+      <code>$initialRequestContext</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="src/Model/FeedInterface.php">
+    <MismatchingDocblockReturnType occurrences="1">
+      <code>Collection|ViolationInterface[]</code>
+    </MismatchingDocblockReturnType>
+  </file>
+  <file src="src/Processor/FeedProcessor.php">
+    <PossiblyNullReference occurrences="1">
+      <code>info</code>
+    </PossiblyNullReference>
+  </file>
+</files>

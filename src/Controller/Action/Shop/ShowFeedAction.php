@@ -6,9 +6,6 @@ namespace Setono\SyliusFeedPlugin\Controller\Action\Shop;
 
 use League\Flysystem\FilesystemInterface;
 use RuntimeException;
-use function Safe\fclose;
-use function Safe\fread;
-use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\Generator\FeedPathGeneratorInterface;
 use Setono\SyliusFeedPlugin\Repository\FeedRepositoryInterface;
 use Sylius\Component\Channel\Context\ChannelContextInterface;

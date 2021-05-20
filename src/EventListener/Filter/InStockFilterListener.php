@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\EventListener\Filter;
 
-use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\Event\QueryBuilderEvent;
 use Sylius\Component\Inventory\Model\StockableInterface;
 

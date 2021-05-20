@@ -7,8 +7,7 @@ namespace Setono\SyliusFeedPlugin\Model;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
-use Sylius\Component\Channel\Model\ChannelInterface as BaseChannelInterface;
-use Sylius\Component\Core\Model\ChannelInterface;
+use Sylius\Component\Channel\Model\ChannelInterface;
 use Sylius\Component\Resource\Model\ToggleableTrait;
 use Symfony\Component\Uid\Uuid;
 
@@ -30,11 +29,17 @@ class Feed implements FeedInterface
 
     protected int $finishedBatches = 0;
 
-    /** @var Collection|ChannelInterface[] */
-    protected $channels;
+    /**
+     * @var Collection|ChannelInterface[]
+     * @psalm-var Collection<array-key, ChannelInterface>
+     */
+    protected Collection $channels;
 
-    /** @var Collection|ViolationInterface[] */
-    protected $violations;
+    /**
+     * @var Collection|ViolationInterface[]
+     * @psalm-var Collection<array-key, ViolationInterface>
+     */
+    protected Collection $violations;
 
     public function __construct()
     {
@@ -124,21 +129,21 @@ class Feed implements FeedInterface
         return $this->channels;
     }
 
-    public function addChannel(BaseChannelInterface $channel): void
+    public function addChannel(ChannelInterface $channel): void
     {
         if (!$this->hasChannel($channel)) {
             $this->channels->add($channel);
         }
     }
 
-    public function removeChannel(BaseChannelInterface $channel): void
+    public function removeChannel(ChannelInterface $channel): void
     {
         if ($this->hasChannel($channel)) {
             $this->channels->removeElement($channel);
         }
     }
 
-    public function hasChannel(BaseChannelInterface $channel): bool
+    public function hasChannel(ChannelInterface $channel): bool
     {
         return $this->channels->contains($channel);
     }

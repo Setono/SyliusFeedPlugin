@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\Message\Handler;
 
 use InvalidArgumentException;
-use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\FeedType\FeedTypeInterface;
 use Setono\SyliusFeedPlugin\Message\Command\GenerateBatch;
 use Setono\SyliusFeedPlugin\Message\Command\GenerateFeed;
@@ -63,7 +62,8 @@ final class GenerateFeedHandler implements MessageHandlerInterface
             return $this->feedTypeRegistry->get((string) $feed->getFeedType());
         } catch (InvalidArgumentException $e) {
             throw new UnrecoverableMessageHandlingException(sprintf(
-                'Feed type with code "%s" does not exist', $feed->getFeedType()
+                'Feed type with code "%s" does not exist',
+                (string) $feed->getFeedType()
             ), 0, $e);
         }
     }
