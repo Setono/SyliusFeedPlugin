@@ -42,7 +42,7 @@
     "require-dev": {
         "phpspec/phpspec": "^6.3",
         "phpunit/phpunit": "^9.5",
-        "psalm/plugin-phpunit": "^0.15.1",
+        "psalm/plugin-phpunit": "^0.15.1 || ^0.16.0",
         "psalm/plugin-symfony": "^2.3",
         "roave/security-advisories": "dev-latest",
         "setono/code-quality-pack": "^2.1",
