@@ -125,6 +125,7 @@ final class ProcessFeedsContext implements Context
     <g:image_link>https://example.dk/media/cache/resolve/sylius_shop_product_large_thumbnail/%image_path%</g:image_link>
     <g:availability>instock</g:availability>
     <g:price>0USD</g:price>
+    <g:identifier_exists>false</g:identifier_exists>
     <g:condition>new</g:condition>
     <g:item_group_id>WARM_BEER</g:item_group_id>
 </item>
@@ -147,6 +148,7 @@ CONTENT;
     <g:image_link>https://example.com/media/cache/resolve/sylius_shop_product_large_thumbnail/%image_path%</g:image_link>
     <g:availability>instock</g:availability>
     <g:price>0USD</g:price>
+    <g:identifier_exists>false</g:identifier_exists>
     <g:condition>new</g:condition>
     <g:item_group_id>COLD_BEER</g:item_group_id>
 </item>
