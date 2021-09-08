@@ -2,7 +2,7 @@ setono_sylius_feed_admin_feed:
     resource: |
         alias: setono_sylius_feed.feed
         section: admin
-        templates: SyliusAdminBundle:Crud
+        templates: '@SyliusAdmin\\Crud'
         redirect: show
         grid: setono_sylius_feed_admin_feed
         vars:
@@ -11,7 +11,7 @@ setono_sylius_feed_admin_feed:
             index:
                 icon: 'file image outline'
     type: sylius.resource
-    
+
 setono_sylius_feed_admin_feed_show:
     path: /feeds/{id}
     methods: [GET]
@@ -21,7 +21,7 @@ setono_sylius_feed_admin_feed_show:
             section: admin
             permission: true
             template: "@SetonoSyliusFeedPlugin/Admin/Feed/show.html.twig"
-            
+
 setono_sylius_feed_admin_feed_process:
     path: /feeds/{id}/process
     methods: [GET]
@@ -38,7 +38,7 @@ setono_sylius_feed_admin_feed_violations_index:
                 route:
                     parameters:
                         id: $id
-            template: SyliusAdminBundle:Crud:index.html.twig
+            template: '@SyliusAdmin/Crud/index.html.twig'
             grid: setono_sylius_feed_admin_violation
             section: admin
             permission: true
