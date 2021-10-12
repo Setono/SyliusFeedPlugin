@@ -47,7 +47,9 @@ use Webmozart\Assert\Assert;
 final class GenerateBatchHandler implements MessageHandlerInterface
 {
     use GetChannelTrait;
+
     use GetFeedTrait;
+
     use GetLocaleTrait;
 
     private RequestContext $initialRequestContext;
