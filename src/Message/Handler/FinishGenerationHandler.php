@@ -147,8 +147,10 @@ final class FinishGenerationHandler implements MessageHandlerInterface
         } catch (Throwable $e) {
             $this->logger->critical($e->getMessage(), ['feedId' => $feed->getId()]);
 
-            $workflow->apply($feed, FeedGraph::TRANSITION_ERRORED);
-            $this->feedManager->flush();
+            if ($workflow->can($feed, FeedGraph::TRANSITION_ERRORED)) {
+                $workflow->apply($feed, FeedGraph::TRANSITION_ERRORED);
+                $this->feedManager->flush();
+            }
 
             throw $e;
         }
