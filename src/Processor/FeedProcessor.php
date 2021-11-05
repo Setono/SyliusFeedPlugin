@@ -8,6 +8,7 @@ use Psr\Log\LoggerAwareTrait;
 use Psr\Log\NullLogger;
 use Setono\SyliusFeedPlugin\Message\Command\ProcessFeed;
 use Setono\SyliusFeedPlugin\Repository\FeedRepositoryInterface;
+use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 final class FeedProcessor implements FeedProcessorInterface
@@ -30,8 +31,16 @@ final class FeedProcessor implements FeedProcessorInterface
         $feeds = $this->feedRepository->findEnabled();
 
         foreach ($feeds as $feed) {
-            $this->logger->info(sprintf('Triggering processing for feed "%s" (id: %d)', (string) $feed->getName(), (int) $feed->getId()));
-            $this->commandBus->dispatch(new ProcessFeed((int) $feed->getId()));
+            if ($feed->getState() !== FeedGraph::STATE_PROCESSING) {
+                $this->logger->info(
+                    sprintf(
+                        'Triggering processing for feed "%s" (id: %d)',
+                        (string)$feed->getName(),
+                        (int)$feed->getId()
+                    )
+                );
+                $this->commandBus->dispatch(new ProcessFeed((int)$feed->getId()));
+            }
         }
     }
 }
