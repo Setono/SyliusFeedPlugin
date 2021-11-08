@@ -6,6 +6,7 @@ namespace Setono\SyliusFeedPlugin\Doctrine\ORM;
 
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Repository\FeedRepositoryInterface;
+use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
 use Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository;
 
 class FeedRepository extends EntityRepository implements FeedRepositoryInterface
@@ -20,10 +21,12 @@ class FeedRepository extends EntityRepository implements FeedRepositoryInterface
         ;
     }
 
-    public function findEnabled(): array
+    public function findReadyToBeProcessed(): array
     {
         return $this->createQueryBuilder('o')
-            ->where('o.enabled = true')
+            ->where('o.state = :state')
+            ->andWhere('o.enabled = true')
+            ->setParameter('state', FeedGraph::STATE_READY)
             ->getQuery()
             ->getResult()
         ;
