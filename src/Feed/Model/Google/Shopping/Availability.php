@@ -19,9 +19,10 @@ final class Availability extends Enum
     protected static function values(): array
     {
         return [
-            'inStock' => 'in stock',
-            'outOfStock' => 'out of stock',
-            'preOrder' => 'pre order',
+            'backOrder' => 'backorder',
+            'inStock' => 'in_stock',
+            'outOfStock' => 'out_of_stock',
+            'preOrder' => 'preorder',
         ];
     }
 }
