@@ -1,6 +1,7 @@
 setono_sylius_feed:
     feed_type:
         google_shopping: Google shopping
+        facebook_catalog: Facebook catalog
     form:
         feed:
             name: Name
