@@ -15,8 +15,8 @@
             <argument>facebook_catalog</argument>
             <argument>@SetonoSyliusFeedPlugin/Feed/Facebook/Catalog/feed.txt.twig</argument>
             <argument type="service" id="setono_sylius_feed.data_provider.product"/>
-            <argument type="service" id="setono_sylius_feed.feed_context.google.shopping"/>
-            <argument type="service" id="setono_sylius_feed.feed_context.google.shopping.product_item"/>
+            <argument type="service" id="setono_sylius_feed.feed_context.facebook.catalog"/>
+            <argument type="service" id="setono_sylius_feed.feed_context.facebook.catalog.product_item"/>
             <tag name="setono_sylius_feed.feed_type"/>
         </service>
     </services>
