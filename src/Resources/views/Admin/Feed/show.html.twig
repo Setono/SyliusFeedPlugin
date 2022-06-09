@@ -42,14 +42,14 @@
                                 <div class="ui icon input" style="width: 100%;position: relative;">
                                     <div class="ui pointing below label teal"
                                          style="position:absolute; right: 10px; top: -100%; display: none"
-                                         id="link-copied-{{ loop.parent.loop.index }}">
+                                         id="link-copied-{{ loop.parent.loop.index }}-{{ loop.index }}">
                                         <i class="check icon"></i> {{ 'setono_sylius_feed.ui.link_copied'|trans }}
                                     </div>
-                                    <input id="link-{{ loop.parent.loop.index }}" type="text"
+                                    <input id="link-{{ loop.parent.loop.index }}-{{ loop.index }}" type="text"
                                            value="{{ setono_sylius_feed_generate_feed_url(feed, channel, locale) }}"
                                            readonly>
-                                    <i class="copy link icon" data-link-id="link-{{ loop.parent.loop.index }}"
-                                       data-link-copied-id="link-copied-{{ loop.parent.loop.index }}"
+                                    <i class="copy link icon" data-link-id="link-{{ loop.parent.loop.index }}-{{ loop.index }}"
+                                       data-link-copied-id="link-copied-{{ loop.parent.loop.index }}-{{ loop.index }}"
                                        data-content="{{ 'setono_sylius_feed.ui.click_to_copy'|trans }}"
                                        data-position="top right"></i>
                                 </div>
