@@ -20,9 +20,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 final class GenerateFeedHandler implements MessageHandlerInterface
 {
     use GetChannelTrait;
-
     use GetFeedTrait;
-
     use GetLocaleTrait;
 
     private FeedTypeRegistryInterface $feedTypeRegistry;
