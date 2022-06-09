@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.7.2@83a0325c0a95c0ab531d6b90c877068b464377b5">
+<files psalm-version="4.23.0@f1fe6ff483bf325c803df9f510d09a03fd796f88">
   <file src="src/Controller/Action/Shop/ShowFeedAction.php">
     <ImplicitToStringCast occurrences="1">
       <code>$feedPath</code>
@@ -18,31 +18,25 @@
     </PossiblyNullOperand>
   </file>
   <file src="src/DependencyInjection/Compiler/RegisterFeedTypesPass.php">
-    <MixedArgumentTypeCoercion occurrences="1">
-      <code>$id</code>
-    </MixedArgumentTypeCoercion>
-    <MixedAssignment occurrences="1">
-      <code>$attributes</code>
-    </MixedAssignment>
-    <UnusedVariable occurrences="1">
-      <code>$attributes</code>
-    </UnusedVariable>
+    <UnnecessaryVarAnnotation occurrences="1">
+      <code>string</code>
+    </UnnecessaryVarAnnotation>
   </file>
   <file src="src/DependencyInjection/Compiler/RegisterFilesystemPass.php">
-    <MixedArgument occurrences="4">
+    <InvalidArgument occurrences="4">
       <code>$parameterValue</code>
       <code>$parameterValue</code>
       <code>$parameterValue</code>
       <code>$parameterValue</code>
-    </MixedArgument>
-    <MixedAssignment occurrences="1">
+    </InvalidArgument>
+    <PossiblyInvalidCast occurrences="2">
       <code>$parameterValue</code>
-    </MixedAssignment>
+      <code>$parameterValue</code>
+    </PossiblyInvalidCast>
   </file>
   <file src="src/DependencyInjection/Compiler/ValidateDataProvidersPass.php">
-    <MixedArgument occurrences="2">
+    <MixedArgument occurrences="1">
       <code>$code</code>
-      <code>$tagged</code>
     </MixedArgument>
     <MixedArrayAccess occurrences="1">
       <code>$attributes['code']</code>
@@ -51,10 +45,9 @@
       <code>$seen[$code]</code>
       <code>$seen[$code]</code>
     </MixedArrayOffset>
-    <MixedAssignment occurrences="3">
+    <MixedAssignment occurrences="2">
       <code>$attributes</code>
       <code>$code</code>
-      <code>$tagged</code>
     </MixedAssignment>
   </file>
   <file src="src/DependencyInjection/Configuration.php">
@@ -71,9 +64,11 @@
     </UnnecessaryVarAnnotation>
   </file>
   <file src="src/DependencyInjection/SetonoSyliusFeedExtension.php">
-    <MixedArgument occurrences="2">
+    <MixedArgument occurrences="4">
       <code>$config['driver']</code>
       <code>$config['resources']</code>
+      <code>$config['storage']['feed']</code>
+      <code>$config['storage']['feed_tmp']</code>
     </MixedArgument>
     <MixedArrayAccess occurrences="2">
       <code>$config['storage']['feed']</code>
@@ -99,18 +94,15 @@
     </MixedReturnStatement>
   </file>
   <file src="src/EventListener/Filter/AbstractFilterListener.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$this-&gt;class</code>
+    </ArgumentTypeCoercion>
     <MixedArgument occurrences="1">
       <code>$additionalInstanceCheck</code>
     </MixedArgument>
     <MixedAssignment occurrences="1">
       <code>$additionalInstanceCheck</code>
     </MixedAssignment>
-    <MixedInferredReturnType occurrences="1">
-      <code>string</code>
-    </MixedInferredReturnType>
-    <MixedReturnStatement occurrences="1">
-      <code>$aliases[0]</code>
-    </MixedReturnStatement>
   </file>
   <file src="src/EventListener/MoveGeneratedFeedSubscriber.php">
     <ImplicitToStringCast occurrences="1">
@@ -168,6 +160,9 @@
     <PropertyNotSetInConstructor occurrences="1">
       <code>$initialRequestContext</code>
     </PropertyNotSetInConstructor>
+    <UnnecessaryVarAnnotation occurrences="1">
+      <code>ConstraintViolationInterface</code>
+    </UnnecessaryVarAnnotation>
   </file>
   <file src="src/Model/FeedInterface.php">
     <MismatchingDocblockReturnType occurrences="1">
