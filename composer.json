@@ -57,7 +57,7 @@
         "symfony/dotenv": "^4.4 || ^5.4",
         "symfony/intl": "^4.4 || ^5.4",
         "symfony/web-profiler-bundle": "^4.4 || ^5.4",
-        "weirdan/doctrine-psalm-plugin": "^1.0"
+        "weirdan/doctrine-psalm-plugin": "^1.0 || ^2.0"
     },
     "prefer-stable": true,
     "autoload": {
