@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Controller\Action\Shop;
 
-use League\Flysystem\FilesystemInterface;
+use League\Flysystem\FilesystemOperator;
 use RuntimeException;
 use Setono\SyliusFeedPlugin\Generator\FeedPathGeneratorInterface;
 use Setono\SyliusFeedPlugin\Repository\FeedRepositoryInterface;
@@ -24,7 +24,7 @@ final class ShowFeedAction
 
     private FeedPathGeneratorInterface $feedPathGenerator;
 
-    private FilesystemInterface $filesystem;
+    private FilesystemOperator $filesystem;
 
     private MimeTypesInterface $mimeTypes;
 
@@ -33,7 +33,7 @@ final class ShowFeedAction
         ChannelContextInterface $channelContext,
         LocaleContextInterface $localeContext,
         FeedPathGeneratorInterface $feedPathGenerator,
-        FilesystemInterface $filesystem,
+        FilesystemOperator $filesystem,
         MimeTypesInterface $mimeTypes
     ) {
         $this->repository = $repository;

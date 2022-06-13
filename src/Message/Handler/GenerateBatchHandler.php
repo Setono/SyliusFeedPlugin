@@ -11,7 +11,7 @@ use const JSON_PRESERVE_ZERO_FRACTION;
 use const JSON_PRETTY_PRINT;
 use const JSON_UNESCAPED_SLASHES;
 use const JSON_UNESCAPED_UNICODE;
-use League\Flysystem\FilesystemInterface;
+use League\Flysystem\FilesystemOperator;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use Setono\SyliusFeedPlugin\Event\BatchGeneratedEvent;
@@ -42,7 +42,6 @@ use Symfony\Component\Workflow\Registry;
 use Symfony\Component\Workflow\Workflow;
 use Throwable;
 use Twig\Environment;
-use Webmozart\Assert\Assert;
 
 final class GenerateBatchHandler implements MessageHandlerInterface
 {
@@ -58,7 +57,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
 
     private Environment $twig;
 
-    private FilesystemInterface $filesystem;
+    private FilesystemOperator $filesystem;
 
     private FeedPathGeneratorInterface $temporaryFeedPathGenerator;
 
@@ -83,7 +82,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
         ObjectManager $feedManager,
         FeedTypeRegistryInterface $feedTypeRegistry,
         Environment $twig,
-        FilesystemInterface $filesystem,
+        FilesystemOperator $filesystem,
         FeedPathGeneratorInterface $temporaryFeedPathGenerator,
         EventDispatcherInterface $eventDispatcher,
         Registry $workflowRegistry,
@@ -206,11 +205,9 @@ final class GenerateBatchHandler implements MessageHandlerInterface
             $dir = $this->temporaryFeedPathGenerator->generate($feed, (string) $channel->getCode(), (string) $locale->getCode());
             $path = TemporaryFeedPathGenerator::getPartialFile($dir, $this->filesystem);
 
-            $res = $this->filesystem->writeStream((string) $path, $stream);
+            $this->filesystem->writeStream((string) $path, $stream);
 
             fclose($stream);
-
-            Assert::true($res, 'An error occurred when trying to write a feed item');
 
             $this->feedManager->flush();
             $this->feedManager->clear();

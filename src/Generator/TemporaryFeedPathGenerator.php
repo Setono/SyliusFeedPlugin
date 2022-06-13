@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Generator;
 
-use League\Flysystem\FilesystemInterface;
+use League\Flysystem\FilesystemOperator;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use SplFileInfo;
 use Webmozart\Assert\Assert;
@@ -29,11 +29,11 @@ final class TemporaryFeedPathGenerator implements FeedPathGeneratorInterface
         return new SplFileInfo($dir->getPathname() . '/' . self::BASE_FILENAME);
     }
 
-    public static function getPartialFile(SplFileInfo $dir, FilesystemInterface $filesystem): SplFileInfo
+    public static function getPartialFile(SplFileInfo $dir, FilesystemOperator $filesystem): SplFileInfo
     {
         do {
             $path = $dir->getPathname() . '/' . uniqid('partial-', true);
-        } while ($filesystem->has($path));
+        } while ($filesystem->fileExists($path));
 
         return new SplFileInfo($path);
     }
