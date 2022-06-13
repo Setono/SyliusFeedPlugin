@@ -1,8 +1,7 @@
 {
   "dependencies": {
-    "babel-polyfill": "^6.26.0",
     "chart.js": "^2.9.3",
-    "jquery": "^3.2.0",
+    "jquery": "^3.4.0",
     "jquery.dirtyforms": "^2.0.0",
     "lightbox2": "^2.9.0",
     "semantic-ui-css": "^2.2.0",
@@ -29,7 +28,7 @@
     "gulp-if": "^2.0.0",
     "gulp-livereload": "^3.8.1",
     "gulp-order": "^1.1.1",
-    "gulp-sass": "^4.0.1",
+    "gulp-sass": "^5.1",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-uglifycss": "^1.0.5",
     "merge-stream": "^1.0.0",
@@ -39,7 +38,7 @@
     "rollup-plugin-inject": "^2.0.0",
     "rollup-plugin-node-resolve": "^3.3.0",
     "rollup-plugin-uglify": "^4.0.0",
-    "sass-loader": "^7.0.1",
+    "sass-loader": "^13.0",
     "upath": "^1.1.0",
     "yargs": "^6.4.0"
   },

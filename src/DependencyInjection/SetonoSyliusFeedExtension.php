@@ -54,7 +54,12 @@ final class SetonoSyliusFeedExtension extends AbstractResourceExtension implemen
                             'to' => FeedGraph::STATE_PROCESSING,
                         ],
                         FeedGraph::TRANSITION_ERRORED => [
-                            'from' => FeedGraph::STATE_PROCESSING,
+                            'from' => [
+                                FeedGraph::STATE_UNPROCESSED,
+                                FeedGraph::STATE_PROCESSING,
+                                FeedGraph::STATE_READY,
+                                FeedGraph::STATE_ERROR,
+                            ],
                             'to' => FeedGraph::STATE_ERROR,
                         ],
                         FeedGraph::TRANSITION_PROCESSED => [

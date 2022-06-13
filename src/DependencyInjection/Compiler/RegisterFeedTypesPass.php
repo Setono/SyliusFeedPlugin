@@ -18,7 +18,10 @@ final class RegisterFeedTypesPass implements CompilerPassInterface
 
         $registry = $container->getDefinition('setono_sylius_feed.registry.feed_type');
 
-        foreach ($container->findTaggedServiceIds('setono_sylius_feed.feed_type') as $id => $attributes) {
+        /**
+         * @var string $id
+         */
+        foreach (array_keys($container->findTaggedServiceIds('setono_sylius_feed.feed_type')) as $id) {
             $registry->addArgument(new Reference($id));
         }
     }

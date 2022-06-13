@@ -123,8 +123,9 @@ final class ProcessFeedsContext implements Context
     <g:description>Agoodwarmbeer</g:description>
     <link>https://example.dk/en_US/products/warm-beer</link>
     <g:image_link>https://example.dk/media/cache/resolve/sylius_shop_product_large_thumbnail/%image_path%</g:image_link>
-    <g:availability>instock</g:availability>
+    <g:availability>in_stock</g:availability>
     <g:price>0USD</g:price>
+    <g:identifier_exists>false</g:identifier_exists>
     <g:condition>new</g:condition>
     <g:item_group_id>WARM_BEER</g:item_group_id>
 </item>
@@ -145,8 +146,9 @@ CONTENT;
     <g:description>Anicecoldbeer</g:description>
     <link>https://example.com/en_US/products/cold-beer</link>
     <g:image_link>https://example.com/media/cache/resolve/sylius_shop_product_large_thumbnail/%image_path%</g:image_link>
-    <g:availability>instock</g:availability>
+    <g:availability>in_stock</g:availability>
     <g:price>0USD</g:price>
+    <g:identifier_exists>false</g:identifier_exists>
     <g:condition>new</g:condition>
     <g:item_group_id>COLD_BEER</g:item_group_id>
 </item>
