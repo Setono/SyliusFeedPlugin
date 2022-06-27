@@ -56,7 +56,7 @@ final class ShowFeedAction
 
         $feedPath = $this->feedPathGenerator->generate($feed, $channelCode, $localeCode);
 
-        if (!$this->filesystem->has((string) $feedPath)) {
+        if (!$this->filesystem->fileExists((string) $feedPath)) {
             throw new NotFoundHttpException(sprintf('The feed with id %s has not been generated', $code));
         }
 
