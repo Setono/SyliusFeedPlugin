@@ -46,7 +46,7 @@
         "phpspec/phpspec": "^7.2",
         "phpunit/phpunit": "^9.5",
         "polishsymfonycommunity/symfony-mocker-container": "^1.0",
-        "psalm/plugin-phpunit": "^0.16",
+        "psalm/plugin-phpunit": "^0.16 || ^0.17",
         "psalm/plugin-symfony": "^3.0",
         "roave/security-advisories": "dev-latest",
         "setono/code-quality-pack": "^2.2",
