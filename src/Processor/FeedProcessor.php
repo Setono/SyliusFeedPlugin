@@ -34,10 +34,10 @@ final class FeedProcessor implements FeedProcessorInterface
                 sprintf(
                     'Triggering processing for feed "%s" (id: %d)',
                     (string) $feed->getName(),
-                    (int) $feed->getId()
-                )
+                    (int) $feed->getId(),
+                ),
             );
-            $this->commandBus->dispatch(new ProcessFeed((int)$feed->getId()));
+            $this->commandBus->dispatch(new ProcessFeed((int) $feed->getId()));
         }
     }
 }

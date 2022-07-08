@@ -21,7 +21,7 @@ class ProcessFeedActionSpec extends ObjectBehavior
         MessageBusInterface $commandBus,
         UrlGeneratorInterface $urlGenerator,
         FlashBagInterface $flashBag,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
     ): void {
         $this->beConstructedWith($commandBus, $urlGenerator, $flashBag, $translator);
     }

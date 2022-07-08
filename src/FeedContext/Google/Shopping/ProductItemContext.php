@@ -50,7 +50,7 @@ class ProductItemContext implements ItemContextInterface
     public function __construct(
         RouterInterface $router,
         CacheManager $cacheManager,
-        AvailabilityCheckerInterface $availabilityChecker
+        AvailabilityCheckerInterface $availabilityChecker,
     ) {
         $this->router = $router;
         $this->cacheManager = $cacheManager;
@@ -63,7 +63,7 @@ class ProductItemContext implements ItemContextInterface
             throw new InvalidArgumentException(sprintf(
                 'The class %s is not an instance of %s',
                 get_class($product),
-                ProductInterface::class
+                ProductInterface::class,
             ));
         }
 
@@ -97,7 +97,7 @@ class ProductItemContext implements ItemContextInterface
 
             $data->setCondition(
                 $product instanceof ConditionAwareInterface ?
-                    new Condition((string) $product->getCondition()) : Condition::new()
+                    new Condition((string) $product->getCondition()) : Condition::new(),
             );
 
             if (null !== $productType) {
@@ -173,7 +173,7 @@ class ProductItemContext implements ItemContextInterface
         return $this->router->generate(
             'sylius_shop_product_show',
             ['slug' => $translation->getSlug(), '_locale' => $locale->getCode()],
-            UrlGeneratorInterface::ABSOLUTE_URL
+            UrlGeneratorInterface::ABSOLUTE_URL,
         );
     }
 

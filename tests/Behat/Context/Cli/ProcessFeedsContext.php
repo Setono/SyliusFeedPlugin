@@ -49,7 +49,7 @@ final class ProcessFeedsContext implements Context
         FilesystemInterface $filesystem,
         FeedProcessorInterface $processor,
         FeedPathGeneratorInterface $feedPathGenerator,
-        RepositoryInterface $feedRepository
+        RepositoryInterface $feedRepository,
     ) {
         $this->kernel = $kernel;
         $this->filesystem = $filesystem;
@@ -171,7 +171,7 @@ CONTENT;
         return \preg_replace(
             '/sylius_shop_product_large_thumbnail\/.*?\.jpe?g/',
             'sylius_shop_product_large_thumbnail/%image_path%',
-            $actualContent
+            $actualContent,
         );
     }
 }

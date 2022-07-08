@@ -29,7 +29,7 @@ final class FeedType implements FeedTypeInterface
         DataProviderInterface $dataProvider,
         FeedContextInterface $feedContext,
         ItemContextInterface $itemContext,
-        array $validationGroups = []
+        array $validationGroups = [],
     ) {
         $this->code = $code;
         $this->template = $template;

@@ -19,6 +19,6 @@ interface ViolationFactoryInterface extends FactoryInterface
         ConstraintViolationInterface $constraintViolation,
         ChannelInterface $channel,
         LocaleInterface $locale,
-        $data = null
+        $data = null,
     ): ViolationInterface;
 }

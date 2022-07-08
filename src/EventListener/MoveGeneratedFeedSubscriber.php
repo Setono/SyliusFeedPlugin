@@ -29,7 +29,7 @@ final class MoveGeneratedFeedSubscriber implements EventSubscriberInterface
         FilesystemInterface $temporaryFilesystem,
         FilesystemInterface $filesystem,
         FeedPathGeneratorInterface $temporaryFeedPathGenerator,
-        FeedPathGeneratorInterface $feedPathGenerator
+        FeedPathGeneratorInterface $feedPathGenerator,
     ) {
         $this->temporaryFilesystem = $temporaryFilesystem;
         $this->filesystem = $filesystem;
@@ -60,14 +60,14 @@ final class MoveGeneratedFeedSubscriber implements EventSubscriberInterface
                 $temporaryDir = $this->temporaryFeedPathGenerator->generate(
                     $feed,
                     (string) $channel->getCode(),
-                    (string) $locale->getCode()
+                    (string) $locale->getCode(),
                 );
                 $temporaryPath = TemporaryFeedPathGenerator::getBaseFile($temporaryDir);
                 $tempFile = $this->temporaryFilesystem->readStream((string) $temporaryPath);
                 if (false === $tempFile) {
                     throw new \RuntimeException(sprintf(
                         'The file with path "%s" could not be found',
-                        $temporaryPath
+                        $temporaryPath,
                     ));
                 }
 
@@ -75,7 +75,7 @@ final class MoveGeneratedFeedSubscriber implements EventSubscriberInterface
                 $newPath = $this->feedPathGenerator->generate(
                     $feed,
                     (string) $channel->getCode(),
-                    (string) $locale->getCode()
+                    (string) $locale->getCode(),
                 );
                 $path = sprintf('%s/%s', $newPath->getPath(), uniqid('feed-', true));
                 $res = $this->filesystem->writeStream($path, $tempFile);

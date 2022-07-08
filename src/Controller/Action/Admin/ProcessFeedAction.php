@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Controller\Action\Admin;
 
-use Doctrine\Persistence\ObjectManager;
 use Setono\SyliusFeedPlugin\Message\Command\ProcessFeed;
 use Setono\SyliusFeedPlugin\Model\Feed;
 use Setono\SyliusFeedPlugin\Repository\FeedRepositoryInterface;
@@ -25,6 +24,7 @@ final class ProcessFeedAction
     private FlashBagInterface $flashBag;
 
     private TranslatorInterface $translator;
+
     private FeedRepositoryInterface $feedRepository;
 
     public function __construct(
@@ -32,7 +32,7 @@ final class ProcessFeedAction
         UrlGeneratorInterface $urlGenerator,
         FlashBagInterface $flashBag,
         FeedRepositoryInterface $feedRepository,
-        TranslatorInterface $translator
+        TranslatorInterface $translator,
     ) {
         $this->commandBus = $commandBus;
         $this->urlGenerator = $urlGenerator;

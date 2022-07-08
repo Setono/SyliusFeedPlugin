@@ -40,7 +40,7 @@ class DataProvider implements DataProviderInterface
         QueryRebuilderInterface $queryRebuilder,
         EventDispatcherInterface $eventDispatcher,
         ManagerRegistry $managerRegistry,
-        string $class
+        string $class,
     ) {
         $this->batcherFactory = $batcherFactory;
         $this->queryRebuilder = $queryRebuilder;
@@ -79,7 +79,8 @@ class DataProvider implements DataProviderInterface
         $manager = $this->getManager();
         $qb = $manager->createQueryBuilder();
         $qb->select('o')
-            ->from($this->class, 'o');
+            ->from($this->class, 'o')
+        ;
 
         $this->eventDispatcher->dispatch(new QueryBuilderEvent($this, $qb, $channel, $locale));
 

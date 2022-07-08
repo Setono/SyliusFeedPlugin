@@ -32,7 +32,7 @@ final class GenerateFeedHandler implements MessageHandlerInterface
         ChannelRepositoryInterface $channelRepository,
         RepositoryInterface $localeRepository,
         FeedTypeRegistryInterface $feedTypeRegistry,
-        MessageBusInterface $commandBus
+        MessageBusInterface $commandBus,
     ) {
         $this->feedRepository = $feedRepository;
         $this->channelRepository = $channelRepository;
@@ -63,7 +63,7 @@ final class GenerateFeedHandler implements MessageHandlerInterface
         } catch (InvalidArgumentException $e) {
             throw new UnrecoverableMessageHandlingException(sprintf(
                 'Feed type with code "%s" does not exist',
-                (string) $feed->getFeedType()
+                (string) $feed->getFeedType(),
             ), 0, $e);
         }
     }
