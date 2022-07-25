@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Model;
 
+/**
+ * @deprecated since 0.6.6 This interface is deprecated and will be removed in 0.7.0
+ * Use \Setono\SyliusFeedPlugin\Model\LocalizedColorAwareInterface instead.
+ */
 interface ColorAwareInterface
 {
     /**

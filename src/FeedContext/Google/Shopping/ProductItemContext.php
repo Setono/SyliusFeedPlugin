@@ -6,7 +6,6 @@ namespace Setono\SyliusFeedPlugin\FeedContext\Google\Shopping;
 
 use InvalidArgumentException;
 use Liip\ImagineBundle\Imagine\Cache\CacheManager;
-use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Availability;
 use Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Condition;
 use Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping\Price;
@@ -18,6 +17,9 @@ use Setono\SyliusFeedPlugin\Model\BrandAwareInterface;
 use Setono\SyliusFeedPlugin\Model\ColorAwareInterface;
 use Setono\SyliusFeedPlugin\Model\ConditionAwareInterface;
 use Setono\SyliusFeedPlugin\Model\GtinAwareInterface;
+use Setono\SyliusFeedPlugin\Model\LocalizedBrandAwareInterface;
+use Setono\SyliusFeedPlugin\Model\LocalizedColorAwareInterface;
+use Setono\SyliusFeedPlugin\Model\LocalizedSizeAwareInterface;
 use Setono\SyliusFeedPlugin\Model\MpnAwareInterface;
 use Setono\SyliusFeedPlugin\Model\SizeAwareInterface;
 use Setono\SyliusFeedPlugin\Model\TaxonPathAwareInterface;
@@ -59,7 +61,8 @@ class ProductItemContext implements ItemContextInterface
     {
         if (!$product instanceof ProductInterface) {
             throw new InvalidArgumentException(sprintf(
-                'The class %s is not an instance of %s', get_class($product),
+                'The class %s is not an instance of %s',
+                get_class($product),
                 ProductInterface::class
             ));
         }
@@ -101,8 +104,12 @@ class ProductItemContext implements ItemContextInterface
                 $data->setProductType($productType);
             }
 
-            if ($variant instanceof BrandAwareInterface && $variant->getBrand() !== null) {
+            if ($variant instanceof LocalizedBrandAwareInterface && $variant->getBrand($locale) !== null) {
+                $data->setBrand((string) $variant->getBrand($locale));
+            } elseif ($variant instanceof BrandAwareInterface && $variant->getBrand() !== null) {
                 $data->setBrand((string) $variant->getBrand());
+            } elseif ($product instanceof LocalizedBrandAwareInterface && $product->getBrand($locale) !== null) {
+                $data->setBrand((string) $product->getBrand($locale));
             } elseif ($product instanceof BrandAwareInterface && $product->getBrand() !== null) {
                 $data->setBrand((string) $product->getBrand());
             }
@@ -119,14 +126,22 @@ class ProductItemContext implements ItemContextInterface
                 $data->setMpn((string) $product->getMpn());
             }
 
-            if ($variant instanceof SizeAwareInterface && $variant->getSize() !== null) {
+            if ($variant instanceof LocalizedSizeAwareInterface && $variant->getSize($locale) !== null) {
+                $data->setSize((string) $variant->getSize($locale));
+            } elseif ($variant instanceof SizeAwareInterface && $variant->getSize() !== null) {
                 $data->setSize((string) $variant->getSize());
+            } elseif ($product instanceof LocalizedSizeAwareInterface && $product->getSize($locale) !== null) {
+                $data->setSize((string) $product->getSize($locale));
             } elseif ($product instanceof SizeAwareInterface && $product->getSize() !== null) {
                 $data->setSize((string) $product->getSize());
             }
 
-            if ($variant instanceof ColorAwareInterface && $variant->getColor() !== null) {
+            if ($variant instanceof LocalizedColorAwareInterface && $variant->getColor($locale) !== null) {
+                $data->setColor((string) $variant->getColor($locale));
+            } elseif ($variant instanceof ColorAwareInterface && $variant->getColor() !== null) {
                 $data->setColor((string) $variant->getColor());
+            } elseif ($product instanceof LocalizedColorAwareInterface && $product->getColor($locale) !== null) {
+                $data->setColor((string) $product->getColor($locale));
             } elseif ($product instanceof ColorAwareInterface && $product->getColor() !== null) {
                 $data->setColor((string) $product->getColor());
             }

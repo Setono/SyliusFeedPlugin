@@ -16,15 +16,17 @@ interface ViolationInterface extends ResourceInterface
 
     public const SEVERITY_NOTICE = 'notice';
 
+    public function getId(): ?int;
+
     public function getFeed(): ?FeedInterface;
 
     public function setFeed(?FeedInterface $feed): void;
 
-    public function getChannel(): ChannelInterface;
+    public function getChannel(): ?ChannelInterface;
 
     public function setChannel(ChannelInterface $channel): void;
 
-    public function getLocale(): LocaleInterface;
+    public function getLocale(): ?LocaleInterface;
 
     public function setLocale(LocaleInterface $locale): void;
 
@@ -32,7 +34,7 @@ interface ViolationInterface extends ResourceInterface
 
     public function setSeverity(string $severity): void;
 
-    public function getMessage(): string;
+    public function getMessage(): ?string;
 
     public function setMessage(string $message): void;
 

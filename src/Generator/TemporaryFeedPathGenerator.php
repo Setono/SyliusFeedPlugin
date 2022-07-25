@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\Generator;
 
 use League\Flysystem\FilesystemInterface;
-use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use SplFileInfo;
 use Webmozart\Assert\Assert;

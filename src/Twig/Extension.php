@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Twig;
 
-use function Safe\preg_replace;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Locale\Model\LocaleInterface;

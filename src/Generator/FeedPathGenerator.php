@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Generator;
 
-use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Resolver\FeedExtensionResolverInterface;
 use SplFileInfo;

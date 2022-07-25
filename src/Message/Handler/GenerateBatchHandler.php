@@ -14,11 +14,6 @@ use const JSON_UNESCAPED_UNICODE;
 use League\Flysystem\FilesystemInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
-use Safe\Exceptions\FilesystemException;
-use function Safe\fclose;
-use function Safe\fopen;
-use function Safe\fwrite;
-use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\Event\BatchGeneratedEvent;
 use Setono\SyliusFeedPlugin\Event\GenerateBatchItemEvent;
 use Setono\SyliusFeedPlugin\Event\GenerateBatchViolationEvent;
@@ -41,6 +36,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Component\Workflow\Workflow;
@@ -143,21 +139,33 @@ final class GenerateBatchHandler implements MessageHandlerInterface
             foreach ($items as $item) {
                 try {
                     $contextList = $itemContext->getContextList($item, $channel, $locale);
+
+                    /** @var array|object $context */
                     foreach ($contextList as $context) {
                         $this->eventDispatcher->dispatch(new GenerateBatchItemEvent(
-                            $feed, $feedType, $channel, $locale, $context
+                            $feed,
+                            $feedType,
+                            $channel,
+                            $locale,
+                            $context
                         ));
 
                         $constraintViolationList = $this->validator->validate(
-                            $context, null, $feedType->getValidationGroups()
+                            $context,
+                            null,
+                            $feedType->getValidationGroups()
                         );
 
                         $hasErrorViolation = false;
 
                         if ($constraintViolationList->count() > 0) {
+                            /** @var ConstraintViolationInterface $constraintViolation */
                             foreach ($constraintViolationList as $constraintViolation) {
                                 $violation = $this->violationFactory->createFromConstraintViolation(
-                                    $constraintViolation, $channel, $locale, $this->serializer->serialize($context, 'json', [
+                                    $constraintViolation,
+                                    $channel,
+                                    $locale,
+                                    $this->serializer->serialize($context, 'json', [
                                         JsonEncode::OPTIONS => JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION | JSON_INVALID_UTF8_IGNORE,
                                         'setono_sylius_feed_data' => true,
                                     ])
@@ -171,7 +179,12 @@ final class GenerateBatchHandler implements MessageHandlerInterface
                             }
 
                             $this->eventDispatcher->dispatch(new GenerateBatchViolationEvent(
-                                $feed, $feedType, $channel, $locale, $context, $constraintViolationList
+                                $feed,
+                                $feedType,
+                                $channel,
+                                $locale,
+                                $context,
+                                $constraintViolationList
                             ));
                         }
 
@@ -195,7 +208,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
 
             $res = $this->filesystem->writeStream((string) $path, $stream);
 
-            $this->closeStream($stream);
+            fclose($stream);
 
             Assert::true($res, 'An error occurred when trying to write a feed item');
 
@@ -264,7 +277,9 @@ final class GenerateBatchHandler implements MessageHandlerInterface
             $workflow = $this->workflowRegistry->get($feed, FeedGraph::GRAPH);
         } catch (InvalidArgumentException $e) {
             throw new UnrecoverableMessageHandlingException(
-                'An error occurred when trying to get the workflow for the feed', 0, $e
+                'An error occurred when trying to get the workflow for the feed',
+                0,
+                $e
             );
         }
 
@@ -280,18 +295,6 @@ final class GenerateBatchHandler implements MessageHandlerInterface
         return fopen('php://temp', 'w+b');
     }
 
-    /**
-     * @param resource $stream
-     */
-    private function closeStream($stream): void
-    {
-        try {
-            // tries to close the stream although it may already have been closed by flysystem
-            fclose($stream);
-        } catch (FilesystemException $e) {
-        }
-    }
-
     private function applyErrorTransition(Workflow $workflow, FeedInterface $feed): void
     {
         // if the feed is already errored we won't want to throw an exception
@@ -302,7 +305,8 @@ final class GenerateBatchHandler implements MessageHandlerInterface
         if (!$workflow->can($feed, FeedGraph::TRANSITION_ERRORED)) {
             throw new InvalidArgumentException(sprintf(
                 'The transition "%s" could not be applied. State was: "%s"',
-                FeedGraph::TRANSITION_ERRORED, $feed->getState()
+                FeedGraph::TRANSITION_ERRORED,
+                $feed->getState()
             ));
         }
 

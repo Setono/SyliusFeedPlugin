@@ -16,9 +16,9 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 final class SetonoSyliusFeedExtension extends AbstractResourceExtension implements PrependExtensionInterface
 {
-    public function load(array $config, ContainerBuilder $container): void
+    public function load(array $configs, ContainerBuilder $container): void
     {
-        $config = $this->processConfiguration($this->getConfiguration([], $container), $config);
+        $config = $this->processConfiguration($this->getConfiguration([], $container), $configs);
         $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/../Resources/config'));
 
         $container->setParameter('setono_sylius_feed.storage.feed', $config['storage']['feed']);
@@ -54,7 +54,12 @@ final class SetonoSyliusFeedExtension extends AbstractResourceExtension implemen
                             'to' => FeedGraph::STATE_PROCESSING,
                         ],
                         FeedGraph::TRANSITION_ERRORED => [
-                            'from' => FeedGraph::STATE_PROCESSING,
+                            'from' => [
+                                FeedGraph::STATE_UNPROCESSED,
+                                FeedGraph::STATE_PROCESSING,
+                                FeedGraph::STATE_READY,
+                                FeedGraph::STATE_ERROR,
+                            ],
                             'to' => FeedGraph::STATE_ERROR,
                         ],
                         FeedGraph::TRANSITION_PROCESSED => [

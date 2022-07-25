@@ -6,7 +6,6 @@ namespace Setono\SyliusFeedPlugin\DependencyInjection\Compiler;
 
 use InvalidArgumentException;
 use League\Flysystem\FilesystemInterface;
-use function Safe\sprintf;
 use Symfony\Component\Config\Definition\Exception\InvalidDefinitionException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

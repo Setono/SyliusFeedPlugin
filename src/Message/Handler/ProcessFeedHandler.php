@@ -6,7 +6,6 @@ namespace Setono\SyliusFeedPlugin\Message\Handler;
 
 use Doctrine\Persistence\ObjectManager;
 use InvalidArgumentException;
-use function Safe\sprintf;
 use Setono\SyliusFeedPlugin\Message\Command\GenerateFeed;
 use Setono\SyliusFeedPlugin\Message\Command\ProcessFeed;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
