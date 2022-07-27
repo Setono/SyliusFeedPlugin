@@ -45,6 +45,7 @@
         "psalm/plugin-phpunit": "^0.15.1",
         "psalm/plugin-symfony": "^2.3",
         "roave/security-advisories": "dev-latest",
+<<<<<<< HEAD
         "setono/code-quality-pack": "^2.1.2",
         "setono/sylius-behat-pack": "^0.1",
         "sylius/sylius": "~1.7.11",
@@ -53,6 +54,17 @@
         "symfony/intl": "^4.4 || ^5.0",
         "symfony/web-profiler-bundle": "^5.0",
         "weirdan/doctrine-psalm-plugin": "^1.0"
+=======
+        "setono/code-quality-pack": "^2.2",
+        "setono/sylius-behat-pack": "^0.2",
+        "sylius/admin-api-bundle": "^1.11",
+        "sylius/sylius": "~1.10.14",
+        "symfony/debug-bundle": "^4.4 || ^5.4",
+        "symfony/dotenv": "^4.4 || ^5.4",
+        "symfony/intl": "^4.4 || ^5.4",
+        "symfony/web-profiler-bundle": "^4.4 || ^5.4",
+        "weirdan/doctrine-psalm-plugin": "^2.2"
+>>>>>>> 372e3e7 (Up deps)
     },
     "prefer-stable": true,
     "autoload": {
