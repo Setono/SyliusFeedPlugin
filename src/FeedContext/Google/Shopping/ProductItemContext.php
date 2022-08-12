@@ -26,6 +26,7 @@ use Setono\SyliusFeedPlugin\Model\TaxonPathAwareInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ImageInterface;
 use Sylius\Component\Core\Model\ImagesAwareInterface;
+use Sylius\Component\Core\Model\ProductImagesAwareInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductTranslationInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
@@ -82,7 +83,7 @@ class ProductItemContext implements ItemContextInterface
             $data = new Product();
             $data->setId($variant->getCode());
             $data->setItemGroupId($product->getCode());
-            $data->setImageLink($this->getImageLink($product));
+            $data->setImageLink($this->getVariantImageLink($variant) ?? $this->getImageLink($product));
             $data->setAvailability($this->getAvailability($variant));
 
             [$price, $salePrice] = $this->getPrices($variant, $channel);
@@ -175,6 +176,24 @@ class ProductItemContext implements ItemContextInterface
             ['slug' => $translation->getSlug(), '_locale' => $locale->getCode()],
             UrlGeneratorInterface::ABSOLUTE_URL
         );
+    }
+
+    private function getVariantImageLink(ProductImagesAwareInterface $imagesAware): ?string {
+        $images = $imagesAware->getImagesByType('main');
+        if ($images->count() === 0) {
+            $images = $imagesAware->getImages();
+        }
+        if ($images->count() === 0) {
+            return null;
+        }
+
+        /** @var ImageInterface|false $image */
+        $image = $images->first();
+        if (false === $image) {
+            return null;
+        }
+
+        return $this->cacheManager->getBrowserPath((string) $image->getPath(), 'sylius_shop_product_large_thumbnail');
     }
 
     private function getImageLink(ImagesAwareInterface $imagesAware): ?string
