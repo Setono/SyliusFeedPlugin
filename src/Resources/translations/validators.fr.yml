@@ -6,7 +6,7 @@ setono_sylius_feed:
                     length_min: Cette chaîne est trop courte. Elle doit avoir au maximum 1 caractère
                     length_max: Cette chaîne est trop longue. Elle doit avoir au maximum 50 caractères
                 brand:
-                    not_blank: La marque est videThe brand is blank
+                    not_blank: La marque est vide
                 gtin:
                     not_blank: Le GTIN est vide
                 shipping:
