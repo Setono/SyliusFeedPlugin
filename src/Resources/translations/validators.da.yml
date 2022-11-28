@@ -2,6 +2,9 @@ setono_sylius_feed:
     google:
         shopping:
             product:
+                id:
+                    length_min: This string is too short. It must have at most 1 character
+                    length_max: This string is too long. It must have at most 50 characters
                 brand:
                     not_blank: The brand is blank
                 gtin:

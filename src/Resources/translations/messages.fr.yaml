@@ -1,0 +1,37 @@
+setono_sylius_feed:
+    feed_type:
+        google_shopping: Google shopping
+    form:
+        feed:
+            name: Nom
+            feed_type: Type de flux
+            feed_type_placeholder: Choisissez le type de flux...
+    ui:
+        click_to_copy: Cliquez pour copier
+        count: Compteur
+        data: Donnée
+        edit_feed: Modifier le flux
+        feed: Flux
+        feeds: Flux
+        feed_type: Type de flux
+        generate_feed: Générer le flux
+        link: Lien
+        link_copied: Lien copié
+        manage_feeds: Gérer les flux
+        message: Message
+        name: Nom
+        new_feed: Nouveau flux
+        processing: Traitement
+        ready: Prêt
+        severity: Gravité
+        severities:
+            error: Erreur
+            notice: Info
+            warning: Danger
+        state: État
+        unprocessed: Non traité
+        unprocessed_feed_header: Le flux n'est pas prêt
+        unprocessed_feed_body: Le flux contient une erreur ou n'a pas encore été traité. Veuillez appuyer sur le bouton générer pour déclencher le traitement
+        view_all_violations: Afficher toutes les violations en cliquant <a href="%path%">ici</a>.
+        violation_summary: Résumé des violations
+        violations: Violations
