@@ -14,7 +14,7 @@
         "league/flysystem-bundle": "^1.1",
         "liip/imagine-bundle": "^2.4",
         "psr/event-dispatcher": "^1.0",
-        "psr/log": "^1.1",
+        "psr/log": "^2.0",
         "setono/doctrine-orm-batcher": "^0.6",
         "setono/doctrine-orm-batcher-bundle": "^0.3.1",
         "spatie/enum": "^3.7",
