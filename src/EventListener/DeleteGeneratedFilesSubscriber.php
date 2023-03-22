@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\EventListener;
 
-use League\Flysystem\FilesystemInterface;
-use League\Flysystem\RootViolationException;
+use League\Flysystem\FilesystemOperator;
+use League\Flysystem\UnableToDeleteDirectory;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -14,9 +14,9 @@ use Webmozart\Assert\Assert;
 
 final class DeleteGeneratedFilesSubscriber implements EventSubscriberInterface
 {
-    private FilesystemInterface $filesystem;
+    private FilesystemOperator $filesystem;
 
-    public function __construct(FilesystemInterface $filesystem)
+    public function __construct(FilesystemOperator $filesystem)
     {
         $this->filesystem = $filesystem;
     }
@@ -38,8 +38,8 @@ final class DeleteGeneratedFilesSubscriber implements EventSubscriberInterface
         Assert::isInstanceOf($feed, FeedInterface::class);
 
         try {
-            $this->filesystem->deleteDir($feed->getCode());
-        } catch (RootViolationException $e) {
+            $this->filesystem->deleteDirectory($feed->getCode());
+        } catch (UnableToDeleteDirectory $e) {
         }
     }
 }
