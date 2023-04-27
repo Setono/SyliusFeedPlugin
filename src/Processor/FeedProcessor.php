@@ -27,10 +27,16 @@ final class FeedProcessor implements FeedProcessorInterface
 
     public function process(): void
     {
-        $feeds = $this->feedRepository->findEnabled();
+        $feeds = $this->feedRepository->findReadyToBeProcessed();
 
         foreach ($feeds as $feed) {
-            $this->logger->info(sprintf('Triggering processing for feed "%s" (id: %d)', (string) $feed->getName(), (int) $feed->getId()));
+            $this->logger->info(
+                sprintf(
+                    'Triggering processing for feed "%s" (id: %d)',
+                    (string) $feed->getName(),
+                    (int) $feed->getId(),
+                ),
+            );
             $this->commandBus->dispatch(new ProcessFeed((int) $feed->getId()));
         }
     }

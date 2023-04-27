@@ -21,7 +21,7 @@ final class Extension extends AbstractExtension
 
     public function __construct(
         RequestStack $requestStack,
-        UrlGeneratorInterface $urlGenerator
+        UrlGeneratorInterface $urlGenerator,
     ) {
         $this->requestStack = $requestStack;
         $this->urlGenerator = $urlGenerator;

@@ -44,7 +44,7 @@ final class RegisterFilesystemPass implements CompilerPassInterface
                     $parameter,
                     $definitionClass,
                     FilesystemInterface::class,
-                    FilesystemInterface::class
+                    FilesystemInterface::class,
                 ));
             }
 

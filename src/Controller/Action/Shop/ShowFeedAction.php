@@ -34,7 +34,7 @@ final class ShowFeedAction
         LocaleContextInterface $localeContext,
         FeedPathGeneratorInterface $feedPathGenerator,
         FilesystemInterface $filesystem,
-        MimeTypesInterface $mimeTypes
+        MimeTypesInterface $mimeTypes,
     ) {
         $this->repository = $repository;
         $this->channelContext = $channelContext;

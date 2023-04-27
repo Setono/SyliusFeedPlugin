@@ -27,7 +27,8 @@ class ViolationRepository extends EntityRepository implements ViolationRepositor
 
         if (null !== $feed) {
             $qb->andWhere('o.feed = :feed')
-                ->setParameter('feed', $feed);
+                ->setParameter('feed', $feed)
+            ;
         }
 
         return $qb->getQuery()->getResult();

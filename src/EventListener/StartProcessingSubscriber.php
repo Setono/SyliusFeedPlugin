@@ -37,7 +37,7 @@ final class StartProcessingSubscriber implements EventSubscriberInterface
         if (!$feed instanceof FeedInterface) {
             throw new InvalidArgumentException(sprintf(
                 'Unexpected type. Expected %s',
-                FeedInterface::class
+                FeedInterface::class,
             ));
         }
 

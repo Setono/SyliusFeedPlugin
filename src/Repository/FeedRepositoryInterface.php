@@ -12,11 +12,11 @@ interface FeedRepositoryInterface extends RepositoryInterface
     public function findOneByCode(string $code): ?FeedInterface;
 
     /**
-     * Returns all enabled feeds
+     * Returns all feeds that are ready to be processed feeds
      *
      * @return FeedInterface[]
      */
-    public function findEnabled(): array;
+    public function findReadyToBeProcessed(): array;
 
     /**
      * Increments the finished batches count by 1

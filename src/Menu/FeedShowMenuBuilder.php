@@ -23,7 +23,7 @@ final class FeedShowMenuBuilder
     public function __construct(
         FactoryInterface $factory,
         EventDispatcherInterface $eventDispatcher,
-        Registry $workflowRegistry
+        Registry $workflowRegistry,
     ) {
         $this->factory = $factory;
         $this->eventDispatcher = $eventDispatcher;
@@ -53,7 +53,8 @@ final class FeedShowMenuBuilder
                 ])
                 ->setAttribute('type', 'link')
                 ->setLabel('setono_sylius_feed.ui.generate_feed')
-                ->setLabelAttribute('icon', 'redo');
+                ->setLabelAttribute('icon', 'redo')
+            ;
         }
 
         $menu
@@ -63,7 +64,8 @@ final class FeedShowMenuBuilder
             ])
             ->setAttribute('type', 'link')
             ->setLabel('setono_sylius_feed.ui.edit_feed')
-            ->setLabelAttribute('icon', 'pencil');
+            ->setLabelAttribute('icon', 'pencil')
+        ;
 
         $this->eventDispatcher->dispatch(new FeedShowMenuBuilderEvent($this->factory, $menu, $feed));
 
