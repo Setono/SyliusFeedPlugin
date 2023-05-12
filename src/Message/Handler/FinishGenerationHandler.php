@@ -6,7 +6,10 @@ namespace Setono\SyliusFeedPlugin\Message\Handler;
 
 use Doctrine\Persistence\ObjectManager;
 use InvalidArgumentException;
+use League\Flysystem\DirectoryListing;
 use League\Flysystem\FilesystemInterface;
+use League\Flysystem\FilesystemOperator;
+use League\Flysystem\StorageAttributes;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Setono\SyliusFeedPlugin\FeedType\FeedTypeInterface;
@@ -26,13 +29,18 @@ use Throwable;
 use Twig\Environment;
 use Webmozart\Assert\Assert;
 
+/**
+ * @psalm-suppress UndefinedDocblockClass
+ * @psalm-suppress UndefinedClass
+ */
 final class FinishGenerationHandler implements MessageHandlerInterface
 {
     use GetFeedTrait;
 
     private ObjectManager $feedManager;
 
-    private FilesystemInterface $filesystem;
+    /** @var FilesystemInterface|FilesystemOperator */
+    private $filesystem;
 
     private Registry $workflowRegistry;
 
@@ -44,10 +52,15 @@ final class FinishGenerationHandler implements MessageHandlerInterface
 
     private LoggerInterface $logger;
 
+    /**
+     * @psalm-suppress UndefinedDocblockClass
+     *
+     * @param FilesystemInterface|FilesystemOperator $filesystem
+     */
     public function __construct(
         FeedRepositoryInterface $feedRepository,
         ObjectManager $feedManager,
-        FilesystemInterface $filesystem,
+        $filesystem,
         Registry $workflowRegistry,
         Environment $twig,
         FeedTypeRegistryInterface $feedTypeRegistry,
@@ -56,7 +69,17 @@ final class FinishGenerationHandler implements MessageHandlerInterface
     ) {
         $this->feedRepository = $feedRepository;
         $this->feedManager = $feedManager;
-        $this->filesystem = $filesystem;
+        if (interface_exists(FilesystemInterface::class) && $filesystem instanceof FilesystemInterface) {
+            $this->filesystem = $filesystem;
+        } elseif ($filesystem instanceof FilesystemOperator) {
+            $this->filesystem = $filesystem;
+        } else {
+            throw new InvalidArgumentException(sprintf(
+                'The filesystem must be an instance of %s or %s',
+                FilesystemInterface::class,
+                FilesystemOperator::class
+            ));
+        }
         $this->workflowRegistry = $workflowRegistry;
         $this->twig = $twig;
         $this->feedTypeRegistry = $feedTypeRegistry;
@@ -92,22 +115,27 @@ final class FinishGenerationHandler implements MessageHandlerInterface
 
                     fwrite($batchStream, $feedStart);
 
-                    $files = $this->filesystem->listContents((string) $dir);
-                    /** @var array{basename: string, path: string} $file */
+                    $filesystem = $this->filesystem;
+
+                    /** @var array<array-key, array{basename: string, path: string}>|DirectoryListing<StorageAttributes> $files */
+                    $files = $filesystem->listContents((string) $dir);
                     foreach ($files as $file) {
-                        Assert::isArray($file);
-                        Assert::keyExists($file, 'basename');
-                        Assert::keyExists($file, 'path');
+                        if (is_array($file)) {
+                            Assert::keyExists($file, 'basename');
+                            Assert::keyExists($file, 'path');
 
-                        if (TemporaryFeedPathGenerator::BASE_FILENAME === $file['basename']) {
-                            continue;
+                            if (TemporaryFeedPathGenerator::BASE_FILENAME === $file['basename']) {
+                                continue;
+                            }
                         }
-
-                        $fp = $this->filesystem->readStream($file['path']);
+                        /** @var string $path */
+                        $path = $file['path'];
+                        /** @var resource|false $fp */
+                        $fp = $filesystem->readStream($path);
                         if (false === $fp) {
                             throw new \RuntimeException(sprintf(
                                 'The file "%s" could not be opened as a resource',
-                                $file['path']
+                                $path
                             ));
                         }
 
@@ -117,19 +145,24 @@ final class FinishGenerationHandler implements MessageHandlerInterface
 
                         fclose($fp);
 
-                        $this->filesystem->delete($file['path']);
+                        $filesystem->delete($path);
                     }
 
                     fwrite($batchStream, $feedEnd);
 
-                    $res = $this->filesystem->writeStream((string) TemporaryFeedPathGenerator::getBaseFile($dir), $batchStream);
+                    if (interface_exists(FilesystemInterface::class) && $filesystem instanceof FilesystemInterface) {
+                        /** @var resource|false $res */
+                        $res = $filesystem->writeStream((string) TemporaryFeedPathGenerator::getBaseFile($dir), $batchStream);
+
+                        if (false === $res) {
+                            throw new RuntimeException('An error occurred when trying to write the finished feed write');
+                        }
+                    } else {
+                        $filesystem->writeStream((string) TemporaryFeedPathGenerator::getBaseFile($dir), $batchStream);
+                    }
 
                     // tries to close the file pointer although it may already have been closed by flysystem
                     fclose($batchStream);
-
-                    if (false === $res) {
-                        throw new RuntimeException('An error occurred when trying to write the finished feed write');
-                    }
                 }
             }
 

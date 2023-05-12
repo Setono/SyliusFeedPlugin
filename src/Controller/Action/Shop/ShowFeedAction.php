@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Controller\Action\Shop;
 
+use InvalidArgumentException;
 use League\Flysystem\FilesystemInterface;
+use League\Flysystem\FilesystemOperator;
 use RuntimeException;
 use Setono\SyliusFeedPlugin\Generator\FeedPathGeneratorInterface;
 use Setono\SyliusFeedPlugin\Repository\FeedRepositoryInterface;
@@ -14,6 +16,10 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Mime\MimeTypesInterface;
 
+/**
+ * @psalm-suppress UndefinedDocblockClass
+ * @psalm-suppress UndefinedClass
+ */
 final class ShowFeedAction
 {
     private FeedRepositoryInterface $repository;
@@ -24,23 +30,39 @@ final class ShowFeedAction
 
     private FeedPathGeneratorInterface $feedPathGenerator;
 
-    private FilesystemInterface $filesystem;
+    /** @var FilesystemInterface|FilesystemOperator */
+    private $filesystem;
 
     private MimeTypesInterface $mimeTypes;
 
+    /**
+     * @psalm-suppress UndefinedDocblockClass
+     *
+     * @param FilesystemInterface|FilesystemOperator $filesystem
+     */
     public function __construct(
         FeedRepositoryInterface $repository,
         ChannelContextInterface $channelContext,
         LocaleContextInterface $localeContext,
         FeedPathGeneratorInterface $feedPathGenerator,
-        FilesystemInterface $filesystem,
+        $filesystem,
         MimeTypesInterface $mimeTypes
     ) {
         $this->repository = $repository;
         $this->channelContext = $channelContext;
         $this->localeContext = $localeContext;
         $this->feedPathGenerator = $feedPathGenerator;
-        $this->filesystem = $filesystem;
+        if (interface_exists(FilesystemInterface::class) && $filesystem instanceof FilesystemInterface) {
+            $this->filesystem = $filesystem;
+        } elseif ($filesystem instanceof FilesystemOperator) {
+            $this->filesystem = $filesystem;
+        } else {
+            throw new InvalidArgumentException(sprintf(
+                'The filesystem must be an instance of %s or %s',
+                FilesystemInterface::class,
+                FilesystemOperator::class
+            ));
+        }
         $this->mimeTypes = $mimeTypes;
     }
 
@@ -56,11 +78,19 @@ final class ShowFeedAction
 
         $feedPath = $this->feedPathGenerator->generate($feed, $channelCode, $localeCode);
 
-        if (!$this->filesystem->has((string) $feedPath)) {
-            throw new NotFoundHttpException(sprintf('The feed with id %s has not been generated', $code));
+        $filesystem = $this->filesystem;
+        if (interface_exists(FilesystemInterface::class) && $filesystem instanceof FilesystemInterface) {
+            if (!$filesystem->has((string) $feedPath)) {
+                throw new NotFoundHttpException(sprintf('The feed with id %s has not been generated', $code));
+            }
+        } else {
+            if (!$filesystem->fileExists((string) $feedPath)) {
+                throw new NotFoundHttpException(sprintf('The feed with id %s has not been generated', $code));
+            }
         }
 
-        $stream = $this->filesystem->readStream((string) $feedPath);
+        /** @var resource|false $stream */
+        $stream = $filesystem->readStream((string) $feedPath);
         if (false === $stream) {
             throw new RuntimeException(sprintf('An error occurred trying to read the feed file %s', $feedPath));
         }

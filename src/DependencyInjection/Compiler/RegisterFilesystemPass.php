@@ -6,6 +6,8 @@ namespace Setono\SyliusFeedPlugin\DependencyInjection\Compiler;
 
 use InvalidArgumentException;
 use League\Flysystem\FilesystemInterface;
+use League\Flysystem\FilesystemOperator;
+use RuntimeException;
 use Symfony\Component\Config\Definition\Exception\InvalidDefinitionException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -38,14 +40,28 @@ final class RegisterFilesystemPass implements CompilerPassInterface
             $definitionClass = $container->getDefinition($parameterValue)->getClass();
             Assert::notNull($definitionClass);
 
-            if (!is_a($definitionClass, FilesystemInterface::class, true)) {
-                throw new InvalidDefinitionException(sprintf(
-                    'The config parameter "%s" references a service %s, which is not an instance of %s. Fix this by creating a valid service that implements %s.',
-                    $parameter,
-                    $definitionClass,
-                    FilesystemInterface::class,
-                    FilesystemInterface::class
-                ));
+            if (interface_exists(FilesystemInterface::class)) {
+                if (!is_a($definitionClass, FilesystemInterface::class, true)) {
+                    throw new InvalidDefinitionException(sprintf(
+                        'The config parameter "%s" references a service %s, which is not an instance of %s. Fix this by creating a valid service that implements %s.',
+                        $parameter,
+                        $definitionClass,
+                        FilesystemInterface::class,
+                        FilesystemInterface::class,
+                    ));
+                }
+            } elseif (interface_exists(FilesystemOperator::class)) {
+                if (!is_a($definitionClass, FilesystemOperator::class, true)) {
+                    throw new InvalidDefinitionException(sprintf(
+                        'The config parameter "%s" references a service %s, which is not an instance of %s. Fix this by creating a valid service that implements %s.',
+                        $parameter,
+                        $definitionClass,
+                        FilesystemOperator::class,
+                        FilesystemOperator::class,
+                    ));
+                }
+            } else {
+                throw new RuntimeException('It looks like both of league/flysystem v1 and v2 are not installed!');
             }
 
             $container->setAlias($parameter, $parameterValue);

@@ -7,6 +7,7 @@ namespace Tests\Setono\SyliusFeedPlugin\Behat\Context\Cli;
 use Behat\Behat\Context\Context;
 use InvalidArgumentException;
 use League\Flysystem\FilesystemInterface;
+use League\Flysystem\FilesystemOperator;
 use Setono\SyliusFeedPlugin\Command\ProcessFeedsCommand;
 use Setono\SyliusFeedPlugin\Generator\FeedPathGeneratorInterface;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
@@ -18,6 +19,10 @@ use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Webmozart\Assert\Assert;
 
+/**
+ * @psalm-suppress UndefinedDocblockClass
+ * @psalm-suppress UndefinedClass
+ */
 final class ProcessFeedsContext implements Context
 {
     /** @var KernelInterface */
@@ -32,7 +37,7 @@ final class ProcessFeedsContext implements Context
     /** @var ProcessFeedsCommand */
     private $command;
 
-    /** @var FilesystemInterface */
+    /** @var FilesystemInterface|FilesystemOperator */
     private $filesystem;
 
     /** @var FeedProcessorInterface */
@@ -44,15 +49,30 @@ final class ProcessFeedsContext implements Context
     /** @var RepositoryInterface */
     private $feedRepository;
 
+    /**
+     * @psalm-suppress UndefinedDocblockClass
+     *
+     * @param FilesystemInterface|FilesystemOperator $filesystem
+     */
     public function __construct(
         KernelInterface $kernel,
-        FilesystemInterface $filesystem,
+        $filesystem,
         FeedProcessorInterface $processor,
         FeedPathGeneratorInterface $feedPathGenerator,
         RepositoryInterface $feedRepository
     ) {
         $this->kernel = $kernel;
-        $this->filesystem = $filesystem;
+        if (interface_exists(FilesystemInterface::class) && $filesystem instanceof FilesystemInterface) {
+            $this->filesystem = $filesystem;
+        } elseif ($filesystem instanceof FilesystemOperator) {
+            $this->filesystem = $filesystem;
+        } else {
+            throw new InvalidArgumentException(sprintf(
+                'The filesystem must be an instance of %s or %s',
+                FilesystemInterface::class,
+                FilesystemOperator::class
+            ));
+        }
         $this->processor = $processor;
         $this->feedPathGenerator = $feedPathGenerator;
         $this->feedRepository = $feedRepository;
@@ -90,16 +110,26 @@ final class ProcessFeedsContext implements Context
         Assert::count($feeds, 1);
 
         $feed = $feeds[0];
+        /** @var FilesystemInterface|FilesystemOperator $filesystem */
+        $filesystem = $this->filesystem;
 
         /** @var ChannelInterface $channel */
         foreach ($feed->getChannels() as $channel) {
             foreach ($channel->getLocales() as $locale) {
                 $path = $this->feedPathGenerator->generate($feed, $channel->getCode(), $locale->getCode());
 
-                Assert::true($this->filesystem->has($path));
+                if ($filesystem instanceof FilesystemOperator) {
+                    Assert::true($filesystem->fileExists((string) $path));
+                } else {
+                    Assert::true($filesystem->has($path));
+                }
 
                 $expectedContent = $this->getExpectedContent($channel->getCode());
-                $actualContent = $this->removeWhitespace($this->filesystem->read($path));
+                if ($filesystem instanceof FilesystemOperator) {
+                    $actualContent = $this->removeWhitespace($filesystem->read((string) $path));
+                } else {
+                    $actualContent = $this->removeWhitespace($filesystem->read($path));
+                }
                 $actualContent = $this->normalizeImageLink($actualContent);
 
                 Assert::same($actualContent, $expectedContent);
