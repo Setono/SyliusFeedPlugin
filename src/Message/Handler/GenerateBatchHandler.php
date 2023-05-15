@@ -52,9 +52,7 @@ use Webmozart\Assert\Assert;
 final class GenerateBatchHandler implements MessageHandlerInterface
 {
     use GetChannelTrait;
-
     use GetFeedTrait;
-
     use GetLocaleTrait;
 
     private RequestContext $initialRequestContext;
@@ -104,7 +102,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
         ViolationFactoryInterface $violationFactory,
         SerializerInterface $serializer,
         UrlGeneratorInterface $urlGenerator,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         $this->feedRepository = $feedRepository;
         $this->channelRepository = $channelRepository;
@@ -120,7 +118,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
             throw new InvalidArgumentException(sprintf(
                 'The filesystem must be an instance of %s or %s',
                 FilesystemInterface::class,
-                FilesystemOperator::class
+                FilesystemOperator::class,
             ));
         }
         $this->temporaryFeedPathGenerator = $temporaryFeedPathGenerator;
@@ -170,13 +168,13 @@ final class GenerateBatchHandler implements MessageHandlerInterface
                             $feedType,
                             $channel,
                             $locale,
-                            $context
+                            $context,
                         ));
 
                         $constraintViolationList = $this->validator->validate(
                             $context,
                             null,
-                            $feedType->getValidationGroups()
+                            $feedType->getValidationGroups(),
                         );
 
                         $hasErrorViolation = false;
@@ -191,7 +189,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
                                     $this->serializer->serialize($context, 'json', [
                                         JsonEncode::OPTIONS => JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION | JSON_INVALID_UTF8_IGNORE,
                                         'setono_sylius_feed_data' => true,
-                                    ])
+                                    ]),
                                 );
 
                                 if ($violation->getSeverity() === ViolationInterface::SEVERITY_ERROR) {
@@ -207,7 +205,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
                                 $channel,
                                 $locale,
                                 $context,
-                                $constraintViolationList
+                                $constraintViolationList,
                             ));
                         }
 
@@ -307,7 +305,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
             throw new UnrecoverableMessageHandlingException(
                 'An error occurred when trying to get the workflow for the feed',
                 0,
-                $e
+                $e,
             );
         }
 
@@ -334,7 +332,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
             throw new InvalidArgumentException(sprintf(
                 'The transition "%s" could not be applied. State was: "%s"',
                 FeedGraph::TRANSITION_ERRORED,
-                $feed->getState()
+                $feed->getState(),
             ));
         }
 

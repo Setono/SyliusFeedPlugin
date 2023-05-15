@@ -46,7 +46,7 @@ final class ShowFeedAction
         LocaleContextInterface $localeContext,
         FeedPathGeneratorInterface $feedPathGenerator,
         $filesystem,
-        MimeTypesInterface $mimeTypes
+        MimeTypesInterface $mimeTypes,
     ) {
         $this->repository = $repository;
         $this->channelContext = $channelContext;
@@ -60,7 +60,7 @@ final class ShowFeedAction
             throw new InvalidArgumentException(sprintf(
                 'The filesystem must be an instance of %s or %s',
                 FilesystemInterface::class,
-                FilesystemOperator::class
+                FilesystemOperator::class,
             ));
         }
         $this->mimeTypes = $mimeTypes;

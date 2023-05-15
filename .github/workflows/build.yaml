@@ -20,7 +20,7 @@ jobs:
         strategy:
             matrix:
                 php-version:
-                    - "7.4"
+                    - "8.0"
 
                 dependencies:
                     - "highest"
@@ -64,7 +64,6 @@ jobs:
         strategy:
             matrix:
                 php-version:
-                    - "7.4"
                     - "8.0"
                     - "8.1"
 
@@ -72,8 +71,13 @@ jobs:
                     - "highest"
 
                 symfony:
-                    - "^4.4"
                     - "^5.4"
+                    - "^6.0"
+
+                exclude:
+                    -
+                        php-version: "8.0"
+                        symfony: "^6.0"
 
         steps:
             -   name: "Checkout"
@@ -108,7 +112,6 @@ jobs:
         strategy:
             matrix:
                 php-version:
-                    - "7.4"
                     - "8.0"
                     - "8.1"
 
@@ -116,8 +119,13 @@ jobs:
                     - "highest"
 
                 symfony:
-                    - "^4.4"
                     - "^5.4"
+                    - "^6.0"
+
+                exclude:
+                    -
+                        php-version: "8.0"
+                        symfony: "^6.0"
 
         steps:
             -   name: "Checkout"
@@ -152,7 +160,6 @@ jobs:
         strategy:
             matrix:
                 php-version:
-                    - "7.4"
                     - "8.0"
                     - "8.1"
 
@@ -160,8 +167,13 @@ jobs:
                     - "highest"
 
                 symfony:
-                    - "^4.4"
                     - "^5.4"
+                    - "^6.0"
+
+                exclude:
+                    -
+                        php-version: "8.0"
+                        symfony: "^6.0"
 
         steps:
             -   name: "Checkout"
@@ -193,7 +205,6 @@ jobs:
         strategy:
             matrix:
                 php-version:
-                    - "7.4"
                     - "8.0"
                     - "8.1"
 
@@ -201,8 +212,13 @@ jobs:
                     - "highest"
 
                 symfony:
-                    - "^4.4"
                     - "^5.4"
+                    - "^6.0"
+
+                exclude:
+                    -
+                        php-version: "8.0"
+                        symfony: "^6.0"
 
         steps:
             -   name: "Start MySQL"
@@ -251,7 +267,7 @@ jobs:
         strategy:
             matrix:
                 php-version:
-                    - "8.1"
+                    - "8.2"
 
                 dependencies:
                     - "highest"

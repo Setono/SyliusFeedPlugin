@@ -23,7 +23,7 @@ final class FeedShowMenuBuilder
     public function __construct(
         FactoryInterface $factory,
         EventDispatcherInterface $eventDispatcher,
-        Registry $workflowRegistry
+        Registry $workflowRegistry,
     ) {
         $this->factory = $factory;
         $this->eventDispatcher = $eventDispatcher;

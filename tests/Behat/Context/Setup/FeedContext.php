@@ -25,7 +25,7 @@ final class FeedContext implements Context
     public function __construct(
         FactoryInterface $feedFactory,
         RepositoryInterface $feedRepository,
-        ChannelRepositoryInterface $channelRepository
+        ChannelRepositoryInterface $channelRepository,
     ) {
         $this->feedFactory = $feedFactory;
         $this->feedRepository = $feedRepository;

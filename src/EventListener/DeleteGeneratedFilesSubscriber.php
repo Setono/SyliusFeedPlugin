@@ -39,7 +39,7 @@ final class DeleteGeneratedFilesSubscriber implements EventSubscriberInterface
             throw new InvalidArgumentException(sprintf(
                 'The filesystem must be an instance of %s or %s',
                 FilesystemInterface::class,
-                FilesystemOperator::class
+                FilesystemOperator::class,
             ));
         }
     }

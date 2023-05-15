@@ -39,7 +39,7 @@ final class ProcessFeedHandler implements MessageHandlerInterface
         FeedTypeRegistryInterface $feedTypeRegistry,
         MessageBusInterface $commandBus,
         Registry $workflowRegistry,
-        TemplateValidatorInterface $templateValidator
+        TemplateValidatorInterface $templateValidator,
     ) {
         $this->feedRepository = $feedRepository;
         $this->feedManager = $feedManager;

@@ -23,7 +23,7 @@ final class QueryBuilderEvent
         DataProviderInterface $dataProvider,
         QueryBuilder $queryBuilder,
         ChannelInterface $channel,
-        LocaleInterface $locale
+        LocaleInterface $locale,
     ) {
         $this->dataProvider = $dataProvider;
         $this->queryBuilder = $queryBuilder;

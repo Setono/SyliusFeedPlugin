@@ -35,14 +35,14 @@ final class ViolationFactory implements ViolationFactoryInterface
         ConstraintViolationInterface $constraintViolation,
         ChannelInterface $channel,
         LocaleInterface $locale,
-        $data = null
+        $data = null,
     ): ViolationInterface {
         $violation = $this->createNew();
 
         $violation->setChannel($channel);
         $violation->setLocale($locale);
         $violation->setMessage(
-            $constraintViolation->getPropertyPath() . ': ' . sprintf((string) $constraintViolation->getMessage(), $constraintViolation->getInvalidValue())
+            $constraintViolation->getPropertyPath() . ': ' . sprintf((string) $constraintViolation->getMessage(), $constraintViolation->getInvalidValue()),
         );
         $violation->setData($data);
 

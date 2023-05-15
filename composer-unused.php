@@ -9,5 +9,6 @@ return static function (Configuration $config): Configuration {
     return $config
         ->addNamedFilter(NamedFilter::fromString('league/flysystem-bundle'))
         ->addNamedFilter(NamedFilter::fromString('setono/doctrine-orm-batcher-bundle'))
-    ;
+        ->addNamedFilter(NamedFilter::fromString('symfony/mailer'))
+        ;
 };

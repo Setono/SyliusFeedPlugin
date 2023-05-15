@@ -1,8 +1,8 @@
 framework:
-    csrf_protection: true
-    form: true
-    ide: phpstorm
     secret: '%env(APP_SECRET)%'
+    form: true
+    csrf_protection: true
+    ide: phpstorm
     session:
         handler_id: ~
     serializer:

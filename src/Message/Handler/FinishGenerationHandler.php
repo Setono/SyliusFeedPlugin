@@ -65,7 +65,7 @@ final class FinishGenerationHandler implements MessageHandlerInterface
         Environment $twig,
         FeedTypeRegistryInterface $feedTypeRegistry,
         FeedPathGeneratorInterface $temporaryFeedPathGenerator,
-        LoggerInterface $logger
+        LoggerInterface $logger,
     ) {
         $this->feedRepository = $feedRepository;
         $this->feedManager = $feedManager;
@@ -77,7 +77,7 @@ final class FinishGenerationHandler implements MessageHandlerInterface
             throw new InvalidArgumentException(sprintf(
                 'The filesystem must be an instance of %s or %s',
                 FilesystemInterface::class,
-                FilesystemOperator::class
+                FilesystemOperator::class,
             ));
         }
         $this->workflowRegistry = $workflowRegistry;
@@ -97,7 +97,7 @@ final class FinishGenerationHandler implements MessageHandlerInterface
             throw new UnrecoverableMessageHandlingException(
                 'An error occurred when trying to get the workflow for the feed',
                 0,
-                $e
+                $e,
             );
         }
 
@@ -135,7 +135,7 @@ final class FinishGenerationHandler implements MessageHandlerInterface
                         if (false === $fp) {
                             throw new \RuntimeException(sprintf(
                                 'The file "%s" could not be opened as a resource',
-                                $path
+                                $path,
                             ));
                         }
 
@@ -170,7 +170,7 @@ final class FinishGenerationHandler implements MessageHandlerInterface
                 throw new RuntimeException(sprintf(
                     'The feed with id: %d can not be marked as ready because the feed is in a wrong state (%s)',
                     (int) $feed->getId(),
-                    $feed->getState()
+                    $feed->getState(),
                 ));
             }
 
@@ -202,15 +202,15 @@ final class FinishGenerationHandler implements MessageHandlerInterface
         FeedInterface $feed,
         FeedTypeInterface $feedType,
         ChannelInterface $channel,
-        LocaleInterface $locale
+        LocaleInterface $locale,
     ): array {
         $template = $this->twig->load('@SetonoSyliusFeedPlugin/Feed/feed.txt.twig');
 
         $content = $template->render(
             array_merge(
                 $feedType->getFeedContext()->getContext($feed, $channel, $locale),
-                ['feed' => $feedType->getTemplate()]
-            )
+                ['feed' => $feedType->getTemplate()],
+            ),
         );
 
         return explode('<!-- ITEM_BOUNDARY -->', $content);
