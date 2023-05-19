@@ -25,6 +25,7 @@
     "Sylius\\Component\\Core\\Calculator\\ProductVariantPriceCalculatorInterface",
     "Sylius\\Component\\Core\\Model\\ChannelInterface",
     "Sylius\\Component\\Core\\Model\\ImagesAwareInterface",
+    "Sylius\\Component\\Core\\Model\\ProductImagesAwareInterface",
     "Sylius\\Component\\Core\\Model\\ProductInterface",
     "Sylius\\Component\\Core\\Model\\ProductTranslationInterface",
     "Sylius\\Component\\Core\\Model\\ProductVariantInterface",
