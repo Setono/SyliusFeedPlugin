@@ -1,17 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.23.0@f1fe6ff483bf325c803df9f510d09a03fd796f88">
+<files psalm-version="4.30.0@d0bc6e25d89f649e4f36a534f330f8bb4643dd69">
   <file src="src/Controller/Action/Shop/ShowFeedAction.php">
     <ImplicitToStringCast occurrences="1">
       <code>$feedPath</code>
     </ImplicitToStringCast>
   </file>
   <file src="src/DataProvider/DataProvider.php">
-    <MixedInferredReturnType occurrences="1">
-      <code>iterable</code>
-    </MixedInferredReturnType>
-    <MixedReturnStatement occurrences="1">
-      <code>$q-&gt;getResult()</code>
-    </MixedReturnStatement>
     <PossiblyNullOperand occurrences="2">
       <code>$channel-&gt;getCode()</code>
       <code>$locale-&gt;getCode()</code>
@@ -79,19 +73,10 @@
     </PossiblyNullArgument>
   </file>
   <file src="src/Doctrine/ORM/FeedRepository.php">
-    <MixedInferredReturnType occurrences="2">
-      <code>?FeedInterface</code>
-      <code>array</code>
-    </MixedInferredReturnType>
-    <MixedReturnStatement occurrences="2"/>
-  </file>
-  <file src="src/Doctrine/ORM/ViolationRepository.php">
     <MixedInferredReturnType occurrences="1">
-      <code>array</code>
+      <code>?FeedInterface</code>
     </MixedInferredReturnType>
-    <MixedReturnStatement occurrences="1">
-      <code>$qb-&gt;getQuery()-&gt;getResult()</code>
-    </MixedReturnStatement>
+    <MixedReturnStatement occurrences="1"/>
   </file>
   <file src="src/EventListener/Filter/AbstractFilterListener.php">
     <ArgumentTypeCoercion occurrences="1">

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\Doctrine\ORM;
 
 use Doctrine\ORM\QueryBuilder;
+use Setono\SyliusFeedPlugin\DTO\SeverityCount;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Repository\ViolationRepositoryInterface;
 use Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository;
@@ -30,7 +31,10 @@ class ViolationRepository extends EntityRepository implements ViolationRepositor
                 ->setParameter('feed', $feed);
         }
 
-        return $qb->getQuery()->getResult();
+        $res = $qb->getQuery()->getResult();
+        Assert::allIsInstanceOf($res, SeverityCount::class);
+
+        return $res;
     }
 
     public function createQueryBuilderByFeed($feed): QueryBuilder

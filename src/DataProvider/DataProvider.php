@@ -67,11 +67,11 @@ class DataProvider implements DataProviderInterface
         return $this->getBatcher($channel, $locale)->getBatchCount(self::BATCH_SIZE);
     }
 
+    /** @psalm-suppress MixedReturnTypeCoercion */
     public function getItems(BatchInterface $batch): iterable
     {
-        $q = $this->queryRebuilder->rebuild($batch);
-
-        return $q->getResult();
+        /** @psalm-suppress MixedReturnTypeCoercion */
+        return $this->queryRebuilder->rebuild($batch)->getResult();
     }
 
     private function getQueryBuilder(ChannelInterface $channel, LocaleInterface $locale): QueryBuilder

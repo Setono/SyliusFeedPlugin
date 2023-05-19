@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Twig;
 
+use Setono\MainRequestTrait\MainRequestTrait;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Locale\Model\LocaleInterface;
@@ -15,6 +16,8 @@ use Twig\TwigFunction;
 
 final class Extension extends AbstractExtension
 {
+    use MainRequestTrait;
+
     private RequestStack $requestStack;
 
     private UrlGeneratorInterface $urlGenerator;
@@ -54,12 +57,12 @@ final class Extension extends AbstractExtension
         ]);
 
         // todo maybe inject request context into router instead to 'make it right'
-        return $this->getScheme() . '://' . $channel->getHostname() . $path;
+        return sprintf('%s://%s%s', $this->getScheme(), (string) $channel->getHostname(), $path);
     }
 
     private function getScheme(): string
     {
-        $request = $this->requestStack->getMasterRequest();
+        $request = $this->getMainRequestFromRequestStack($this->requestStack);
         if (null === $request) {
             return 'https';
         }

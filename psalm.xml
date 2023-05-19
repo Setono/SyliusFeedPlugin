@@ -14,6 +14,7 @@
         <ignoreFiles>
             <directory name="tests/Application"/>
             <directory name="vendor"/>
+            <file name="src/FeedContext/Google/Shopping/ProductItemContext.php"/>
         </ignoreFiles>
     </projectFiles>
     <plugins>

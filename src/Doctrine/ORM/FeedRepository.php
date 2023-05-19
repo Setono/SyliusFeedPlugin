@@ -7,6 +7,7 @@ namespace Setono\SyliusFeedPlugin\Doctrine\ORM;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Repository\FeedRepositoryInterface;
 use Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository;
+use Webmozart\Assert\Assert;
 
 class FeedRepository extends EntityRepository implements FeedRepositoryInterface
 {
@@ -22,11 +23,15 @@ class FeedRepository extends EntityRepository implements FeedRepositoryInterface
 
     public function findEnabled(): array
     {
-        return $this->createQueryBuilder('o')
+        $res = $this->createQueryBuilder('o')
             ->where('o.enabled = true')
             ->getQuery()
             ->getResult()
         ;
+
+        Assert::allIsInstanceOf($res, FeedInterface::class);
+
+        return $res;
     }
 
     public function incrementFinishedBatches(FeedInterface $feed): void
