@@ -178,7 +178,8 @@ class ProductItemContext implements ItemContextInterface
         );
     }
 
-    private function getVariantImageLink(ProductImagesAwareInterface $imagesAware): ?string {
+    private function getVariantImageLink(ProductImagesAwareInterface $imagesAware): ?string
+    {
         $images = $imagesAware->getImagesByType('main');
         if ($images->count() === 0) {
             $images = $imagesAware->getImages();
