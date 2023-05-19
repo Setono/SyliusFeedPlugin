@@ -44,6 +44,7 @@
         "api-platform/core": "^2.6",
         "friendsofsymfony/oauth-server-bundle": ">2.0.0-alpha.0 ^2.0@dev",
         "lexik/jwt-authentication-bundle": "^2.15",
+        "php-http/message-factory": "^1.1",
         "phpspec/phpspec": "^7.2",
         "phpunit/phpunit": "^9.5",
         "polishsymfonycommunity/symfony-mocker-container": "^1.0",
