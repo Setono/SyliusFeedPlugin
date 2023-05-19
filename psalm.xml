@@ -30,6 +30,7 @@
     </plugins>
     <issueHandlers>
         <PluginIssue name="QueryBuilderSetParameter" errorLevel="info"/>
+        <UnnecessaryVarAnnotation errorLevel="suppress"/>
     </issueHandlers>
     <forbiddenFunctions>
         <function name="dd"/>

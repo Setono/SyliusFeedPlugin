@@ -14,6 +14,10 @@ final class ValidateDataProvidersPass implements CompilerPassInterface
     {
         $seen = [];
 
+        /**
+         * @var string $id
+         * @var array $tagged
+         */
         foreach ($container->findTaggedServiceIds('setono_sylius_feed.data_provider') as $id => $tagged) {
             if (count($tagged) === 0) {
                 throw new InvalidArgumentException(sprintf('The service %s needs the code attribute. Something like this: <tag name="setono_sylius_feed.data_provider" code="insert code here"/>', $id));
