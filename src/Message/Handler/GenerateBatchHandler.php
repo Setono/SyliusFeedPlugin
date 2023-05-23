@@ -12,6 +12,7 @@ use const JSON_PRETTY_PRINT;
 use const JSON_UNESCAPED_SLASHES;
 use const JSON_UNESCAPED_UNICODE;
 use League\Flysystem\FilesystemInterface;
+use League\Flysystem\FilesystemOperator;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
 use Setono\SyliusFeedPlugin\Event\BatchGeneratedEvent;
@@ -44,6 +45,10 @@ use Throwable;
 use Twig\Environment;
 use Webmozart\Assert\Assert;
 
+/**
+ * @psalm-suppress UndefinedDocblockClass
+ * @psalm-suppress UndefinedClass
+ */
 final class GenerateBatchHandler implements MessageHandlerInterface
 {
     use GetChannelTrait;
@@ -60,7 +65,8 @@ final class GenerateBatchHandler implements MessageHandlerInterface
 
     private Environment $twig;
 
-    private FilesystemInterface $filesystem;
+    /** @var FilesystemInterface|FilesystemOperator */
+    private $filesystem;
 
     private FeedPathGeneratorInterface $temporaryFeedPathGenerator;
 
@@ -78,6 +84,11 @@ final class GenerateBatchHandler implements MessageHandlerInterface
 
     private LoggerInterface $logger;
 
+    /**
+     * @psalm-suppress UndefinedDocblockClass
+     *
+     * @param FilesystemOperator|FilesystemInterface $filesystem
+     */
     public function __construct(
         FeedRepositoryInterface $feedRepository,
         ChannelRepositoryInterface $channelRepository,
@@ -85,7 +96,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
         ObjectManager $feedManager,
         FeedTypeRegistryInterface $feedTypeRegistry,
         Environment $twig,
-        FilesystemInterface $filesystem,
+        $filesystem,
         FeedPathGeneratorInterface $temporaryFeedPathGenerator,
         EventDispatcherInterface $eventDispatcher,
         Registry $workflowRegistry,
@@ -101,7 +112,17 @@ final class GenerateBatchHandler implements MessageHandlerInterface
         $this->feedManager = $feedManager;
         $this->feedTypeRegistry = $feedTypeRegistry;
         $this->twig = $twig;
-        $this->filesystem = $filesystem;
+        if (interface_exists(FilesystemInterface::class) && $filesystem instanceof FilesystemInterface) {
+            $this->filesystem = $filesystem;
+        } elseif ($filesystem instanceof FilesystemOperator) {
+            $this->filesystem = $filesystem;
+        } else {
+            throw new InvalidArgumentException(sprintf(
+                'The filesystem must be an instance of %s or %s',
+                FilesystemInterface::class,
+                FilesystemOperator::class
+            ));
+        }
         $this->temporaryFeedPathGenerator = $temporaryFeedPathGenerator;
         $this->eventDispatcher = $eventDispatcher;
         $this->workflowRegistry = $workflowRegistry;
@@ -206,13 +227,18 @@ final class GenerateBatchHandler implements MessageHandlerInterface
             }
 
             $dir = $this->temporaryFeedPathGenerator->generate($feed, (string) $channel->getCode(), (string) $locale->getCode());
-            $path = TemporaryFeedPathGenerator::getPartialFile($dir, $this->filesystem);
+            $filesystem = $this->filesystem;
+            $path = TemporaryFeedPathGenerator::getPartialFile($dir, $filesystem);
 
-            $res = $this->filesystem->writeStream((string) $path, $stream);
+            if (interface_exists(FilesystemInterface::class) && $filesystem instanceof FilesystemInterface) {
+                $res = $filesystem->writeStream((string) $path, $stream);
+                fclose($stream);
 
-            fclose($stream);
-
-            Assert::true($res, 'An error occurred when trying to write a feed item');
+                Assert::true($res, 'An error occurred when trying to write a feed item');
+            } else {
+                $filesystem->writeStream((string) $path, $stream);
+                fclose($stream);
+            }
 
             $this->feedManager->flush();
             $this->feedManager->clear();

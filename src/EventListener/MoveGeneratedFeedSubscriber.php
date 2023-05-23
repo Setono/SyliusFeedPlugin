@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\EventListener;
 
+use InvalidArgumentException;
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\FilesystemInterface;
+use League\Flysystem\FilesystemOperator;
+use League\Flysystem\UnableToDeleteFile;
 use RuntimeException;
 use Setono\SyliusFeedPlugin\Generator\FeedPathGeneratorInterface;
 use Setono\SyliusFeedPlugin\Generator\TemporaryFeedPathGenerator;
@@ -15,24 +18,56 @@ use Sylius\Component\Core\Model\ChannelInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Workflow\Event\TransitionEvent;
 
+/**
+ * @psalm-suppress UndefinedDocblockClass
+ * @psalm-suppress UndefinedClass
+ */
 final class MoveGeneratedFeedSubscriber implements EventSubscriberInterface
 {
-    private FilesystemInterface $temporaryFilesystem;
+    /** @var FilesystemInterface|FilesystemOperator */
+    private $temporaryFilesystem;
 
-    private FilesystemInterface $filesystem;
+    /** @var FilesystemInterface|FilesystemOperator */
+    private $filesystem;
 
     private FeedPathGeneratorInterface $temporaryFeedPathGenerator;
 
     private FeedPathGeneratorInterface $feedPathGenerator;
 
+    /**
+     * @psalm-suppress UndefinedDocblockClass
+     *
+     * @param FilesystemInterface|FilesystemOperator $temporaryFilesystem
+     * @param FilesystemInterface|FilesystemOperator $filesystem
+     */
     public function __construct(
-        FilesystemInterface $temporaryFilesystem,
-        FilesystemInterface $filesystem,
+        $temporaryFilesystem,
+        $filesystem,
         FeedPathGeneratorInterface $temporaryFeedPathGenerator,
         FeedPathGeneratorInterface $feedPathGenerator
     ) {
-        $this->temporaryFilesystem = $temporaryFilesystem;
-        $this->filesystem = $filesystem;
+        if (interface_exists(FilesystemInterface::class) && $temporaryFilesystem instanceof FilesystemInterface) {
+            $this->temporaryFilesystem = $temporaryFilesystem;
+        } elseif ($temporaryFilesystem instanceof FilesystemOperator) {
+            $this->temporaryFilesystem = $temporaryFilesystem;
+        } else {
+            throw new InvalidArgumentException(sprintf(
+                'The filesystem must be an instance of %s or %s',
+                FilesystemInterface::class,
+                FilesystemOperator::class
+            ));
+        }
+        if (interface_exists(FilesystemInterface::class) && $filesystem instanceof FilesystemInterface) {
+            $this->filesystem = $filesystem;
+        } elseif ($filesystem instanceof FilesystemOperator) {
+            $this->filesystem = $filesystem;
+        } else {
+            throw new InvalidArgumentException(sprintf(
+                'The filesystem must be an instance of %s or %s',
+                FilesystemInterface::class,
+                FilesystemOperator::class
+            ));
+        }
         $this->temporaryFeedPathGenerator = $temporaryFeedPathGenerator;
         $this->feedPathGenerator = $feedPathGenerator;
     }
@@ -62,8 +97,10 @@ final class MoveGeneratedFeedSubscriber implements EventSubscriberInterface
                     (string) $channel->getCode(),
                     (string) $locale->getCode()
                 );
+                $temporaryFilesystem = $this->temporaryFilesystem;
                 $temporaryPath = TemporaryFeedPathGenerator::getBaseFile($temporaryDir);
-                $tempFile = $this->temporaryFilesystem->readStream((string) $temporaryPath);
+                /** @var resource|false $tempFile */
+                $tempFile = $temporaryFilesystem->readStream((string) $temporaryPath);
                 if (false === $tempFile) {
                     throw new \RuntimeException(sprintf(
                         'The file with path "%s" could not be found',
@@ -78,20 +115,31 @@ final class MoveGeneratedFeedSubscriber implements EventSubscriberInterface
                     (string) $locale->getCode()
                 );
                 $path = sprintf('%s/%s', $newPath->getPath(), uniqid('feed-', true));
-                $res = $this->filesystem->writeStream($path, $tempFile);
+                $filesystem = $this->filesystem;
 
-                if (false === $res) {
-                    throw new RuntimeException('An error occurred when trying to write the feed to the filesystem');
+                if (interface_exists(FilesystemInterface::class) && $filesystem instanceof FilesystemInterface) {
+                    /** @var resource|false $res */
+                    $res = $filesystem->writeStream($path, $tempFile);
+
+                    if (false === $res) {
+                        throw new RuntimeException('An error occurred when trying to write the feed to the filesystem');
+                    }
+                } else {
+                    $filesystem->writeStream($path, $tempFile);
                 }
 
                 try {
-                    $this->filesystem->delete((string) $newPath);
-                } catch (FileNotFoundException $e) {
+                    $filesystem->delete((string) $newPath);
+                } catch (FileNotFoundException|UnableToDeleteFile $e) {
                 }
 
-                $this->filesystem->rename($path, (string) $newPath);
+                if (interface_exists(FilesystemInterface::class) && $filesystem instanceof FilesystemInterface) {
+                    $filesystem->rename($path, (string) $newPath);
+                } else {
+                    $filesystem->move($path, (string) $newPath);
+                }
 
-                $this->temporaryFilesystem->delete((string) $temporaryPath);
+                $temporaryFilesystem->delete((string) $temporaryPath);
             }
         }
     }

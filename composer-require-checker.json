@@ -33,6 +33,9 @@
     "Sylius\\Component\\Inventory\\Model\\StockableInterface",
     "Sylius\\Component\\Locale\\Context\\LocaleContextInterface",
     "Sylius\\Component\\Locale\\Model\\LocaleInterface",
-    "Sylius\\Component\\Product\\Resolver\\ProductVariantResolverInterface"
+    "Sylius\\Component\\Product\\Resolver\\ProductVariantResolverInterface",
+    "League\\Flysystem\\FileNotFoundException",
+    "League\\Flysystem\\FilesystemInterface",
+    "League\\Flysystem\\RootViolationException"
   ]
 }
