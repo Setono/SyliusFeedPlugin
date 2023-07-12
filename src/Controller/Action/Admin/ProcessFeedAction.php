@@ -14,6 +14,12 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Webmozart\Assert\Assert;
 
+/**
+ * @psalm-suppress UndefinedClass
+ * @psalm-suppress MixedArgument
+ * @psalm-suppress UndefinedInterfaceMethod
+ * @psalm-suppress MixedAssignment
+ */
 final class ProcessFeedAction
 {
     private MessageBusInterface $commandBus;
@@ -24,17 +30,24 @@ final class ProcessFeedAction
 
     private TranslatorInterface $translator;
 
+    /**
+     * @param FlashBagInterface|RequestStack $requestStack
+     */
     public function __construct(
         MessageBusInterface $commandBus,
         UrlGeneratorInterface $urlGenerator,
-        RequestStack $requestStack,
+        $requestStack,
         TranslatorInterface $translator,
     ) {
         $this->commandBus = $commandBus;
         $this->urlGenerator = $urlGenerator;
-        $session = $requestStack->getSession();
-        Assert::isInstanceOf($session, FlashBagAwareSessionInterface::class);
-        $this->flashBag = $session->getFlashBag();
+        if ($requestStack instanceof FlashBagInterface) {
+            $this->flashBag = $requestStack;
+        } else {
+            $session = $requestStack->getSession();
+            Assert::isInstanceOf($session, FlashBagAwareSessionInterface::class);
+            $this->flashBag = $session->getFlashBag();
+        }
         $this->translator = $translator;
     }
 

@@ -17,6 +17,9 @@ use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
+/**
+ * @psalm-suppress DeprecatedInterface
+ */
 final class GenerateFeedHandler implements MessageHandlerInterface
 {
     use GetChannelTrait;

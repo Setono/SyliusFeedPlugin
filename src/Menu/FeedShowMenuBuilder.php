@@ -30,6 +30,9 @@ final class FeedShowMenuBuilder
         $this->workflowRegistry = $workflowRegistry;
     }
 
+    /**
+     * @psalm-suppress InternalMethod
+     */
     public function createMenu(array $options): ItemInterface
     {
         $menu = $this->factory->createItem('root');

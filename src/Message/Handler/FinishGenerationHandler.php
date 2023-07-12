@@ -32,6 +32,8 @@ use Webmozart\Assert\Assert;
 /**
  * @psalm-suppress UndefinedDocblockClass
  * @psalm-suppress UndefinedClass
+ * @psalm-suppress DeprecatedInterface
+ * @psalm-suppress InternalMethod
  */
 final class FinishGenerationHandler implements MessageHandlerInterface
 {

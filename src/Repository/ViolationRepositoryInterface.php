@@ -9,6 +9,11 @@ use Setono\SyliusFeedPlugin\DTO\SeverityCount;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 
+/**
+ * @psalm-suppress InvalidTemplateParam
+ *
+ * @extends RepositoryInterface<SeverityCount>
+ */
 interface ViolationRepositoryInterface extends RepositoryInterface
 {
     /**

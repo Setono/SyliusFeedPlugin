@@ -42,7 +42,7 @@ abstract class AbstractFilterListener
             throw new InvalidArgumentException('This filter only works with one root alias');
         }
 
-        return $aliases[0];
+        return reset($aliases);
     }
 
     protected function getClassMetadata(QueryBuilderEvent $event): ClassMetadata

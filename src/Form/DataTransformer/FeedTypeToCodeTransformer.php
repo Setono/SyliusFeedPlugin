@@ -9,6 +9,9 @@ use Setono\SyliusFeedPlugin\Registry\FeedTypeRegistryInterface;
 use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
 
+/**
+ * @implements DataTransformerInterface<string|null, FeedTypeInterface|null>
+ */
 final class FeedTypeToCodeTransformer implements DataTransformerInterface
 {
     private FeedTypeRegistryInterface $feedTypeRegistry;

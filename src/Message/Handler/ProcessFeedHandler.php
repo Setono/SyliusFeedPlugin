@@ -19,6 +19,10 @@ use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Registry;
 
+/**
+ * @psalm-suppress DeprecatedInterface
+ * @psalm-suppress InternalMethod
+ */
 final class ProcessFeedHandler implements MessageHandlerInterface
 {
     use GetFeedTrait;

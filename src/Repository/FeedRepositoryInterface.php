@@ -7,6 +7,9 @@ namespace Setono\SyliusFeedPlugin\Repository;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 
+/**
+ * @extends RepositoryInterface<FeedInterface>
+ */
 interface FeedRepositoryInterface extends RepositoryInterface
 {
     public function findOneByCode(string $code): ?FeedInterface;
