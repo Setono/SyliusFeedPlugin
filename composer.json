@@ -4,7 +4,7 @@
     "license": "MIT",
     "type": "symfony-bundle",
     "require": {
-        "php": ">=8.0",
+        "php": ">=8.1",
         "ext-json": "*",
         "doctrine/collections": "^1.6",
         "doctrine/orm": "^2.7",

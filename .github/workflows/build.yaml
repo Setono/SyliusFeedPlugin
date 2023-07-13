@@ -20,7 +20,7 @@ jobs:
         strategy:
             matrix:
                 php-version:
-                    - "8.0"
+                    - "8.1"
 
                 dependencies:
                     - "highest"
@@ -64,8 +64,8 @@ jobs:
         strategy:
             matrix:
                 php-version:
-                    - "8.0"
                     - "8.1"
+                    - "8.2"
 
                 dependencies:
                     - "highest"
@@ -73,11 +73,6 @@ jobs:
                 symfony:
                     - "^5.4"
                     - "^6.0"
-
-                exclude:
-                    -
-                        php-version: "8.0"
-                        symfony: "^6.0"
 
         steps:
             -   name: "Checkout"
@@ -112,8 +107,8 @@ jobs:
         strategy:
             matrix:
                 php-version:
-                    - "8.0"
                     - "8.1"
+                    - "8.2"
 
                 dependencies:
                     - "highest"
@@ -121,11 +116,6 @@ jobs:
                 symfony:
                     - "^5.4"
                     - "^6.0"
-
-                exclude:
-                    -
-                        php-version: "8.0"
-                        symfony: "^6.0"
 
         steps:
             -   name: "Checkout"
@@ -160,8 +150,8 @@ jobs:
         strategy:
             matrix:
                 php-version:
-                    - "8.0"
                     - "8.1"
+                    - "8.2"
 
                 dependencies:
                     - "highest"
@@ -169,11 +159,6 @@ jobs:
                 symfony:
                     - "^5.4"
                     - "^6.0"
-
-                exclude:
-                    -
-                        php-version: "8.0"
-                        symfony: "^6.0"
 
         steps:
             -   name: "Checkout"
@@ -205,8 +190,8 @@ jobs:
         strategy:
             matrix:
                 php-version:
-                    - "8.0"
                     - "8.1"
+                    - "8.2"
 
                 dependencies:
                     - "highest"
@@ -214,11 +199,6 @@ jobs:
                 symfony:
                     - "^5.4"
                     - "^6.0"
-
-                exclude:
-                    -
-                        php-version: "8.0"
-                        symfony: "^6.0"
 
         steps:
             -   name: "Start MySQL"
@@ -243,9 +223,7 @@ jobs:
                     dependency-versions: "${{ matrix.dependencies }}"
 
             -   name: "Lint container"
-                # Do not lint on SF4 because we get this error: Invalid definition for service "doctrine.migrations.dependency_factory": argument 2 of "Doctrine\Migrations\DependencyFactory::setDefinition()" accepts "callable", "SyliusLabs\DoctrineMigrationsExtraBundle\Factory\ContainerAwareVersionFactory" passed.
-                # Note: We cannot use the if statement here, because of https://github.community/t/matrix-cannot-be-used-in-jobs-level-if/17177/10
-                run: 'if [ "${{ matrix.symfony }}" != "^4.4" ]; then (cd tests/Application && bin/console lint:container); fi'
+                run: "(cd tests/Application && bin/console lint:container)"
 
             -   name: "Create database"
                 run: "(cd tests/Application && bin/console doctrine:database:create -vvv)"
