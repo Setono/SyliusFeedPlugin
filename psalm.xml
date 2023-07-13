@@ -28,6 +28,11 @@
         <pluginClass class="Weirdan\DoctrinePsalmPlugin\Plugin"/>
     </plugins>
     <issueHandlers>
+        <MethodSignatureMismatch>
+            <errorLevel type="suppress">
+                <file name="src/Feed/Model/Google/Shopping/DateTime.php" />
+            </errorLevel>
+        </MethodSignatureMismatch>
         <PluginIssue name="QueryBuilderSetParameter" errorLevel="info"/>
         <UnnecessaryVarAnnotation errorLevel="suppress"/>
     </issueHandlers>

@@ -30,13 +30,10 @@ final class ProcessFeedAction
 
     private TranslatorInterface $translator;
 
-    /**
-     * @param FlashBagInterface|RequestStack $requestStack
-     */
     public function __construct(
         MessageBusInterface $commandBus,
         UrlGeneratorInterface $urlGenerator,
-        $requestStackOrFlashBag,
+        FlashBagInterface|RequestStack $requestStackOrFlashBag,
         TranslatorInterface $translator,
     ) {
         $this->commandBus = $commandBus;
