@@ -36,15 +36,15 @@ final class ProcessFeedAction
     public function __construct(
         MessageBusInterface $commandBus,
         UrlGeneratorInterface $urlGenerator,
-        $requestStack,
+        $requestStackOrFlashBag,
         TranslatorInterface $translator,
     ) {
         $this->commandBus = $commandBus;
         $this->urlGenerator = $urlGenerator;
-        if ($requestStack instanceof FlashBagInterface) {
-            $this->flashBag = $requestStack;
+        if ($requestStackOrFlashBag instanceof FlashBagInterface) {
+            $this->flashBag = $requestStackOrFlashBag;
         } else {
-            $session = $requestStack->getSession();
+            $session = $requestStackOrFlashBag->getSession();
             Assert::isInstanceOf($session, FlashBagAwareSessionInterface::class);
             $this->flashBag = $session->getFlashBag();
         }

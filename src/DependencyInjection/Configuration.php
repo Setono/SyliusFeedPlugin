@@ -57,8 +57,7 @@ final class Configuration implements ConfigurationInterface
     }
 
     /**
-     * @psalm-suppress MixedMethodCall
-     * @psalm-suppress UndefinedInterfaceMethod
+     * @psalm-suppress MixedMethodCall, UndefinedInterfaceMethod
      */
     private function addResourcesSection(ArrayNodeDefinition $node): void
     {
