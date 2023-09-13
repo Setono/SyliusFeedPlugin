@@ -20,8 +20,6 @@ use Sylius\Component\Locale\Model\LocaleInterface;
 
 class DataProvider implements DataProviderInterface
 {
-    private const BATCH_SIZE = 100;
-
     private BatcherFactoryInterface $batcherFactory;
 
     private QueryRebuilderInterface $queryRebuilder;
@@ -35,18 +33,22 @@ class DataProvider implements DataProviderInterface
     /** @var CollectionBatcherInterface[] */
     private array $batchers = [];
 
+    private int $batchSize;
+
     public function __construct(
         BatcherFactoryInterface $batcherFactory,
         QueryRebuilderInterface $queryRebuilder,
         EventDispatcherInterface $eventDispatcher,
         ManagerRegistry $managerRegistry,
-        string $class
+        string $class,
+        int $batchSize = 100
     ) {
         $this->batcherFactory = $batcherFactory;
         $this->queryRebuilder = $queryRebuilder;
         $this->eventDispatcher = $eventDispatcher;
         $this->managerRegistry = $managerRegistry;
         $this->class = $class;
+        $this->batchSize = $batchSize;
     }
 
     public function getClass(): string
@@ -59,12 +61,12 @@ class DataProvider implements DataProviderInterface
      */
     public function getBatches(ChannelInterface $channel, LocaleInterface $locale): iterable
     {
-        yield from $this->getBatcher($channel, $locale)->getBatches(self::BATCH_SIZE);
+        yield from $this->getBatcher($channel, $locale)->getBatches($this->batchSize);
     }
 
     public function getBatchCount(ChannelInterface $channel, LocaleInterface $locale): int
     {
-        return $this->getBatcher($channel, $locale)->getBatchCount(self::BATCH_SIZE);
+        return $this->getBatcher($channel, $locale)->getBatchCount($this->batchSize);
     }
 
     /** @psalm-suppress MixedReturnTypeCoercion */
