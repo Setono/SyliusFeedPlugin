@@ -41,7 +41,7 @@ class DataProvider implements DataProviderInterface
         EventDispatcherInterface $eventDispatcher,
         ManagerRegistry $managerRegistry,
         string $class,
-        int $batchSize = 100
+        int $batchSize = 100,
     ) {
         $this->batcherFactory = $batcherFactory;
         $this->queryRebuilder = $queryRebuilder;
