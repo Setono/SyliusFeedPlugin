@@ -33,7 +33,7 @@
         "symfony/options-resolver": "^5.4 || ^6.3",
         "symfony/routing": "^5.4 || ^6.3",
         "symfony/serializer": "^5.4 || ^6.3",
-        "symfony/translation-contracts": "^1.1 || ^2.3",
+        "symfony/translation-contracts": "^1.1 || ^2.3 || ^3.0",
         "symfony/uid": "^5.4 || ^6.3",
         "symfony/validator": "^5.4 || ^6.3",
         "symfony/workflow": "^5.4 || ^6.3",
