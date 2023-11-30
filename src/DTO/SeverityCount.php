@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\DTO;
 
-final class SeverityCount
+class SeverityCount
 {
     private string $severity;
 

@@ -9,7 +9,7 @@ use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Sylius\Component\Channel\Model\ChannelInterface;
 use Sylius\Component\Locale\Model\LocaleInterface;
 
-final class GenerateBatch implements CommandInterface
+class GenerateBatch implements CommandInterface
 {
     private int $feedId;
 

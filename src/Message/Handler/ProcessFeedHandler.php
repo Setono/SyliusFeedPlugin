@@ -19,7 +19,7 @@ use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Registry;
 
-final class ProcessFeedHandler implements MessageHandlerInterface
+class ProcessFeedHandler implements MessageHandlerInterface
 {
     use GetFeedTrait;
 

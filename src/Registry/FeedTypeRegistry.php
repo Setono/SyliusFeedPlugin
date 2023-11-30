@@ -7,7 +7,7 @@ namespace Setono\SyliusFeedPlugin\Registry;
 use InvalidArgumentException;
 use Setono\SyliusFeedPlugin\FeedType\FeedTypeInterface;
 
-final class FeedTypeRegistry implements FeedTypeRegistryInterface
+class FeedTypeRegistry implements FeedTypeRegistryInterface
 {
     /** @var FeedTypeInterface[] */
     private array $feedTypes = [];

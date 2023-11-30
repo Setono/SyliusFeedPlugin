@@ -9,7 +9,7 @@ use Knp\Menu\ItemInterface;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Sylius\Bundle\UiBundle\Menu\Event\MenuBuilderEvent;
 
-final class FeedShowMenuBuilderEvent extends MenuBuilderEvent
+class FeedShowMenuBuilderEvent extends MenuBuilderEvent
 {
     private FeedInterface $feed;
 

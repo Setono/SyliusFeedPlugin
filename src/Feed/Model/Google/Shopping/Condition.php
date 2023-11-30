@@ -11,6 +11,6 @@ use Spatie\Enum\Enum;
  * @method static self refurbished()
  * @method static self used()
  */
-final class Condition extends Enum
+class Condition extends Enum
 {
 }

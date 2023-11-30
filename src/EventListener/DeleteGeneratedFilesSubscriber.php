@@ -19,7 +19,7 @@ use Webmozart\Assert\Assert;
  * @psalm-suppress UndefinedDocblockClass
  * @psalm-suppress UndefinedClass
  */
-final class DeleteGeneratedFilesSubscriber implements EventSubscriberInterface
+class DeleteGeneratedFilesSubscriber implements EventSubscriberInterface
 {
     /** @var FilesystemInterface|FilesystemOperator */
     private $filesystem;

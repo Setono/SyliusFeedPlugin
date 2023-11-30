@@ -14,7 +14,7 @@ use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
 
-final class Extension extends AbstractExtension
+class Extension extends AbstractExtension
 {
     use MainRequestTrait;
 

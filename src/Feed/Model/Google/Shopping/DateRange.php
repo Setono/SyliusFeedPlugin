@@ -6,7 +6,7 @@ namespace Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping;
 
 use JsonSerializable;
 
-final class DateRange implements JsonSerializable
+class DateRange implements JsonSerializable
 {
     private DateTime $start;
 

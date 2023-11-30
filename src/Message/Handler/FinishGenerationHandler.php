@@ -33,7 +33,7 @@ use Webmozart\Assert\Assert;
  * @psalm-suppress UndefinedDocblockClass
  * @psalm-suppress UndefinedClass
  */
-final class FinishGenerationHandler implements MessageHandlerInterface
+class FinishGenerationHandler implements MessageHandlerInterface
 {
     use GetFeedTrait;
 

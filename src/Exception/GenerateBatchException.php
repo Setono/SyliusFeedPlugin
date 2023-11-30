@@ -8,7 +8,7 @@ use RuntimeException;
 use Throwable;
 use Webmozart\Assert\Assert;
 
-final class GenerateBatchException extends RuntimeException implements ExceptionInterface
+class GenerateBatchException extends RuntimeException implements ExceptionInterface
 {
     private string $originalMessage;
 

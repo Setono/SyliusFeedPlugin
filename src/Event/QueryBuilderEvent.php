@@ -9,7 +9,7 @@ use Setono\SyliusFeedPlugin\DataProvider\DataProviderInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Locale\Model\LocaleInterface;
 
-final class QueryBuilderEvent
+class QueryBuilderEvent
 {
     private DataProviderInterface $dataProvider;
 

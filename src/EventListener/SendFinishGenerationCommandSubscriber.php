@@ -10,7 +10,7 @@ use Setono\SyliusFeedPlugin\Repository\FeedRepositoryInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-final class SendFinishGenerationCommandSubscriber implements EventSubscriberInterface
+class SendFinishGenerationCommandSubscriber implements EventSubscriberInterface
 {
     private FeedRepositoryInterface $feedRepository;
 

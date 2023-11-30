@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Workflow;
 
-final class FeedGraph
+class FeedGraph
 {
     public const GRAPH = 'setono_sylius_feed.feed';
 

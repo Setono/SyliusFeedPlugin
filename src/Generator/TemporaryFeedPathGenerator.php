@@ -15,7 +15,7 @@ use Webmozart\Assert\Assert;
  * @psalm-suppress UndefinedDocblockClass
  * @psalm-suppress UndefinedClass
  */
-final class TemporaryFeedPathGenerator implements FeedPathGeneratorInterface
+class TemporaryFeedPathGenerator implements FeedPathGeneratorInterface
 {
     public const BASE_FILENAME = '_feed';
 

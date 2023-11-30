@@ -10,7 +10,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 
-final class ProcessFeedsCommand extends Command
+class ProcessFeedsCommand extends Command
 {
     protected static $defaultName = 'setono:sylius-feed:process';
 

@@ -22,7 +22,7 @@ use Symfony\Component\Workflow\Event\TransitionEvent;
  * @psalm-suppress UndefinedDocblockClass
  * @psalm-suppress UndefinedClass
  */
-final class MoveGeneratedFeedSubscriber implements EventSubscriberInterface
+class MoveGeneratedFeedSubscriber implements EventSubscriberInterface
 {
     /** @var FilesystemInterface|FilesystemOperator */
     private $temporaryFilesystem;

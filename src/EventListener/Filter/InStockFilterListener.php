@@ -7,7 +7,7 @@ namespace Setono\SyliusFeedPlugin\EventListener\Filter;
 use Setono\SyliusFeedPlugin\Event\QueryBuilderEvent;
 use Sylius\Component\Inventory\Model\StockableInterface;
 
-final class InStockFilterListener extends AbstractFilterListener
+class InStockFilterListener extends AbstractFilterListener
 {
     public function filter(QueryBuilderEvent $event): void
     {

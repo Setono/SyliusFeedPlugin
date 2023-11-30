@@ -9,7 +9,7 @@ use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Locale\Model\LocaleInterface;
 
-final class FeedContext implements FeedContextInterface
+class FeedContext implements FeedContextInterface
 {
     public function getContext(FeedInterface $feed, ChannelInterface $channel, LocaleInterface $locale): array
     {

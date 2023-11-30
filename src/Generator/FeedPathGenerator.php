@@ -9,7 +9,7 @@ use Setono\SyliusFeedPlugin\Resolver\FeedExtensionResolverInterface;
 use SplFileInfo;
 use Webmozart\Assert\Assert;
 
-final class FeedPathGenerator implements FeedPathGeneratorInterface
+class FeedPathGenerator implements FeedPathGeneratorInterface
 {
     private FeedExtensionResolverInterface $feedExtensionResolver;
 

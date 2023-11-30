@@ -12,7 +12,7 @@ use Sylius\Component\Locale\Model\LocaleInterface;
  * @internal because it is called in a context where dependent data is updated in the database,
  * i.e. the batches, finished batches numbers in the feed model
  */
-final class GenerateFeed implements CommandInterface
+class GenerateFeed implements CommandInterface
 {
     private int $feedId;
 

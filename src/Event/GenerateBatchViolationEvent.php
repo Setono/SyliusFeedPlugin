@@ -10,7 +10,7 @@ use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Locale\Model\LocaleInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
-final class GenerateBatchViolationEvent
+class GenerateBatchViolationEvent
 {
     private FeedInterface $feed;
 

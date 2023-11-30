@@ -9,7 +9,7 @@ use Setono\SyliusFeedPlugin\FeedContext\FeedContextInterface;
 use Setono\SyliusFeedPlugin\FeedContext\ItemContextInterface;
 use Symfony\Component\Validator\Constraint;
 
-final class FeedType implements FeedTypeInterface
+class FeedType implements FeedTypeInterface
 {
     private string $code;
 

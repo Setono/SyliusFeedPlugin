@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Message\Command;
 
-final class ProcessFeed implements CommandInterface
+class ProcessFeed implements CommandInterface
 {
     private int $feedId;
 

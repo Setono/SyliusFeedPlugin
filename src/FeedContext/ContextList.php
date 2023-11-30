@@ -7,7 +7,7 @@ namespace Setono\SyliusFeedPlugin\FeedContext;
 use ArrayIterator;
 use IteratorAggregate;
 
-final class ContextList implements IteratorAggregate, ContextListInterface
+class ContextList implements IteratorAggregate, ContextListInterface
 {
     /** @var array<array-key, array|object> */
     private array $contexts = [];

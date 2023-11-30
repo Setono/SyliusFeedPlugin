@@ -12,7 +12,7 @@ use Sylius\Component\Core\Model\ChannelInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Workflow\Event\TransitionEvent;
 
-final class StartProcessingSubscriber implements EventSubscriberInterface
+class StartProcessingSubscriber implements EventSubscriberInterface
 {
     private FeedTypeRegistryInterface $feedTypeRegistry;
 

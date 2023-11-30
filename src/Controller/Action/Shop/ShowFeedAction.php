@@ -20,7 +20,7 @@ use Symfony\Component\Mime\MimeTypesInterface;
  * @psalm-suppress UndefinedDocblockClass
  * @psalm-suppress UndefinedClass
  */
-final class ShowFeedAction
+class ShowFeedAction
 {
     private FeedRepositoryInterface $repository;
 

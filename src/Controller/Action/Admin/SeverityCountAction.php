@@ -8,7 +8,7 @@ use Setono\SyliusFeedPlugin\Repository\ViolationRepositoryInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Twig\Environment;
 
-final class SeverityCountAction
+class SeverityCountAction
 {
     private ViolationRepositoryInterface $violationRepository;
 

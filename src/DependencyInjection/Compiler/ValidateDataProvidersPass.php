@@ -8,7 +8,7 @@ use InvalidArgumentException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
-final class ValidateDataProvidersPass implements CompilerPassInterface
+class ValidateDataProvidersPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container): void
     {

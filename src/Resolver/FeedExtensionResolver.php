@@ -8,7 +8,7 @@ use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Registry\FeedTypeRegistryInterface;
 use Twig\Environment;
 
-final class FeedExtensionResolver implements FeedExtensionResolverInterface
+class FeedExtensionResolver implements FeedExtensionResolverInterface
 {
     private FeedTypeRegistryInterface $feedTypeRegistry;
 

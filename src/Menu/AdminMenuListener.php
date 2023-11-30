@@ -6,7 +6,7 @@ namespace Setono\SyliusFeedPlugin\Menu;
 
 use Sylius\Bundle\UiBundle\Menu\Event\MenuBuilderEvent;
 
-final class AdminMenuListener
+class AdminMenuListener
 {
     public function addAdminMenuItems(MenuBuilderEvent $event): void
     {

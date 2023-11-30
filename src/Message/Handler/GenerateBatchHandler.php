@@ -49,7 +49,7 @@ use Webmozart\Assert\Assert;
  * @psalm-suppress UndefinedDocblockClass
  * @psalm-suppress UndefinedClass
  */
-final class GenerateBatchHandler implements MessageHandlerInterface
+class GenerateBatchHandler implements MessageHandlerInterface
 {
     use GetChannelTrait;
 

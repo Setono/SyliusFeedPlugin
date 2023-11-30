@@ -11,7 +11,7 @@ use Sylius\Component\Resource\Factory\FactoryInterface;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 
-final class ViolationFactory implements ViolationFactoryInterface
+class ViolationFactory implements ViolationFactoryInterface
 {
     private FactoryInterface $decoratedFactory;
 

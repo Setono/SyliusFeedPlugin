@@ -7,7 +7,7 @@ namespace Setono\SyliusFeedPlugin\EventListener\Filter;
 use Setono\SyliusFeedPlugin\Event\QueryBuilderEvent;
 use Sylius\Component\Channel\Model\ChannelsAwareInterface;
 
-final class ChannelFilterListener extends AbstractFilterListener
+class ChannelFilterListener extends AbstractFilterListener
 {
     public function filter(QueryBuilderEvent $event): void
     {

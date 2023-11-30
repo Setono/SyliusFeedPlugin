@@ -6,7 +6,7 @@ namespace Setono\SyliusFeedPlugin\Exception;
 
 use InvalidArgumentException;
 
-final class UndefinedBlockException extends InvalidArgumentException implements ExceptionInterface
+class UndefinedBlockException extends InvalidArgumentException implements ExceptionInterface
 {
     private string $block;
 

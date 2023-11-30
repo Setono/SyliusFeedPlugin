@@ -6,7 +6,7 @@ namespace Setono\SyliusFeedPlugin\Event;
 
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 
-final class BatchGeneratedEvent
+class BatchGeneratedEvent
 {
     private FeedInterface $feed;
 

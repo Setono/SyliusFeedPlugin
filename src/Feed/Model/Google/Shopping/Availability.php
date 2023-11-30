@@ -11,7 +11,7 @@ use Spatie\Enum\Enum;
  * @method static self outOfStock()
  * @method static self preOrder()
  */
-final class Availability extends Enum
+class Availability extends Enum
 {
     /**
      * @return array<string, string>

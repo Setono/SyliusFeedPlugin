@@ -10,7 +10,7 @@ use Setono\SyliusFeedPlugin\Message\Command\ProcessFeed;
 use Setono\SyliusFeedPlugin\Repository\FeedRepositoryInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-final class FeedProcessor implements FeedProcessorInterface
+class FeedProcessor implements FeedProcessorInterface
 {
     use LoggerAwareTrait;
 
