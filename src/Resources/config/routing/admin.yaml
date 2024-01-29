@@ -17,7 +17,7 @@ setono_sylius_feed_admin_feed_show:
     path: /feeds/{id}
     methods: [GET]
     defaults:
-        _controller: setono_sylius_feed.controller.feed:showAction
+        _controller: setono_sylius_feed.controller.feed::showAction
         _sylius:
             section: admin
             permission: true
@@ -33,7 +33,7 @@ setono_sylius_feed_admin_feed_violations_index:
     path: /feeds/{id}/violations
     methods: [GET]
     defaults:
-        _controller: setono_sylius_feed.controller.violation:indexAction
+        _controller: setono_sylius_feed.controller.violation::indexAction
         _sylius:
             vars:
                 route:
