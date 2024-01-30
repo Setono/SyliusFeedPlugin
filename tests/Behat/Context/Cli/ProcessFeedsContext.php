@@ -59,7 +59,7 @@ final class ProcessFeedsContext implements Context
         $filesystem,
         FeedProcessorInterface $processor,
         FeedPathGeneratorInterface $feedPathGenerator,
-        RepositoryInterface $feedRepository
+        RepositoryInterface $feedRepository,
     ) {
         $this->kernel = $kernel;
         if (interface_exists(FilesystemInterface::class) && $filesystem instanceof FilesystemInterface) {
@@ -70,7 +70,7 @@ final class ProcessFeedsContext implements Context
             throw new InvalidArgumentException(sprintf(
                 'The filesystem must be an instance of %s or %s',
                 FilesystemInterface::class,
-                FilesystemOperator::class
+                FilesystemOperator::class,
             ));
         }
         $this->processor = $processor;
@@ -201,7 +201,7 @@ CONTENT;
         return \preg_replace(
             '/sylius_shop_product_large_thumbnail\/.*?\.jpe?g/',
             'sylius_shop_product_large_thumbnail/%image_path%',
-            $actualContent
+            $actualContent,
         );
     }
 }

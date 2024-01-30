@@ -17,12 +17,13 @@ use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
+/**
+ * @psalm-suppress DeprecatedInterface
+ */
 final class GenerateFeedHandler implements MessageHandlerInterface
 {
     use GetChannelTrait;
-
     use GetFeedTrait;
-
     use GetLocaleTrait;
 
     private FeedTypeRegistryInterface $feedTypeRegistry;
@@ -34,7 +35,7 @@ final class GenerateFeedHandler implements MessageHandlerInterface
         ChannelRepositoryInterface $channelRepository,
         RepositoryInterface $localeRepository,
         FeedTypeRegistryInterface $feedTypeRegistry,
-        MessageBusInterface $commandBus
+        MessageBusInterface $commandBus,
     ) {
         $this->feedRepository = $feedRepository;
         $this->channelRepository = $channelRepository;
@@ -65,7 +66,7 @@ final class GenerateFeedHandler implements MessageHandlerInterface
         } catch (InvalidArgumentException $e) {
             throw new UnrecoverableMessageHandlingException(sprintf(
                 'Feed type with code "%s" does not exist',
-                (string) $feed->getFeedType()
+                (string) $feed->getFeedType(),
             ), 0, $e);
         }
     }

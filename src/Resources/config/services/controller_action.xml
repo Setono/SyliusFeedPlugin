@@ -17,7 +17,7 @@
                  class="Setono\SyliusFeedPlugin\Controller\Action\Admin\ProcessFeedAction" public="true">
             <argument type="service" id="setono_sylius_feed.command_bus"/>
             <argument type="service" id="router"/>
-            <argument type="service" id="session.flash_bag"/>
+            <argument type="service" id="request_stack"/>
             <argument type="service" id="translator"/>
         </service>
 

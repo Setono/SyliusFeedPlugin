@@ -19,16 +19,20 @@
     </projectFiles>
     <plugins>
         <pluginClass class="Psalm\SymfonyPsalmPlugin\Plugin">
-            <!-- Symfony 4 container XML -->
-            <containerXml>tests/Application/var/cache/test/ApplicationTests_Setono_SyliusFeedPlugin_Application_KernelTestDebugContainer.xml</containerXml>
-
-            <!-- Symfony 5 container XML -->
             <containerXml>tests/Application/var/cache/test/Tests_Setono_SyliusFeedPlugin_Application_KernelTestDebugContainer.xml</containerXml>
+            <extraFiles>
+                <directory name="var/cache/dev/Symfony/Config" /> <!-- https://github.com/psalm/psalm-plugin-symfony/issues/201 -->
+            </extraFiles>
         </pluginClass>
         <pluginClass class="Psalm\PhpUnitPlugin\Plugin"/>
         <pluginClass class="Weirdan\DoctrinePsalmPlugin\Plugin"/>
     </plugins>
     <issueHandlers>
+        <MethodSignatureMismatch>
+            <errorLevel type="suppress">
+                <file name="src/Feed/Model/Google/Shopping/DateTime.php" />
+            </errorLevel>
+        </MethodSignatureMismatch>
         <PluginIssue name="QueryBuilderSetParameter" errorLevel="info"/>
         <UnnecessaryVarAnnotation errorLevel="suppress"/>
     </issueHandlers>

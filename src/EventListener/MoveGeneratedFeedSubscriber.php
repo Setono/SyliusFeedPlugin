@@ -44,7 +44,7 @@ final class MoveGeneratedFeedSubscriber implements EventSubscriberInterface
         $temporaryFilesystem,
         $filesystem,
         FeedPathGeneratorInterface $temporaryFeedPathGenerator,
-        FeedPathGeneratorInterface $feedPathGenerator
+        FeedPathGeneratorInterface $feedPathGenerator,
     ) {
         if (interface_exists(FilesystemInterface::class) && $temporaryFilesystem instanceof FilesystemInterface) {
             $this->temporaryFilesystem = $temporaryFilesystem;
@@ -54,7 +54,7 @@ final class MoveGeneratedFeedSubscriber implements EventSubscriberInterface
             throw new InvalidArgumentException(sprintf(
                 'The filesystem must be an instance of %s or %s',
                 FilesystemInterface::class,
-                FilesystemOperator::class
+                FilesystemOperator::class,
             ));
         }
         if (interface_exists(FilesystemInterface::class) && $filesystem instanceof FilesystemInterface) {
@@ -65,7 +65,7 @@ final class MoveGeneratedFeedSubscriber implements EventSubscriberInterface
             throw new InvalidArgumentException(sprintf(
                 'The filesystem must be an instance of %s or %s',
                 FilesystemInterface::class,
-                FilesystemOperator::class
+                FilesystemOperator::class,
             ));
         }
         $this->temporaryFeedPathGenerator = $temporaryFeedPathGenerator;
@@ -95,7 +95,7 @@ final class MoveGeneratedFeedSubscriber implements EventSubscriberInterface
                 $temporaryDir = $this->temporaryFeedPathGenerator->generate(
                     $feed,
                     (string) $channel->getCode(),
-                    (string) $locale->getCode()
+                    (string) $locale->getCode(),
                 );
                 $temporaryFilesystem = $this->temporaryFilesystem;
                 $temporaryPath = TemporaryFeedPathGenerator::getBaseFile($temporaryDir);
@@ -104,7 +104,7 @@ final class MoveGeneratedFeedSubscriber implements EventSubscriberInterface
                 if (false === $tempFile) {
                     throw new \RuntimeException(sprintf(
                         'The file with path "%s" could not be found',
-                        $temporaryPath
+                        $temporaryPath,
                     ));
                 }
 
@@ -112,7 +112,7 @@ final class MoveGeneratedFeedSubscriber implements EventSubscriberInterface
                 $newPath = $this->feedPathGenerator->generate(
                     $feed,
                     (string) $channel->getCode(),
-                    (string) $locale->getCode()
+                    (string) $locale->getCode(),
                 );
                 $path = sprintf('%s/%s', $newPath->getPath(), uniqid('feed-', true));
                 $filesystem = $this->filesystem;

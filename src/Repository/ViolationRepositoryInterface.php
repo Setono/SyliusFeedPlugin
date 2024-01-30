@@ -7,8 +7,12 @@ namespace Setono\SyliusFeedPlugin\Repository;
 use Doctrine\ORM\QueryBuilder;
 use Setono\SyliusFeedPlugin\DTO\SeverityCount;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
+use Setono\SyliusFeedPlugin\Model\ViolationInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 
+/**
+ * @extends RepositoryInterface<ViolationInterface>
+ */
 interface ViolationRepositoryInterface extends RepositoryInterface
 {
     /**

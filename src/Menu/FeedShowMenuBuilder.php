@@ -23,13 +23,16 @@ final class FeedShowMenuBuilder
     public function __construct(
         FactoryInterface $factory,
         EventDispatcherInterface $eventDispatcher,
-        Registry $workflowRegistry
+        Registry $workflowRegistry,
     ) {
         $this->factory = $factory;
         $this->eventDispatcher = $eventDispatcher;
         $this->workflowRegistry = $workflowRegistry;
     }
 
+    /**
+     * @psalm-suppress InternalMethod
+     */
     public function createMenu(array $options): ItemInterface
     {
         $menu = $this->factory->createItem('root');

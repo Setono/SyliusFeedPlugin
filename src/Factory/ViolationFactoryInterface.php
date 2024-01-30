@@ -10,6 +10,9 @@ use Sylius\Component\Locale\Model\LocaleInterface;
 use Sylius\Component\Resource\Factory\FactoryInterface;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 
+/**
+ * @extends FactoryInterface<ViolationInterface>
+ */
 interface ViolationFactoryInterface extends FactoryInterface
 {
     /**
@@ -19,6 +22,6 @@ interface ViolationFactoryInterface extends FactoryInterface
         ConstraintViolationInterface $constraintViolation,
         ChannelInterface $channel,
         LocaleInterface $locale,
-        $data = null
+        $data = null,
     ): ViolationInterface;
 }
