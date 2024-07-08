@@ -6,7 +6,7 @@ namespace Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping;
 
 use Webmozart\Assert\Assert;
 
-final class Product
+class Product
 {
     private ?string $id = null;
 
