@@ -8,11 +8,10 @@ use Setono\SyliusFeedPlugin\Message\Command\ProcessFeed;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
-use Symfony\Component\HttpFoundation\Session\FlashBagAwareSessionInterface;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
-use Webmozart\Assert\Assert;
 
 /**
  * @psalm-suppress UndefinedClass
@@ -38,13 +37,7 @@ final class ProcessFeedAction
     ) {
         $this->commandBus = $commandBus;
         $this->urlGenerator = $urlGenerator;
-        if ($requestStackOrFlashBag instanceof FlashBagInterface) {
-            $this->flashBag = $requestStackOrFlashBag;
-        } else {
-            $session = $requestStackOrFlashBag->getSession();
-            Assert::isInstanceOf($session, FlashBagAwareSessionInterface::class);
-            $this->flashBag = $session->getFlashBag();
-        }
+        $this->flashBag = $requestStackOrFlashBag;
         $this->translator = $translator;
     }
 
@@ -52,8 +45,22 @@ final class ProcessFeedAction
     {
         $this->commandBus->dispatch(new ProcessFeed($id));
 
-        $this->flashBag->add('success', $this->translator->trans('setono_sylius_feed.feed_generation_triggered'));
+        $this->getFlashBag()->add('success', $this->translator->trans('setono_sylius_feed.feed_generation_triggered'));
 
         return new RedirectResponse($this->urlGenerator->generate('setono_sylius_feed_admin_feed_show', ['id' => $id]));
+    }
+
+    private function getFlashBag(): FlashBagInterface
+    {
+        if ($this->flashBag instanceof FlashBagInterface) {
+            return $this->flashBag;
+        }
+
+        $session = $this->flashBag->getSession();
+        if ($session instanceof Session) {
+            return $session->getFlashBag();
+        }
+
+        throw new \RuntimeException('Could not get flash bag');
     }
 }
