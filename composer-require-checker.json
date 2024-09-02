@@ -36,7 +36,6 @@
     "Sylius\\Component\\Product\\Resolver\\ProductVariantResolverInterface",
     "League\\Flysystem\\FileNotFoundException",
     "League\\Flysystem\\FilesystemInterface",
-    "League\\Flysystem\\RootViolationException",
-    "Symfony\\Component\\HttpFoundation\\Session\\FlashBagAwareSessionInterface"
+    "League\\Flysystem\\RootViolationException"
   ]
 }
