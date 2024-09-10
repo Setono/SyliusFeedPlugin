@@ -25,7 +25,7 @@ final class ProcessFeedAction
 
     private UrlGeneratorInterface $urlGenerator;
 
-    private FlashBagInterface $flashBag;
+    private FlashBagInterface|RequestStack $flashBag;
 
     private TranslatorInterface $translator;
 
