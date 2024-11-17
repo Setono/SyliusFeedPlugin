@@ -7,6 +7,7 @@ namespace Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping;
 use Spatie\Enum\Enum;
 
 /**
+ * @method static self backOrder()
  * @method static self inStock()
  * @method static self outOfStock()
  * @method static self preOrder()
