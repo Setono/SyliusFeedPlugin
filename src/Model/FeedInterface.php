@@ -4,56 +4,48 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Model;
 
-use Doctrine\Common\Collections\Collection;
-use Sylius\Component\Channel\Model\ChannelsAwareInterface;
-use Sylius\Component\Resource\Model\CodeAwareInterface;
+use Setono\SyliusFeedPlugin\Specification\Specification;
 use Sylius\Component\Resource\Model\ResourceInterface;
+use Sylius\Component\Resource\Model\SlugAwareInterface;
 use Sylius\Component\Resource\Model\ToggleableInterface;
 
-interface FeedInterface extends ChannelsAwareInterface, CodeAwareInterface, ResourceInterface, ToggleableInterface
+interface FeedInterface extends ResourceInterface, ToggleableInterface, SlugAwareInterface
 {
-    public function __toString(): string;
-
     public function getId(): ?int;
-
-    public function getCode(): string;
-
-    public function getState(): string;
-
-    public function setState(string $state): void;
-
-    public function isErrored(): bool;
 
     public function getName(): ?string;
 
     public function setName(string $name): void;
 
-    public function getFeedType(): ?string;
+    public function getSlug(): ?string;
 
-    public function setFeedType(string $feedType): void;
-
-    public function getBatches(): int;
-
-    public function setBatches(int $batches): void;
-
-    public function getFinishedBatches(): int;
+    public function setSlug(?string $slug): void;
 
     /**
-     * This will reset the batches and finished batches
-     * Use this method when processing starts
+     * @return list<class-string>
      */
-    public function resetBatches(): void;
+    public function getEntities(): array;
 
     /**
-     * @return Collection|ViolationInterface[]
+     * @param list<class-string>|null $entities
      */
-    public function getViolations(): Collection;
+    public function setEntities(?array $entities): void;
 
-    public function addViolation(ViolationInterface $violation): void;
+    /**
+     * @return class-string<Specification>|null
+     */
+    public function getSpecification(): ?string;
 
-    public function removeViolation(ViolationInterface $violation): void;
+    /**
+     * @param class-string<Specification>|null $specification
+     */
+    public function setSpecification(?string $specification): void;
 
-    public function hasViolation(ViolationInterface $violation): bool;
+    public function getFormat(): ?string;
 
-    public function clearViolations(): void;
+    public function setFormat(?string $format): void;
+
+    public function getConfiguration(): array;
+
+    public function setConfiguration(?array $configuration): void;
 }

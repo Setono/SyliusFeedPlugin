@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Model;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
-use Sylius\Component\Channel\Model\ChannelInterface;
+use Setono\SyliusFeedPlugin\Specification\Specification;
 use Sylius\Component\Resource\Model\ToggleableTrait;
 use Symfony\Component\Uid\Uuid;
 
@@ -17,70 +14,28 @@ class Feed implements FeedInterface
 
     protected ?int $id = null;
 
-    protected string $code;
-
-    protected string $state = FeedGraph::STATE_UNPROCESSED;
-
     protected ?string $name = null;
 
-    protected ?string $feedType = null;
+    protected ?string $slug = null;
 
-    protected int $batches = 0;
+    /** @var list<class-string>|null */
+    protected ?array $entities = null;
 
-    protected int $finishedBatches = 0;
+    /** @var class-string<Specification>|null */
+    protected ?string $specification = null;
 
-    /**
-     * @var Collection|ChannelInterface[]
-     * @psalm-var Collection<array-key, ChannelInterface>
-     */
-    protected Collection $channels;
+    protected ?string $format = null;
 
-    /**
-     * @var Collection|ViolationInterface[]
-     * @psalm-var Collection<array-key, ViolationInterface>
-     */
-    protected Collection $violations;
+    protected ?array $configuration = null;
 
     public function __construct()
     {
-        $this->code = (string) Uuid::v4();
-        $this->channels = new ArrayCollection();
-        $this->violations = new ArrayCollection();
-    }
-
-    public function __toString(): string
-    {
-        return (string) $this->getName();
+        $this->slug = (string) Uuid::v7();
     }
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getCode(): string
-    {
-        return $this->code;
-    }
-
-    public function setCode(?string $code): void
-    {
-        $this->code = (string) $code;
-    }
-
-    public function getState(): string
-    {
-        return $this->state;
-    }
-
-    public function setState(string $state): void
-    {
-        $this->state = $state;
-    }
-
-    public function isErrored(): bool
-    {
-        return FeedGraph::STATE_ERROR === $this->state;
     }
 
     public function getName(): ?string
@@ -93,93 +48,61 @@ class Feed implements FeedInterface
         $this->name = $name;
     }
 
-    public function getFeedType(): ?string
+    public function getSlug(): ?string
     {
-        return $this->feedType;
+        return $this->slug;
     }
 
-    public function setFeedType(string $feedType): void
+    public function setSlug(?string $slug): void
     {
-        $this->feedType = $feedType;
+        $this->slug = $slug;
     }
 
-    public function getBatches(): int
+    public function getEntities(): array
     {
-        return $this->batches;
+        return $this->entities ?? [];
     }
 
-    public function setBatches(int $batches): void
+    public function setEntities(?array $entities): void
     {
-        $this->batches = $batches;
-    }
-
-    public function getFinishedBatches(): int
-    {
-        return $this->finishedBatches;
-    }
-
-    public function resetBatches(): void
-    {
-        $this->batches = 0;
-        $this->finishedBatches = 0;
-    }
-
-    public function getChannels(): Collection
-    {
-        return $this->channels;
-    }
-
-    public function addChannel(ChannelInterface $channel): void
-    {
-        if (!$this->hasChannel($channel)) {
-            $this->channels->add($channel);
-        }
-    }
-
-    public function removeChannel(ChannelInterface $channel): void
-    {
-        if ($this->hasChannel($channel)) {
-            $this->channels->removeElement($channel);
-        }
-    }
-
-    public function hasChannel(ChannelInterface $channel): bool
-    {
-        return $this->channels->contains($channel);
-    }
-
-    public function getViolations(): Collection
-    {
-        return $this->violations;
-    }
-
-    public function addViolation(ViolationInterface $violation): void
-    {
-        if (!$this->hasViolation($violation)) {
-            $violation->setFeed($this);
-            $this->violations->add($violation);
-        }
-    }
-
-    public function removeViolation(ViolationInterface $violation): void
-    {
-        if ($this->hasViolation($violation)) {
-            $violation->setFeed(null);
-            $this->violations->removeElement($violation);
-        }
-    }
-
-    public function hasViolation(ViolationInterface $violation): bool
-    {
-        return $this->violations->contains($violation);
-    }
-
-    public function clearViolations(): void
-    {
-        foreach ($this->violations as $violation) {
-            $violation->setFeed(null);
+        if ([] === $entities) {
+            $entities = null;
         }
 
-        $this->violations->clear();
+        $this->entities = $entities;
+    }
+
+    public function getSpecification(): ?string
+    {
+        return $this->specification;
+    }
+
+    public function setSpecification(?string $specification): void
+    {
+        $this->specification = $specification;
+    }
+
+    public function getFormat(): ?string
+    {
+        return $this->format;
+    }
+
+    public function setFormat(?string $format): void
+    {
+        $this->format = $format;
+    }
+
+    public function getConfiguration(): array
+    {
+        return $this->configuration ?? [];
+    }
+
+    public function setConfiguration(?array $configuration): void
+    {
+        if ([] === $configuration) {
+            $configuration = null;
+        }
+
+        $this->configuration = $configuration;
     }
 }
