@@ -1,2 +1,0 @@
-setono_sylius_feed:
-    resource: "@SetonoSyliusFeedPlugin/Resources/config/routing.yaml"

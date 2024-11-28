@@ -2,7 +2,6 @@ imports:
     - { resource: "@SyliusCoreBundle/Resources/config/app/config.yml" }
     - { resource: "@SyliusAdminBundle/Resources/config/app/config.yml" }
     - { resource: "@SyliusShopBundle/Resources/config/app/config.yml" }
-
     - { resource: "@SyliusApiBundle/Resources/config/app/config.yaml" }
 
 parameters:
@@ -14,6 +13,3 @@ sylius_shop:
 
 sylius_api:
     enabled: true
-    
-sylius_mailer:
-    sender_adapter: sylius.email_sender.adapter.default

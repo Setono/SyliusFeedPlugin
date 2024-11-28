@@ -1,0 +1,3 @@
+setono_sylius_feed_admin:
+    resource: "@SetonoSyliusFeedPlugin/Resources/config/routes/admin.yaml"
+    prefix: /admin

@@ -15,7 +15,7 @@ your Google Merchant center? Then this is the right plugin for you.
 Open a command console, enter your project directory and execute the following command to download the latest stable version of this plugin:
 
 ```bash
-$ composer require setono/sylius-feed-plugin
+composer require setono/sylius-feed-plugin
 ```
 
 This command requires you to have Composer installed globally, as explained in the [installation chapter](https://getcomposer.org/doc/00-intro.md) of the Composer documentation.
@@ -33,7 +33,6 @@ return [
     
     League\FlysystemBundle\FlysystemBundle::class => ['all' => true],
     Setono\SyliusFeedPlugin\SetonoSyliusFeedPlugin::class => ['all' => true],
-    Setono\DoctrineORMBatcherBundle\SetonoDoctrineORMBatcherBundle::class => ['all' => true],
     
     // It is important to add plugin before the grid bundle
     Sylius\Bundle\GridBundle\SyliusGridBundle::class => ['all' => true],
@@ -75,7 +74,7 @@ $ bin/console doctrine:migrations:migrate
 ### Step 6: Using asynchronous transport (optional, but recommended)
 
 All commands in this plugin will extend the [CommandInterface](src/Message/Command/CommandInterface.php).
-Therefore you can route all commands easily by adding this to your [Messenger config](https://symfony.com/doc/current/messenger.html#routing-messages-to-a-transport):
+Therefore, you can route all commands easily by adding this to your [Messenger config](https://symfony.com/doc/current/messenger.html#routing-messages-to-a-transport):
 
 ```yaml
 # config/packages/messenger.yaml
@@ -84,7 +83,7 @@ framework:
         routing:
             # Route all command messages to the async transport
             # This presumes that you have already set up an 'async' transport
-            # See docs on how to setup a transport like that: https://symfony.com/doc/current/messenger.html#transports-async-queued-messages
+            # See docs on how to set up a transport like that: https://symfony.com/doc/current/messenger.html#transports-async-queued-messages
             'Setono\SyliusFeedPlugin\Message\Command\CommandInterface': async
 ```
 
@@ -95,7 +94,7 @@ one or more channels.
 After that go to your console and run this command:
 
 ```bash
-$ php bin/console setono:sylius-feed:process
+php bin/console setono:sylius-feed:process
 ```
 
 If you haven't changed any configuration, there should be a feed with your products inside the `/var/storage/setono_sylius_feed/feed` directory.

@@ -1,4 +1,0 @@
-suites:
-    main:
-        namespace: Setono\SyliusFeedPlugin
-        psr4_prefix: Setono\SyliusFeedPlugin
