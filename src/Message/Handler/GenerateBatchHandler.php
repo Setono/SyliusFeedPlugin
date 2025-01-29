@@ -171,6 +171,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
                             $channel,
                             $locale,
                             $context,
+                            $item,
                         ));
 
                         $constraintViolationList = $this->validator->validate(

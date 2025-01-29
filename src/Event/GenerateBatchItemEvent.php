@@ -22,16 +22,19 @@ final class GenerateBatchItemEvent
     /** @var object|array */
     private $item;
 
+    private ?object $rootItem;
+
     /**
      * @param object|array $item
      */
-    public function __construct(FeedInterface $feed, FeedTypeInterface $feedType, ChannelInterface $channel, LocaleInterface $locale, $item)
+    public function __construct(FeedInterface $feed, FeedTypeInterface $feedType, ChannelInterface $channel, LocaleInterface $locale, $item, object $rootItem = null)
     {
         $this->feed = $feed;
         $this->feedType = $feedType;
         $this->channel = $channel;
         $this->locale = $locale;
         $this->item = $item;
+        $this->rootItem = $rootItem;
     }
 
     public function getFeed(): FeedInterface
@@ -60,5 +63,10 @@ final class GenerateBatchItemEvent
     public function getItem()
     {
         return $this->item;
+    }
+
+    public function getRootItem(): ?object
+    {
+        return $this->rootItem;
     }
 }
