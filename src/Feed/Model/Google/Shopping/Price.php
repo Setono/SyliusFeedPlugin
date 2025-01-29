@@ -29,6 +29,16 @@ final class Price implements JsonSerializable
         return round($this->amount / 100, 2) . ' ' . $this->currency;
     }
 
+    public function getAmount(): int
+    {
+        return $this->amount;
+    }
+
+    public function getCurrency(): string
+    {
+        return $this->currency;
+    }
+
     public function jsonSerialize(): string
     {
         return (string) $this;
