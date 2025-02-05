@@ -30,7 +30,7 @@ class Feed implements FeedInterface
 
     public function __construct()
     {
-        $this->slug = (string) Uuid::v7();
+        $this->slug = (string) Uuid::v4();
     }
 
     public function getId(): ?int
