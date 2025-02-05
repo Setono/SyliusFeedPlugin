@@ -66,4 +66,8 @@ if (class_exists(Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle::class)) {
     $bundles[Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle::class] = ['all' => true];
 }
 
+if (class_exists(Sylius\Abstraction\StateMachine\SyliusStateMachineAbstractionBundle::class)) {
+    $bundles[Sylius\Abstraction\StateMachine\SyliusStateMachineAbstractionBundle::class] = ['all' => true];
+}
+
 return $bundles;
