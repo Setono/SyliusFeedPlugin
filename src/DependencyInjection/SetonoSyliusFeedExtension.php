@@ -49,6 +49,18 @@ final class SetonoSyliusFeedExtension extends AbstractResourceExtension implemen
 
     public function prepend(ContainerBuilder $container): void
     {
+        $container->prependExtensionConfig('framework', [
+            'messenger' => [
+                'buses' => [
+                    'setono_sylius_feed.command_bus' => [
+                        'middleware' => [
+                            'doctrine_ping_connection',
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+
         $container->prependExtensionConfig('sylius_grid', [
             'grids' => [
                 'setono_sylius_feed_admin_feed' => [

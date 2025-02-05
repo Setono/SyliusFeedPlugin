@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<doctrine-mapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                                      http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <mapped-superclass name="Setono\SyliusFeedPlugin\Model\FeedUpdate" table="setono_sylius_feed__feed_update">
+        <id name="id" column="id" type="integer">
+            <generator strategy="AUTO"/>
+        </id>
+
+        <field name="state" type="string"/>
+        <field name="startedAt" type="datetime" nullable="true"/>
+        <field name="completedAt" type="datetime" nullable="true"/>
+        <field name="failedAt" type="datetime" nullable="true"/>
+
+        <many-to-one field="feed" target-entity="Setono\SyliusFeedPlugin\Model\FeedInterface">
+            <join-column name="feed_id" referenced-column-name="id" nullable="false"/>
+        </many-to-one>
+    </mapped-superclass>
+</doctrine-mapping>
