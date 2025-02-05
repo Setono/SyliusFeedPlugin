@@ -9,6 +9,11 @@
         </id>
 
         <field name="name" type="string"/>
+        <field name="slug" type="string"/>
+        <field name="entities" type="json" nullable="true"/>
+        <field name="specification" type="text" nullable="true"/>
+        <field name="format" type="string" nullable="true"/>
+        <field name="configuration" type="json" nullable="true"/>
         <field name="enabled" column="enabled" type="boolean"/>
     </mapped-superclass>
 </doctrine-mapping>

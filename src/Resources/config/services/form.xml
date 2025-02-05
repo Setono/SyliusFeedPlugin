@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<container xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://symfony.com/schema/dic/services"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <parameters>
+        <parameter key="setono_sylius_feed.form.type.feed.validation_groups" type="collection">
+            <parameter>setono_sylius_feed</parameter>
+        </parameter>
+    </parameters>
+    <services>
+        <service id="Setono\SyliusFeedPlugin\Form\EntityChoiceType">
+            <argument type="service" id="doctrine"/>
+
+            <tag name="form.type"/>
+        </service>
+
+        <service id="Setono\SyliusFeedPlugin\Form\SpecificationChoiceType">
+            <argument type="service" id="Setono\SyliusFeedPlugin\Specification\Registry\SpecificationRegistryInterface"/>
+
+            <tag name="form.type"/>
+        </service>
+
+        <service id="Setono\SyliusFeedPlugin\Form\FeedType">
+            <argument>%setono_sylius_feed.model.feed.class%</argument>
+            <argument>%setono_sylius_feed.form.type.feed.validation_groups%</argument>
+
+            <tag name="form.type"/>
+        </service>
+    </services>
+</container>

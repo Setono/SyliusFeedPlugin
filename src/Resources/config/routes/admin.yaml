@@ -3,7 +3,7 @@ setono_sylius_feed_admin_feed:
         alias: setono_sylius_feed.feed
         section: admin
         templates: '@SyliusAdmin\\Crud'
-        redirect: show
+        redirect: update
         grid: setono_sylius_feed_admin_feed
         permission: true
         vars:

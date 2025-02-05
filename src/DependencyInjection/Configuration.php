@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\DependencyInjection;
 
+use Setono\SyliusFeedPlugin\Form\FeedType;
 use Setono\SyliusFeedPlugin\Model\Feed;
 use Sylius\Bundle\ResourceBundle\Controller\ResourceController;
 use Sylius\Component\Resource\Factory\Factory;
@@ -43,6 +44,7 @@ final class Configuration implements ConfigurationInterface
                                     ->children()
                                         ->scalarNode('model')->defaultValue(Feed::class)->cannotBeEmpty()->end()
                                         ->scalarNode('controller')->defaultValue(ResourceController::class)->cannotBeEmpty()->end()
+                                        ->scalarNode('form')->defaultValue(FeedType::class)->end()
                                         ->scalarNode('factory')->defaultValue(Factory::class)->end()
         ;
     }
