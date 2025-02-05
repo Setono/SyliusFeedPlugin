@@ -15,7 +15,7 @@
         <field name="completedAt" type="datetime" nullable="true"/>
         <field name="failedAt" type="datetime" nullable="true"/>
 
-        <many-to-one field="feed" target-entity="Setono\SyliusFeedPlugin\Model\FeedInterface">
+        <many-to-one field="feed" target-entity="Setono\SyliusFeedPlugin\Model\FeedInterface" fetch="EAGER">
             <join-column name="feed_id" referenced-column-name="id" nullable="false"/>
         </many-to-one>
     </mapped-superclass>

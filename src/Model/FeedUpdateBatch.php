@@ -15,6 +15,12 @@ class FeedUpdateBatch implements FeedUpdateBatchInterface
 
     protected ?FeedUpdateInterface $feedUpdate = null;
 
+    /** @var class-string|null */
+    protected ?string $entity = null;
+
+    /** @var list<int>|null */
+    protected ?array $ids = null;
+
     protected string $state = self::STATE_PENDING;
 
     protected ?\DateTimeInterface $startedAt = null;
@@ -36,6 +42,30 @@ class FeedUpdateBatch implements FeedUpdateBatchInterface
     public function setFeedUpdate(?FeedUpdateInterface $feedUpdate): void
     {
         $this->feedUpdate = $feedUpdate;
+    }
+
+    public function getEntity(): ?string
+    {
+        return $this->entity;
+    }
+
+    public function setEntity(?string $entity): void
+    {
+        $this->entity = $entity;
+    }
+
+    public function getIds(): array
+    {
+        return $this->ids ?? [];
+    }
+
+    public function setIds(?array $ids): void
+    {
+        if ([] === $ids) {
+            $ids = null;
+        }
+
+        $this->ids = $ids;
     }
 
     public function getState(): string

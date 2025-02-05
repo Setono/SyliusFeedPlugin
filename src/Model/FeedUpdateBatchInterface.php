@@ -24,6 +24,23 @@ interface FeedUpdateBatchInterface extends ResourceInterface, TimestampableInter
 
     public function setFeedUpdate(?FeedUpdateInterface $feedUpdate): void;
 
+    public function getEntity(): ?string;
+
+    /**
+     * @param class-string|null $entity
+     */
+    public function setEntity(?string $entity): void;
+
+    /**
+     * @return list<int>
+     */
+    public function getIds(): array;
+
+    /**
+     * @param list<int> $ids
+     */
+    public function setIds(array $ids): void;
+
     public function getState(): string;
 
     public function setState(string $state): void;

@@ -10,12 +10,14 @@
 
         <field name="version" type="integer" version="true"/>
 
+        <field name="entity" type="string"/>
+        <field name="ids" type="json"/>
         <field name="state" type="string"/>
         <field name="startedAt" type="datetime" nullable="true"/>
         <field name="completedAt" type="datetime" nullable="true"/>
         <field name="failedAt" type="datetime" nullable="true"/>
 
-        <many-to-one field="feedUpdate" target-entity="Setono\SyliusFeedPlugin\Model\FeedUpdateInterface">
+        <many-to-one field="feedUpdate" target-entity="Setono\SyliusFeedPlugin\Model\FeedUpdateInterface" fetch="EAGER">
             <join-column name="feed_update_id" referenced-column-name="id" nullable="false"/>
         </many-to-one>
     </mapped-superclass>
