@@ -63,6 +63,14 @@ final class SetonoSyliusFeedExtension extends AbstractResourceExtension implemen
                             'type' => 'string',
                             'label' => 'setono_sylius_feed.ui.name',
                         ],
+                        'slug' => [
+                            'type' => 'string',
+                            'label' => 'setono_sylius_feed.ui.slug',
+                        ],
+                        'specification' => [
+                            'type' => 'string',
+                            'label' => 'setono_sylius_feed.ui.specification',
+                        ],
                     ],
                     'actions' => [
                         'main' => [

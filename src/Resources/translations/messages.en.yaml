@@ -1,9 +1,9 @@
 setono_sylius_feed:
     form:
         feed:
+            entities: Entities
             name: Name
             slug: Slug
-            entities: Entities
             specification: Specification
     menu:
         admin:
@@ -16,5 +16,7 @@ setono_sylius_feed:
         feeds: Feeds
         manage_feeds: Create, update, and manage your feeds. Get your products out in the world!
         message: Message
-        new_feed: New feed
         name: Name
+        new_feed: New feed
+        slug: Slug
+        specification: Specification
