@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\Model;
 
 use Setono\SyliusFeedPlugin\Specification\Specification;
-use Sylius\Component\Resource\Model\ResourceInterface;
-use Sylius\Component\Resource\Model\SlugAwareInterface;
-use Sylius\Component\Resource\Model\ToggleableInterface;
+use Sylius\Resource\Model\ResourceInterface;
+use Sylius\Resource\Model\SlugAwareInterface;
+use Sylius\Resource\Model\ToggleableInterface;
 
 interface FeedInterface extends ResourceInterface, ToggleableInterface, SlugAwareInterface
 {

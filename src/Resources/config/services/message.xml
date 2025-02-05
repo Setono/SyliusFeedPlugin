@@ -3,6 +3,15 @@
 <container xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://symfony.com/schema/dic/services"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
+        <service id="Setono\SyliusFeedPlugin\Message\CommandHandler\ProcessFeedUpdateHandler">
+            <argument type="service" id="setono_sylius_feed.command_bus"/>
+            <argument type="service" id="doctrine"/>
+            <argument type="service" id="state_machine.setono_sylius_feed__feed_update"/>
+            <argument>%setono_sylius_feed.model.feed_update.class%</argument>
+
+            <tag name="messenger.message_handler"/>
+        </service>
+
         <service id="Setono\SyliusFeedPlugin\Message\CommandHandler\StartFeedUpdateHandler">
             <argument type="service" id="setono_sylius_feed.repository.feed"/>
             <argument type="service" id="setono_sylius_feed.factory.feed_update"/>

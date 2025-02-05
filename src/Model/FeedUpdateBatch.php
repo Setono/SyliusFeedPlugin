@@ -6,14 +6,14 @@ namespace Setono\SyliusFeedPlugin\Model;
 
 use Sylius\Component\Resource\Model\TimestampableTrait;
 
-class FeedUpdate implements FeedUpdateInterface
+class FeedUpdateBatch implements FeedUpdateBatchInterface
 {
     use TimestampableTrait;
     use VersionedTrait;
 
     protected ?int $id = null;
 
-    protected ?FeedInterface $feed = null;
+    protected ?FeedUpdateInterface $feedUpdate = null;
 
     protected string $state = self::STATE_PENDING;
 
@@ -28,14 +28,14 @@ class FeedUpdate implements FeedUpdateInterface
         return $this->id;
     }
 
-    public function getFeed(): ?FeedInterface
+    public function getFeedUpdate(): ?FeedUpdateInterface
     {
-        return $this->feed;
+        return $this->feedUpdate;
     }
 
-    public function setFeed(?FeedInterface $feed): void
+    public function setFeedUpdate(?FeedUpdateInterface $feedUpdate): void
     {
-        $this->feed = $feed;
+        $this->feedUpdate = $feedUpdate;
     }
 
     public function getState(): string

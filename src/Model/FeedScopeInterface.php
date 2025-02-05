@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\Model;
 
 use Sylius\Component\Channel\Model\ChannelAwareInterface;
-use Sylius\Component\Resource\Model\ResourceInterface;
+use Sylius\Resource\Model\ResourceInterface;
 
 interface FeedScopeInterface extends ResourceInterface, ChannelAwareInterface
 {

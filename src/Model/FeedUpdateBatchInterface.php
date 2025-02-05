@@ -8,7 +8,7 @@ use Sylius\Resource\Model\ResourceInterface;
 use Sylius\Resource\Model\TimestampableInterface;
 use Sylius\Resource\Model\VersionedInterface;
 
-interface FeedUpdateInterface extends ResourceInterface, TimestampableInterface, VersionedInterface
+interface FeedUpdateBatchInterface extends ResourceInterface, TimestampableInterface, VersionedInterface
 {
     public const STATE_PENDING = 'pending';
 
@@ -20,9 +20,9 @@ interface FeedUpdateInterface extends ResourceInterface, TimestampableInterface,
 
     public function getId(): ?int;
 
-    public function getFeed(): ?FeedInterface;
+    public function getFeedUpdate(): ?FeedUpdateInterface;
 
-    public function setFeed(?FeedInterface $feed): void;
+    public function setFeedUpdate(?FeedUpdateInterface $feedUpdate): void;
 
     public function getState(): string;
 

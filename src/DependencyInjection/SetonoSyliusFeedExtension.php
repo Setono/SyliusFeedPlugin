@@ -7,6 +7,7 @@ namespace Setono\SyliusFeedPlugin\DependencyInjection;
 use Setono\SyliusFeedPlugin\Specification\Registry\SpecificationRegistryInterface;
 use Setono\SyliusFeedPlugin\Specification\Specification;
 use Setono\SyliusFeedPlugin\Specification\Vendor\Google\Shopping\Product;
+use Setono\SyliusFeedPlugin\Workflow\FeedUpdateWorkflow;
 use Sylius\Bundle\ResourceBundle\DependencyInjection\Extension\AbstractResourceExtension;
 use Sylius\Bundle\ResourceBundle\SyliusResourceBundle;
 use Symfony\Component\Config\FileLocator;
@@ -59,6 +60,7 @@ final class SetonoSyliusFeedExtension extends AbstractResourceExtension implemen
                     ],
                 ],
             ],
+            'workflows' => FeedUpdateWorkflow::getConfig(),
         ]);
 
         $container->prependExtensionConfig('sylius_grid', [
