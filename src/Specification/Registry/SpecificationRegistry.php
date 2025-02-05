@@ -17,6 +17,10 @@ final class SpecificationRegistry implements SpecificationRegistryInterface
             throw new \InvalidArgumentException(sprintf('The specification "%s" already exists', $specification));
         }
 
+        if (!is_a($specification, Specification::class, true)) {
+            throw new \InvalidArgumentException(sprintf('The specification "%s" is not a valid specification. It must be an instance of %s', $specification, Specification::class));
+        }
+
         $this->specifications[] = $specification;
     }
 

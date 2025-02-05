@@ -22,6 +22,12 @@ final class Configuration implements ConfigurationInterface
         /** @var ArrayNodeDefinition $rootNode */
         $rootNode = $treeBuilder->getRootNode();
 
+        $rootNode
+            ->children()
+                ->arrayNode('specifications')
+                    ->scalarPrototype()->end()
+        ;
+
         $this->addResourcesSection($rootNode);
 
         return $treeBuilder;

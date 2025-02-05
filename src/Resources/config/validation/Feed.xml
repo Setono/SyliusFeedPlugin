@@ -9,5 +9,20 @@
                 <option name="groups">setono_sylius_feed</option>
             </constraint>
         </property>
+        <property name="slug">
+            <constraint name="NotBlank">
+                <option name="groups">setono_sylius_feed</option>
+            </constraint>
+        </property>
+        <property name="specification">
+            <constraint name="NotBlank">
+                <option name="groups">setono_sylius_feed</option>
+            </constraint>
+        </property>
+        <property name="entities">
+            <constraint name="NotBlank">
+                <option name="groups">setono_sylius_feed</option>
+            </constraint>
+        </property>
     </class>
 </constraint-mapping>
