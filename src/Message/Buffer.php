@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Setono\SyliusFeedPlugin\Message\CommandHandler;
+namespace Setono\SyliusFeedPlugin\Message;
 
 use Closure;
 
@@ -11,7 +11,7 @@ use Closure;
  *
  * @template T
  */
-final class MessageBuffer
+final class Buffer
 {
     private int $count = 0;
 

@@ -7,6 +7,7 @@ namespace Setono\SyliusFeedPlugin\Message\CommandHandler;
 use Doctrine\Persistence\ManagerRegistry;
 use Setono\Doctrine\ORMTrait;
 use Setono\SyliusFeedPlugin\DataProvider\DataProviderInterface;
+use Setono\SyliusFeedPlugin\Message\Buffer;
 use Setono\SyliusFeedPlugin\Message\Command\ProcessFeedUpdate;
 use Setono\SyliusFeedPlugin\Message\Command\ProcessFeedUpdateBatch;
 use Setono\SyliusFeedPlugin\Model\FeedUpdateBatchInterface;
@@ -58,9 +59,9 @@ final class ProcessFeedUpdateHandler
             /**
              * @psalm-suppress MixedArgumentTypeCoercion
              *
-             * @var MessageBuffer<int> $buffer
+             * @var Buffer<int> $buffer
              */
-            $buffer = new MessageBuffer(
+            $buffer = new Buffer(
                 $this->bufferSize,
                 function (array $ids) use ($message, $entity): void {
                     $feedUpdateBatch = $this->feedUpdateBatchFactory->createNew();
