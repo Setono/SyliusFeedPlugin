@@ -14,6 +14,7 @@
         "league/flysystem-bundle": "^2.4",
         "psr/event-dispatcher": "^1.0",
         "psr/log": "^1.0 || ^2.0 || ^3.0",
+        "setono/composite-compiler-pass": "^1.2",
         "setono/doctrine-orm-trait": "^1.2",
         "sylius/resource-bundle": "^1.6",
         "symfony/config": "^5.4 || ^6.4 || ^7.0",

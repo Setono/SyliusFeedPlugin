@@ -9,7 +9,7 @@ use Setono\SyliusFeedPlugin\Specification\Specification;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\SerializerInterface;
 
-final class SpecificationSerializer implements SpecificationSerializerInterface
+final class XmlSpecificationSerializer implements SpecificationSerializerInterface
 {
     public function __construct(private readonly SerializerInterface $serializer)
     {
@@ -22,7 +22,11 @@ final class SpecificationSerializer implements SpecificationSerializerInterface
             XmlEncoder::FORMAT_OUTPUT => true,
             XmlEncoder::SAVE_OPTIONS => \LIBXML_NOXMLDECL,
             XmlEncoder::ENCODER_IGNORED_NODE_TYPES => [\XML_PI_NODE],
-            XmlEncoder::ROOT_NODE_NAME => null,
         ]);
+    }
+
+    public function supports(FeedInterface $feed, Specification $specification): bool
+    {
+        return $feed->getFormat() === 'xml';
     }
 }

@@ -4,10 +4,14 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
         <service id="Setono\SyliusFeedPlugin\Serializer\SpecificationSerializerInterface"
-                 alias="Setono\SyliusFeedPlugin\Serializer\SpecificationSerializer"/>
+                 alias="Setono\SyliusFeedPlugin\Serializer\CompositeSpecificationSerializer"/>
 
-        <service id="Setono\SyliusFeedPlugin\Serializer\SpecificationSerializer">
+        <service id="Setono\SyliusFeedPlugin\Serializer\CompositeSpecificationSerializer"/>
+
+        <service id="Setono\SyliusFeedPlugin\Serializer\XmlSpecificationSerializer">
             <argument type="service" id="serializer"/>
+
+            <tag name="setono_sylius_feed.specification_serializer"/>
         </service>
     </services>
 </container>
