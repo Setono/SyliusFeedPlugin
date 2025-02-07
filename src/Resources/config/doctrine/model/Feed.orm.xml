@@ -12,7 +12,6 @@
         <field name="slug" type="string" unique="true"/>
         <field name="entities" type="json" nullable="true"/>
         <field name="specification" type="text" nullable="true"/>
-        <field name="format" type="string" nullable="true"/>
         <field name="configuration" type="json" nullable="true"/>
         <field name="enabled" column="enabled" type="boolean"/>
     </mapped-superclass>

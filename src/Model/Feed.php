@@ -24,8 +24,6 @@ class Feed implements FeedInterface
     /** @var class-string<Specification>|null */
     protected ?string $specification = null;
 
-    protected ?string $format = null;
-
     protected ?array $configuration = null;
 
     public function __construct()
@@ -80,16 +78,6 @@ class Feed implements FeedInterface
     public function setSpecification(?string $specification): void
     {
         $this->specification = $specification;
-    }
-
-    public function getFormat(): ?string
-    {
-        return $this->format;
-    }
-
-    public function setFormat(?string $format): void
-    {
-        $this->format = $format;
     }
 
     public function getConfiguration(): array

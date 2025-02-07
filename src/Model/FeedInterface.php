@@ -41,10 +41,6 @@ interface FeedInterface extends ResourceInterface, ToggleableInterface, SlugAwar
      */
     public function setSpecification(?string $specification): void;
 
-    public function getFormat(): ?string;
-
-    public function setFormat(?string $format): void;
-
     public function getConfiguration(): array;
 
     public function setConfiguration(?array $configuration): void;
