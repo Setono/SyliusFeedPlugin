@@ -24,6 +24,9 @@ interface FeedUpdateBatchInterface extends ResourceInterface, TimestampableInter
 
     public function setFeedUpdate(?FeedUpdateInterface $feedUpdate): void;
 
+    /**
+     * @return class-string|null
+     */
     public function getEntity(): ?string;
 
     /**
@@ -45,6 +48,10 @@ interface FeedUpdateBatchInterface extends ResourceInterface, TimestampableInter
 
     public function setState(string $state): void;
 
+    public function setPath(?string $path): void;
+
+    public function getPath(): ?string;
+
     public function getStartedAt(): ?\DateTimeInterface;
 
     public function setStartedAt(?\DateTimeInterface $startedAt): void;
@@ -56,4 +63,8 @@ interface FeedUpdateBatchInterface extends ResourceInterface, TimestampableInter
     public function getFailedAt(): ?\DateTimeInterface;
 
     public function setFailedAt(?\DateTimeInterface $failedAt): void;
+
+    public function setError(?string $error): void;
+
+    public function getError(): ?string;
 }

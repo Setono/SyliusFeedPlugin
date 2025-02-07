@@ -23,11 +23,15 @@ class FeedUpdateBatch implements FeedUpdateBatchInterface
 
     protected string $state = self::STATE_PENDING;
 
+    protected ?string $path = null;
+
     protected ?\DateTimeInterface $startedAt = null;
 
     protected ?\DateTimeInterface $completedAt = null;
 
     protected ?\DateTimeInterface $failedAt = null;
+
+    protected ?string $error = null;
 
     public function getId(): ?int
     {
@@ -78,6 +82,16 @@ class FeedUpdateBatch implements FeedUpdateBatchInterface
         $this->state = $state;
     }
 
+    public function getPath(): ?string
+    {
+        return $this->path;
+    }
+
+    public function setPath(?string $path): void
+    {
+        $this->path = $path;
+    }
+
     public function getStartedAt(): ?\DateTimeInterface
     {
         return $this->startedAt;
@@ -106,5 +120,15 @@ class FeedUpdateBatch implements FeedUpdateBatchInterface
     public function setFailedAt(?\DateTimeInterface $failedAt): void
     {
         $this->failedAt = $failedAt;
+    }
+
+    public function getError(): ?string
+    {
+        return $this->error;
+    }
+
+    public function setError(?string $error): void
+    {
+        $this->error = $error;
     }
 }

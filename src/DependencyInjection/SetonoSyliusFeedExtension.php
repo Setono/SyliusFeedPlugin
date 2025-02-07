@@ -7,6 +7,7 @@ namespace Setono\SyliusFeedPlugin\DependencyInjection;
 use Setono\SyliusFeedPlugin\Specification\Registry\SpecificationRegistryInterface;
 use Setono\SyliusFeedPlugin\Specification\Specification;
 use Setono\SyliusFeedPlugin\Specification\Vendor\Google\Shopping\Product;
+use Setono\SyliusFeedPlugin\Workflow\FeedUpdateBatchWorkflow;
 use Setono\SyliusFeedPlugin\Workflow\FeedUpdateWorkflow;
 use Sylius\Bundle\ResourceBundle\DependencyInjection\Extension\AbstractResourceExtension;
 use Sylius\Bundle\ResourceBundle\SyliusResourceBundle;
@@ -50,6 +51,18 @@ final class SetonoSyliusFeedExtension extends AbstractResourceExtension implemen
 
     public function prepend(ContainerBuilder $container): void
     {
+        // todo this storage needs to be configurable for the plugin somehow
+        $container->prependExtensionConfig('flysystem', [
+            'storages' => [
+                'setono_sylius_feed.storage' => [
+                    'adapter' => 'local',
+                    'options' => [
+                        'directory' => '%kernel.project_dir%/var/storage/feeds',
+                    ],
+                ],
+            ],
+        ]);
+
         $container->prependExtensionConfig('framework', [
             'messenger' => [
                 'buses' => [
@@ -60,7 +73,7 @@ final class SetonoSyliusFeedExtension extends AbstractResourceExtension implemen
                     ],
                 ],
             ],
-            'workflows' => FeedUpdateWorkflow::getConfig(),
+            'workflows' => FeedUpdateWorkflow::getConfig() + FeedUpdateBatchWorkflow::getConfig(),
         ]);
 
         $container->prependExtensionConfig('sylius_grid', [

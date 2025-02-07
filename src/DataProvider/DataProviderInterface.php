@@ -8,9 +8,18 @@ interface DataProviderInterface
 {
     /**
      * @param class-string $entity
-     * @param list<int> $ids if provided, the returned result will be the objects with these ids
      *
      * @return iterable<int>
      */
-    public function getIds(string $entity, array $ids = []): iterable;
+    public function getIds(string $entity): iterable;
+
+    /**
+     * @template T
+     *
+     * @param class-string<T> $entity
+     * @param list<int> $ids
+     *
+     * @return iterable<T>
+     */
+    public function getObjects(string $entity, array $ids): iterable;
 }

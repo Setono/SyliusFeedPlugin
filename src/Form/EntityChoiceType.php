@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Form;
 
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -21,6 +22,10 @@ final class EntityChoiceType extends AbstractType
 
         foreach ($this->managerRegistry->getManagers() as $manager) {
             foreach ($manager->getMetadataFactory()->getAllMetadata() as $metadata) {
+                if ($metadata instanceof ClassMetadataInfo && ($metadata->isMappedSuperclass || $metadata->isEmbeddedClass)) {
+                    continue;
+                }
+
                 $entities[] = $metadata->getName();
             }
         }

@@ -9,4 +9,10 @@ namespace Setono\SyliusFeedPlugin\Specification;
  */
 abstract class Specification
 {
+    /**
+     * Making the constructor final allows us to always be able to instantiate an extending class without worrying about constructor arguments
+     */
+    final public function __construct()
+    {
+    }
 }
