@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Specification\Vendor\Google\Shopping;
 
-use Setono\SyliusFeedPlugin\Specification\Attribute\Name;
-use Setono\SyliusFeedPlugin\Specification\Attribute\SupportedFormats;
+use Setono\SyliusFeedPlugin\Specification\Attribute\Specification as SpecificationAttribute;
 use Setono\SyliusFeedPlugin\Specification\Specification;
 
 /**
  * See https://support.google.com/merchants/answer/7052112?hl=en and https://developers.google.com/shopping-content/reference/rest/v2.1/products
  */
-#[Name('Google Shopping')]
-#[SupportedFormats(['xml'])]
+#[SpecificationAttribute('Google Shopping', 'xml')]
 class Product extends Specification
 {
     public ?string $id = null;
