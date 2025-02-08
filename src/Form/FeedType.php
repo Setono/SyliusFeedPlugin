@@ -26,6 +26,9 @@ final class FeedType extends AbstractResourceType
                 'label' => 'setono_sylius_feed.form.feed.entities',
                 'multiple' => true,
             ])
+            ->add('scopes', FeedScopeType::class, [
+                'label' => 'setono_sylius_feed.form.feed.scopes',
+            ])
         ;
     }
 }

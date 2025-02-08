@@ -6,6 +6,9 @@
         <parameter key="setono_sylius_feed.form.type.feed.validation_groups" type="collection">
             <parameter>setono_sylius_feed</parameter>
         </parameter>
+        <parameter key="setono_sylius_feed.form.type.feed_scope.validation_groups" type="collection">
+            <parameter>setono_sylius_feed</parameter>
+        </parameter>
     </parameters>
     <services>
         <service id="Setono\SyliusFeedPlugin\Form\EntityChoiceType">
@@ -23,6 +26,13 @@
         <service id="Setono\SyliusFeedPlugin\Form\FeedType">
             <argument>%setono_sylius_feed.model.feed.class%</argument>
             <argument>%setono_sylius_feed.form.type.feed.validation_groups%</argument>
+
+            <tag name="form.type"/>
+        </service>
+
+        <service id="Setono\SyliusFeedPlugin\Form\FeedScopeType">
+            <argument>%setono_sylius_feed.model.feed_scope.class%</argument>
+            <argument>%setono_sylius_feed.form.type.feed_scope.validation_groups%</argument>
 
             <tag name="form.type"/>
         </service>

@@ -15,11 +15,11 @@ interface FeedScopeInterface extends ResourceInterface, ChannelAwareInterface
 
     public function setFeed(?FeedInterface $feed): void;
 
-    public function getLocale(): ?string;
+    public function getLocaleCode(): ?string;
 
-    public function setLocale(?string $locale): void;
+    public function setLocaleCode(?string $localeCode): void;
 
-    public function getCurrency(): ?string;
+    public function getCurrencyCode(): ?string;
 
-    public function setCurrency(?string $currency): void;
+    public function setCurrencyCode(?string $currencyCode): void;
 }

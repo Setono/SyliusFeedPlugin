@@ -6,10 +6,12 @@ namespace Setono\SyliusFeedPlugin\DependencyInjection;
 
 use Setono\SyliusFeedPlugin\Form\FeedType;
 use Setono\SyliusFeedPlugin\Model\Feed;
+use Setono\SyliusFeedPlugin\Model\FeedScope;
 use Setono\SyliusFeedPlugin\Model\FeedUpdate;
 use Setono\SyliusFeedPlugin\Model\FeedUpdateBatch;
 use Setono\SyliusFeedPlugin\Repository\FeedRepository;
 use Sylius\Bundle\ResourceBundle\Controller\ResourceController;
+use Sylius\Bundle\ResourceBundle\Form\Type\AbstractResourceType;
 use Sylius\Component\Resource\Factory\Factory;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
@@ -56,6 +58,21 @@ final class Configuration implements ConfigurationInterface
                                         ->scalarNode('form')->defaultValue(FeedType::class)->end()
                                         ->scalarNode('factory')->defaultValue(Factory::class)->end()
                                         ->scalarNode('repository')->defaultValue(FeedRepository::class)->end()
+                                    ->end()
+                                ->end()
+                            ->end()
+                        ->end()
+                        ->arrayNode('feed_scope')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->variableNode('options')->end()
+                                ->arrayNode('classes')
+                                    ->addDefaultsIfNotSet()
+                                    ->children()
+                                        ->scalarNode('model')->defaultValue(FeedScope::class)->cannotBeEmpty()->end()
+                                        ->scalarNode('controller')->defaultValue(ResourceController::class)->cannotBeEmpty()->end()
+                                        ->scalarNode('form')->defaultValue(AbstractResourceType::class)->end()
+                                        ->scalarNode('factory')->defaultValue(Factory::class)->end()
                                     ->end()
                                 ->end()
                             ->end()

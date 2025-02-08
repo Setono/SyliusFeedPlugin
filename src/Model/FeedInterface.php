@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Model;
 
+use Doctrine\Common\Collections\Collection;
 use Setono\SyliusFeedPlugin\Specification\Specification;
 use Sylius\Resource\Model\ResourceInterface;
 use Sylius\Resource\Model\SlugAwareInterface;
@@ -44,4 +45,13 @@ interface FeedInterface extends ResourceInterface, ToggleableInterface, SlugAwar
     public function getConfiguration(): array;
 
     public function setConfiguration(?array $configuration): void;
+
+    /**
+     * @return Collection<array-key, FeedScopeInterface>
+     */
+    public function getScopes(): Collection;
+
+    public function addScope(FeedScopeInterface $scope): void;
+
+    public function removeScope(FeedScopeInterface $scope): void;
 }

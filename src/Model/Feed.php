@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Model;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Setono\SyliusFeedPlugin\Specification\Specification;
 use Sylius\Component\Resource\Model\ToggleableTrait;
 use Symfony\Component\Uid\Uuid;
@@ -26,9 +28,13 @@ class Feed implements FeedInterface
 
     protected ?array $configuration = null;
 
+    /** @var Collection<array-key, FeedScopeInterface> */
+    protected Collection $scopes;
+
     public function __construct()
     {
         $this->slug = (string) Uuid::v4();
+        $this->scopes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -92,5 +98,28 @@ class Feed implements FeedInterface
         }
 
         $this->configuration = $configuration;
+    }
+
+    public function getScopes(): Collection
+    {
+        return $this->scopes;
+    }
+
+    public function addScope(FeedScopeInterface $scope): void
+    {
+        if ($this->scopes->contains($scope)) {
+            return;
+        }
+
+        $this->scopes->add($scope);
+    }
+
+    public function removeScope(FeedScopeInterface $scope): void
+    {
+        if (!$this->scopes->contains($scope)) {
+            return;
+        }
+
+        $this->scopes->removeElement($scope);
     }
 }
