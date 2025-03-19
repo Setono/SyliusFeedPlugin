@@ -10,7 +10,7 @@
                  class="Setono\SyliusFeedPlugin\FeedContext\Google\Shopping\ProductItemContext">
             <argument type="service" id="router"/>
             <argument type="service" id="liip_imagine.cache.manager"/>
-            <argument type="service" id="sylius.availability_checker"/>
+            <argument type="service" id="sylius.checker.inventory.availability"/>
         </service>
     </services>
 </container>
