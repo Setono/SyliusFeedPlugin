@@ -13,14 +13,15 @@ use Setono\SyliusFeedPlugin\Registry\FeedTypeRegistryInterface;
 use Setono\SyliusFeedPlugin\Repository\FeedRepositoryInterface;
 use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
-use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
  * @psalm-suppress DeprecatedInterface
  */
-final class GenerateFeedHandler implements MessageHandlerInterface
+#[AsMessageHandler]
+final class GenerateFeedHandler
 {
     use GetChannelTrait;
     use GetFeedTrait;
