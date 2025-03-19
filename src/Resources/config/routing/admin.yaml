@@ -2,7 +2,7 @@ setono_sylius_feed_admin_feed:
     resource: |
         alias: setono_sylius_feed.feed
         section: admin
-        templates: '@SyliusAdmin\\Crud'
+        templates: "@SyliusAdmin/shared/crud"
         redirect: show
         grid: setono_sylius_feed_admin_feed
         permission: true
