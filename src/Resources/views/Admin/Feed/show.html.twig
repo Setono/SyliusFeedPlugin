@@ -1,10 +1,12 @@
-{% extends '@SyliusAdmin/layout.html.twig' %}
+{% extends '@SyliusAdmin/shared/layout/base.html.twig' %}
 
 {# @var \Setono\SyliusFeedPlugin\Model\FeedInterface feed #}
 
 {% block title %}{{ 'setono_sylius_feed.ui.feed'|trans ~' '~ feed.name }} {{ parent() }}{% endblock %}
 
-{% block content %}
+{% block body %}
+    {% hook 'add_admin.custom' %}
+<div class="page-wrapper">
     <div class="ui stackable two column grid">
         <div class="ten wide column">
             {% include '@SetonoSyliusFeedPlugin/Admin/Feed/Show/_header.html.twig' %}
@@ -72,7 +74,7 @@
 
         {{ render(controller('setono_sylius_feed.controller.action.admin.severity_count', {'feed': feed.id})) }}
     {% endif %}
-
+</div>
 {% endblock %}
 
 {% block javascripts %}
