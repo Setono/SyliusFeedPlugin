@@ -5,8 +5,6 @@
 {% block title %}{{ 'setono_sylius_feed.ui.feed'|trans ~' '~ feed.name }} {{ parent() }}{% endblock %}
 
 {% block content %}
-    {{ sonata_block_render_event('setono_sylius_feed.admin.feed.show.before_header', {'resource': resource}) }}
-
     <div class="ui stackable two column grid">
         <div class="ten wide column">
             {% include '@SetonoSyliusFeedPlugin/Admin/Feed/Show/_header.html.twig' %}
@@ -16,11 +14,8 @@
         {{ knp_menu_render(menu, {'template': '@SyliusUi/Menu/top.html.twig'}) }}
     </div>
 
-    {{ sonata_block_render_event('setono_sylius_feed.admin.feed.show.after_header', {'resource': resource}) }}
 
     {% include '@SetonoSyliusFeedPlugin/Admin/Feed/Show/_breadcrumb.html.twig' %}
-
-    {{ sonata_block_render_event('setono_sylius_feed.admin.feed.show.after_breadcrumb', {'resource': resource}) }}
 
     {% if workflow_has_marked_place(feed, constant('Setono\\SyliusFeedPlugin\\Workflow\\FeedGraph::STATE_READY')) or workflow_has_marked_place(feed, constant('Setono\\SyliusFeedPlugin\\Workflow\\FeedGraph::STATE_PROCESSING')) %}
         <div class="ui segment spaceless">
@@ -78,7 +73,6 @@
         {{ render(controller('setono_sylius_feed.controller.action.admin.severity_count', {'feed': feed.id})) }}
     {% endif %}
 
-    {{ sonata_block_render_event('setono_sylius_feed.admin.feed.show.after_content', {'resource': resource}) }}
 {% endblock %}
 
 {% block javascripts %}
