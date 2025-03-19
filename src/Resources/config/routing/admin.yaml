@@ -39,7 +39,7 @@ setono_sylius_feed_admin_feed_violations_index:
                 route:
                     parameters:
                         id: $id
-            template: '@SyliusAdmin/Crud/index.html.twig'
+            template: '@SyliusAdmin/shared/crud/index.html.twig'
             grid: setono_sylius_feed_admin_violation
             section: admin
             permission: true

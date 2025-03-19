@@ -13,7 +13,7 @@
         </div>
 
         {% set menu = knp_menu_get('setono_sylius_feed.admin.feed.show', [], {'feed': feed}) %}
-        {{ knp_menu_render(menu, {'template': '@SyliusUi/Menu/top.html.twig'}) }}
+        {{ knp_menu_render(menu, {'template': '@SyliusAdmin/shared/crud/common/navbar/menu.html.twig'}) }}
     </div>
 
 

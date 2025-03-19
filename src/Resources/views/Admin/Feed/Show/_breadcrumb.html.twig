@@ -1,10 +1,10 @@
-{% import '@SyliusAdmin/Macro/breadcrumb.html.twig' as breadcrumb %}
+{% import '@SyliusAdmin/shared/helper/breadcrumbs.html.twig' as breadcrumb %}
 
 {% set breadcrumbs = [
-    { label: 'sylius.ui.administration'|trans, url: path('sylius_admin_dashboard') },
-    { label: 'setono_sylius_feed.ui.feeds'|trans, url: path('setono_sylius_feed_admin_feed_index') },
-    { label: '#'~feed.id }
+    { name: 'sylius.ui.administration'|trans, url: path('sylius_admin_dashboard') },
+    { name: 'setono_sylius_feed.ui.feeds'|trans, url: path('setono_sylius_feed_admin_feed_index') },
+    { name: '#'~feed.id }
 ]
 %}
 
-{{ breadcrumb.crumble(breadcrumbs) }}
+{{ breadcrumb.breadcrumbs(breadcrumbs) }}
