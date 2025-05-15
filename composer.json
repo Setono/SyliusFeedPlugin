@@ -3,46 +3,55 @@
     "description": "Plugin to generate feeds within the Sylius ecommerce platform",
     "license": "MIT",
     "type": "symfony-bundle",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/tuxes3/DoctrineORMBatcherBundle.git"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/tuxes3/symfony-main-request-trait.git"
+        }
+    ],
     "require": {
         "php": ">=8.1",
         "ext-json": "*",
-        "doctrine/collections": "^1.6",
+        "doctrine/collections": "^2.0",
         "doctrine/orm": "^2.7",
         "doctrine/persistence": "^1.3 || ^2.0 || ^3.0",
         "knplabs/knp-menu": "^3.1",
-        "league/flysystem": "^1.1 || ^2.1",
-        "league/flysystem-bundle": "^1.1 || ^2.4",
+        "league/flysystem": "^2.1 || ^3.0",
+        "league/flysystem-bundle": "^2.4 || ^3.0",
         "liip/imagine-bundle": "^2.4",
         "psr/event-dispatcher": "^1.0",
         "psr/log": "^1.0 || ^2.0 || ^3.0",
-        "setono/doctrine-orm-batcher": "^0.6",
-        "setono/doctrine-orm-batcher-bundle": "^0.3.4",
-        "setono/symfony-main-request-trait": "^1.0",
+        "setono/doctrine-orm-batcher-bundle": "dev-master as 0.3.4",
+        "setono/symfony-main-request-trait": "dev-master as 1.0.0",
         "spatie/enum": "^3.7",
         "sylius/resource-bundle": "^1.6",
-        "symfony/config": "^5.4 || ^6.3",
-        "symfony/console": "^5.4 || ^6.3",
-        "symfony/dependency-injection": "^5.4 || ^6.3",
-        "symfony/event-dispatcher": "^5.4 || ^6.3",
+        "symfony/config": "^6.4 || ^7.0",
+        "symfony/console": "^6.4 || ^7.0",
+        "symfony/dependency-injection": "^6.4 || ^7.0",
+        "symfony/event-dispatcher": "^6.4 || ^7.0",
         "symfony/event-dispatcher-contracts": "^1.1 || ^2.2 || ^3.0",
-        "symfony/form": "^5.4 || ^6.3",
-        "symfony/http-foundation": "^5.4.7 || ^6.3",
-        "symfony/http-kernel": "^5.4 || ^6.3",
-        "symfony/messenger": "^5.4 || ^6.3",
-        "symfony/mime": "^5.4 || ^6.3",
-        "symfony/options-resolver": "^5.4 || ^6.3",
-        "symfony/routing": "^5.4 || ^6.3",
-        "symfony/serializer": "^5.4 || ^6.3",
+        "symfony/form": "^6.4 || ^7.0",
+        "symfony/http-foundation": "^6.4 || ^7.0",
+        "symfony/http-kernel": "^6.4 || ^7.0",
+        "symfony/messenger": "^6.4 || ^7.0",
+        "symfony/mime": "^6.4 || ^7.0",
+        "symfony/options-resolver": "^6.4 || ^7.0",
+        "symfony/routing": "^6.4 || ^7.0",
+        "symfony/serializer": "^6.4 || ^7.0",
         "symfony/translation-contracts": "^1.1 || ^2.3 || ^3.0",
-        "symfony/uid": "^5.4 || ^6.3",
-        "symfony/validator": "^5.4 || ^6.3",
-        "symfony/workflow": "^5.4 || ^6.3",
+        "symfony/uid": "^6.4 || ^7.0",
+        "symfony/validator": "^6.4 || ^7.0",
+        "symfony/workflow": "^6.4 || ^7.0",
         "twig/twig": "^2.14 || ^3.0",
         "webmozart/assert": "^1.1"
     },
     "require-dev": {
         "api-platform/core": "^2.6",
-        "lexik/jwt-authentication-bundle": "^2.15",
+        "lexik/jwt-authentication-bundle": "^3.1",
         "php-http/message-factory": "^1.1",
         "phpspec/phpspec": "^7.2",
         "phpunit/phpunit": "^9.5",
@@ -51,14 +60,15 @@
         "psalm/plugin-symfony": "^5.0",
         "setono/code-quality-pack": "^2.4",
         "setono/sylius-behat-pack": "^0.2",
-        "sylius/sylius": "^1.11",
+        "sylius/sylius": "^2.0",
         "symfony/debug-bundle": "^5.4 || ^6.3",
         "symfony/dotenv": "^5.4 || ^6.3",
         "symfony/intl": "^5.4 || ^6.3",
         "symfony/web-profiler-bundle": "^5.4 || ^6.3",
-        "symfony/webpack-encore-bundle": "^1.17",
+        "symfony/webpack-encore-bundle": "^2.2",
         "weirdan/doctrine-psalm-plugin": "^2.2"
     },
+    "minimum-stability": "dev",
     "prefer-stable": true,
     "autoload": {
         "psr-4": {
@@ -77,9 +87,13 @@
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": false,
             "ergebnis/composer-normalize": true,
+            "php-http/discovery": true,
             "symfony/thanks": false
         },
-        "sort-packages": true
+        "sort-packages": true,
+        "platform": {
+            "php": "8.3.99"
+        }
     },
     "extra": {
         "branch-alias": {

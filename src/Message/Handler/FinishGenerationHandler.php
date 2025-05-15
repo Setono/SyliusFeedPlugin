@@ -7,7 +7,6 @@ namespace Setono\SyliusFeedPlugin\Message\Handler;
 use Doctrine\Persistence\ObjectManager;
 use InvalidArgumentException;
 use League\Flysystem\DirectoryListing;
-use League\Flysystem\FilesystemInterface;
 use League\Flysystem\FilesystemOperator;
 use League\Flysystem\StorageAttributes;
 use Psr\Log\LoggerInterface;
@@ -22,8 +21,8 @@ use Setono\SyliusFeedPlugin\Repository\FeedRepositoryInterface;
 use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Locale\Model\LocaleInterface;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
-use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Workflow\Registry;
 use Throwable;
 use Twig\Environment;
@@ -35,13 +34,14 @@ use Webmozart\Assert\Assert;
  * @psalm-suppress DeprecatedInterface
  * @psalm-suppress InternalMethod
  */
-final class FinishGenerationHandler implements MessageHandlerInterface
+#[AsMessageHandler]
+final class FinishGenerationHandler
 {
     use GetFeedTrait;
 
     private ObjectManager $feedManager;
 
-    /** @var FilesystemInterface|FilesystemOperator */
+    /** @var FilesystemOperator */
     private $filesystem;
 
     private Registry $workflowRegistry;
@@ -71,14 +71,12 @@ final class FinishGenerationHandler implements MessageHandlerInterface
     ) {
         $this->feedRepository = $feedRepository;
         $this->feedManager = $feedManager;
-        if (interface_exists(FilesystemInterface::class) && $filesystem instanceof FilesystemInterface) {
-            $this->filesystem = $filesystem;
-        } elseif ($filesystem instanceof FilesystemOperator) {
+
+        if ($filesystem instanceof FilesystemOperator) {
             $this->filesystem = $filesystem;
         } else {
             throw new InvalidArgumentException(sprintf(
-                'The filesystem must be an instance of %s or %s',
-                FilesystemInterface::class,
+                'The filesystem must be an instance of %s',
                 FilesystemOperator::class,
             ));
         }
@@ -152,16 +150,7 @@ final class FinishGenerationHandler implements MessageHandlerInterface
 
                     fwrite($batchStream, $feedEnd);
 
-                    if (interface_exists(FilesystemInterface::class) && $filesystem instanceof FilesystemInterface) {
-                        /** @var resource|false $res */
-                        $res = $filesystem->writeStream((string) TemporaryFeedPathGenerator::getBaseFile($dir), $batchStream);
-
-                        if (false === $res) {
-                            throw new RuntimeException('An error occurred when trying to write the finished feed write');
-                        }
-                    } else {
-                        $filesystem->writeStream((string) TemporaryFeedPathGenerator::getBaseFile($dir), $batchStream);
-                    }
+                    $filesystem->writeStream((string) TemporaryFeedPathGenerator::getBaseFile($dir), $batchStream);
 
                     // tries to close the file pointer although it may already have been closed by flysystem
                     fclose($batchStream);

@@ -11,7 +11,6 @@ use const JSON_PRESERVE_ZERO_FRACTION;
 use const JSON_PRETTY_PRINT;
 use const JSON_UNESCAPED_SLASHES;
 use const JSON_UNESCAPED_UNICODE;
-use League\Flysystem\FilesystemInterface;
 use League\Flysystem\FilesystemOperator;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
@@ -31,8 +30,8 @@ use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
 use Sylius\Component\Channel\Model\ChannelInterface;
 use Sylius\Component\Channel\Repository\ChannelRepositoryInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
-use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
@@ -41,9 +40,9 @@ use Symfony\Component\Validator\ConstraintViolationInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Workflow\Registry;
 use Symfony\Component\Workflow\Workflow;
+use Symfony\Component\Workflow\WorkflowInterface;
 use Throwable;
 use Twig\Environment;
-use Webmozart\Assert\Assert;
 
 /**
  * @psalm-suppress UndefinedDocblockClass
@@ -51,7 +50,8 @@ use Webmozart\Assert\Assert;
  * @psalm-suppress DeprecatedInterface
  * @psalm-suppress InternalMethod
  */
-final class GenerateBatchHandler implements MessageHandlerInterface
+#[AsMessageHandler]
+final class GenerateBatchHandler
 {
     use GetChannelTrait;
     use GetFeedTrait;
@@ -65,7 +65,7 @@ final class GenerateBatchHandler implements MessageHandlerInterface
 
     private Environment $twig;
 
-    /** @var FilesystemInterface|FilesystemOperator */
+    /** @var FilesystemOperator */
     private $filesystem;
 
     private FeedPathGeneratorInterface $temporaryFeedPathGenerator;
@@ -112,14 +112,11 @@ final class GenerateBatchHandler implements MessageHandlerInterface
         $this->feedManager = $feedManager;
         $this->feedTypeRegistry = $feedTypeRegistry;
         $this->twig = $twig;
-        if (interface_exists(FilesystemInterface::class) && $filesystem instanceof FilesystemInterface) {
-            $this->filesystem = $filesystem;
-        } elseif ($filesystem instanceof FilesystemOperator) {
+        if ($filesystem instanceof FilesystemOperator) {
             $this->filesystem = $filesystem;
         } else {
             throw new InvalidArgumentException(sprintf(
-                'The filesystem must be an instance of %s or %s',
-                FilesystemInterface::class,
+                'The filesystem must be an instance of %s',
                 FilesystemOperator::class,
             ));
         }
@@ -231,15 +228,8 @@ final class GenerateBatchHandler implements MessageHandlerInterface
             $filesystem = $this->filesystem;
             $path = TemporaryFeedPathGenerator::getPartialFile($dir, $filesystem);
 
-            if (interface_exists(FilesystemInterface::class) && $filesystem instanceof FilesystemInterface) {
-                $res = $filesystem->writeStream((string) $path, $stream);
-                fclose($stream);
-
-                Assert::true($res, 'An error occurred when trying to write a feed item');
-            } else {
-                $filesystem->writeStream((string) $path, $stream);
-                fclose($stream);
-            }
+            $filesystem->writeStream((string) $path, $stream);
+            fclose($stream);
 
             $this->feedManager->flush();
             $this->feedManager->clear();
@@ -300,10 +290,10 @@ final class GenerateBatchHandler implements MessageHandlerInterface
         $this->urlGenerator->setContext($this->initialRequestContext);
     }
 
-    private function getWorkflow(FeedInterface $feed): Workflow
+    private function getWorkflow(FeedInterface $feed): WorkflowInterface
     {
         try {
-            $workflow = $this->workflowRegistry->get($feed, FeedGraph::GRAPH);
+            return $this->workflowRegistry->get($feed, FeedGraph::GRAPH);
         } catch (InvalidArgumentException $e) {
             throw new UnrecoverableMessageHandlingException(
                 'An error occurred when trying to get the workflow for the feed',
@@ -311,8 +301,6 @@ final class GenerateBatchHandler implements MessageHandlerInterface
                 $e,
             );
         }
-
-        return $workflow;
     }
 
     /**
