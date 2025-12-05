@@ -1,7 +1,6 @@
 # Sylius Feed Plugin
 
 [![Latest Version][ico-version]][link-packagist]
-[![Latest Unstable Version][ico-unstable-version]][link-packagist]
 [![Software License][ico-license]](LICENSE)
 [![Build Status][ico-github-actions]][link-github-actions]
 
@@ -15,7 +14,7 @@ your Google Merchant center? Then this is the right plugin for you.
 Open a command console, enter your project directory and execute the following command to download the latest stable version of this plugin:
 
 ```bash
-$ composer require setono/sylius-feed-plugin
+composer require setono/sylius-feed-plugin
 ```
 
 This command requires you to have Composer installed globally, as explained in the [installation chapter](https://getcomposer.org/doc/00-intro.md) of the Composer documentation.
@@ -68,14 +67,14 @@ imports:
 Use Doctrine migrations to create a migration file and update the database.
 
 ```bash
-$ bin/console doctrine:migrations:diff
-$ bin/console doctrine:migrations:migrate
+bin/console doctrine:migrations:diff
+bin/console doctrine:migrations:migrate
 ```
 
 ### Step 6: Using asynchronous transport (optional, but recommended)
 
 All commands in this plugin will extend the [CommandInterface](src/Message/Command/CommandInterface.php).
-Therefore you can route all commands easily by adding this to your [Messenger config](https://symfony.com/doc/current/messenger.html#routing-messages-to-a-transport):
+Therefore, you can route all commands easily by adding this to your [Messenger config](https://symfony.com/doc/current/messenger.html#routing-messages-to-a-transport):
 
 ```yaml
 # config/packages/messenger.yaml
@@ -84,12 +83,12 @@ framework:
         routing:
             # Route all command messages to the async transport
             # This presumes that you have already set up an 'async' transport
-            # See docs on how to setup a transport like that: https://symfony.com/doc/current/messenger.html#transports-async-queued-messages
+            # See docs on how to set up a transport like that: https://symfony.com/doc/current/messenger.html#transports-async-queued-messages
             'Setono\SyliusFeedPlugin\Message\Command\CommandInterface': async
 ```
 
 ## Usage
-After setup you want to create a feed. Go to `/admin/feeds/new` and create a new feed. Remember to enable it and select
+After setup, you want to create a feed. Go to `/admin/feeds/new` and create a new feed. Remember to enable it and select
 one or more channels.
 
 After that go to your console and run this command:
@@ -102,7 +101,6 @@ If you haven't changed any configuration, there should be a feed with your produ
 
 
 [ico-version]: https://poser.pugx.org/setono/sylius-feed-plugin/v/stable
-[ico-unstable-version]: https://poser.pugx.org/setono/sylius-feed-plugin/v/unstable
 [ico-license]: https://poser.pugx.org/setono/sylius-feed-plugin/license
 [ico-github-actions]: https://github.com/Setono/SyliusFeedPlugin/workflows/build/badge.svg
 
