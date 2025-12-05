@@ -1,19 +1,19 @@
 setono_sylius_feed:
     feed_type:
-        google_shopping: Google shopping
+        google_shopping: Google Shopping
     form:
         feed:
             name: Naam
-            feed_type: Feed type
-            feed_type_placeholder: Kies feed type...
+            feed_type: Feedtype
+            feed_type_placeholder: Kies feedtype...
     ui:
         click_to_copy: Klik om te kopiëren
         count: Aantal
-        data: Data
-        edit_feed: Feed aanpassen
+        data: Gegevens
+        edit_feed: Feed bewerken
         feed: Feed
         feeds: Feeds
-        feed_type: Feed type
+        feed_type: Feedtype
         generate_feed: Feed genereren
         link: Link
         link_copied: Link gekopieerd
@@ -25,13 +25,13 @@ setono_sylius_feed:
         ready: Gereed
         severity: Ernst
         severities:
-            error: Error
-            notice: Informatief
+            error: Fout
+            notice: Opmerking
             warning: Waarschuwing
         state: Status
         unprocessed: Onverwerkt
         unprocessed_feed_header: Feed is niet gereed
-        unprocessed_feed_body: De feed heeft een error of is nog niet verwerkt. Klik op de "genereren" knop om de feed te verwerken.
-        view_all_violations: Bekijk alle problemen <a href="%path%">hier</a>.
-        violation_summary: Problemen overzicht
-        violations: Problemen
+        unprocessed_feed_body: De feed is mislukt of is nog niet verwerkt. Druk op de genereerknop om de verwerking te starten
+        view_all_violations: Bekijk alle overtredingen door <a href="%path%">hier</a> te klikken.
+        violation_summary: Overzicht van overtredingen
+        violations: Overtredingen

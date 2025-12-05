@@ -1,10 +1,9 @@
 framework:
     secret: '%env(APP_SECRET)%'
-    form: true
-    csrf_protection: true
     ide: phpstorm
+    form:
+        enabled: true
+        legacy_error_messages: false
+    csrf_protection: true
     session:
         handler_id: ~
-    serializer:
-        mapping:
-            paths: [ '%kernel.project_dir%/config/serialization' ]

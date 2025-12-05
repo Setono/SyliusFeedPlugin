@@ -1,0 +1,23 @@
+setono_sylius_feed:
+    google:
+        shopping:
+            product:
+                id:
+                    length_min: Denna sträng är för kort. Den måste ha minst 1 tecken
+                    length_max: Denna sträng är för lång. Den får ha högst 50 tecken
+                brand:
+                    not_blank: Varumärket är tomt
+                gtin:
+                    not_blank: GTIN är tomt
+                shipping:
+                    not_blank: Frakt är tom
+                title:
+                    not_blank: Titeln får inte vara tom
+    feed:
+        code:
+            not_blank: Koden får inte vara tom
+            unique: Koden måste vara unik
+        name:
+            not_blank: Namnet får inte vara tomt
+        feed_type:
+            not_blank: Flödestypen får inte vara tom

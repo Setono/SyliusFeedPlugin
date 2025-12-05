@@ -3,14 +3,14 @@ setono_sylius_feed:
         shopping:
             product:
                 id:
-                    length_min: Cette chaîne est trop courte. Elle doit avoir au maximum 1 caractère
+                    length_min: Cette chaîne est trop courte. Elle doit avoir au moins 1 caractère
                     length_max: Cette chaîne est trop longue. Elle doit avoir au maximum 50 caractères
                 brand:
                     not_blank: La marque est vide
                 gtin:
                     not_blank: Le GTIN est vide
                 shipping:
-                    not_blank: L'expédition est vide
+                    not_blank: La livraison est vide
                 title:
                     not_blank: Le titre ne doit pas être vide
     feed:
