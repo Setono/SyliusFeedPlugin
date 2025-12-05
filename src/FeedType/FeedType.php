@@ -11,31 +11,16 @@ use Symfony\Component\Validator\Constraint;
 
 final class FeedType implements FeedTypeInterface
 {
-    private string $code;
-
-    private string $template;
-
-    private DataProviderInterface $dataProvider;
-
-    private FeedContextInterface $feedContext;
-
-    private ItemContextInterface $itemContext;
-
-    private array $validationGroups;
+    private readonly array $validationGroups;
 
     public function __construct(
-        string $code,
-        string $template,
-        DataProviderInterface $dataProvider,
-        FeedContextInterface $feedContext,
-        ItemContextInterface $itemContext,
+        private readonly string $code,
+        private readonly string $template,
+        private readonly DataProviderInterface $dataProvider,
+        private readonly FeedContextInterface $feedContext,
+        private readonly ItemContextInterface $itemContext,
         array $validationGroups = [],
     ) {
-        $this->code = $code;
-        $this->template = $template;
-        $this->dataProvider = $dataProvider;
-        $this->feedContext = $feedContext;
-        $this->itemContext = $itemContext;
         $this->validationGroups = count($validationGroups) === 0 ? [Constraint::DEFAULT_GROUP] : $validationGroups;
     }
 

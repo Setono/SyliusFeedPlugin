@@ -13,11 +13,8 @@ use Symfony\Component\Validator\ConstraintViolationInterface;
 
 final class ViolationFactory implements ViolationFactoryInterface
 {
-    private FactoryInterface $decoratedFactory;
-
-    public function __construct(FactoryInterface $decoratedFactory)
+    public function __construct(private readonly FactoryInterface $decoratedFactory)
     {
-        $this->decoratedFactory = $decoratedFactory;
     }
 
     public function createNew(): ViolationInterface

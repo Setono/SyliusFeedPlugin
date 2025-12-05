@@ -12,30 +12,17 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 final class GenerateBatchViolationEvent
 {
-    private FeedInterface $feed;
-
-    private FeedTypeInterface $feedType;
-
-    private ChannelInterface $channel;
-
-    private LocaleInterface $locale;
-
-    /** @var object|array */
-    private $item;
-
-    private ConstraintViolationListInterface $constraintViolationList;
-
     /**
      * @param object|array $item
      */
-    public function __construct(FeedInterface $feed, FeedTypeInterface $feedType, ChannelInterface $channel, LocaleInterface $locale, $item, ConstraintViolationListInterface $constraintViolationList)
-    {
-        $this->feed = $feed;
-        $this->feedType = $feedType;
-        $this->channel = $channel;
-        $this->locale = $locale;
-        $this->item = $item;
-        $this->constraintViolationList = $constraintViolationList;
+    public function __construct(
+        private readonly FeedInterface $feed,
+        private readonly FeedTypeInterface $feedType,
+        private readonly ChannelInterface $channel,
+        private readonly LocaleInterface $locale,
+        private $item,
+        private readonly ConstraintViolationListInterface $constraintViolationList,
+    ) {
     }
 
     public function getFeed(): FeedInterface

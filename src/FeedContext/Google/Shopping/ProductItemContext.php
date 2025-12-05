@@ -42,20 +42,11 @@ use Webmozart\Assert\Assert;
 
 class ProductItemContext implements ItemContextInterface
 {
-    private RouterInterface $router;
-
-    private CacheManager $cacheManager;
-
-    private AvailabilityCheckerInterface $availabilityChecker;
-
     public function __construct(
-        RouterInterface $router,
-        CacheManager $cacheManager,
-        AvailabilityCheckerInterface $availabilityChecker,
+        private readonly RouterInterface $router,
+        private readonly CacheManager $cacheManager,
+        private readonly AvailabilityCheckerInterface $availabilityChecker,
     ) {
-        $this->router = $router;
-        $this->cacheManager = $cacheManager;
-        $this->availabilityChecker = $availabilityChecker;
     }
 
     public function getContextList(object $product, ChannelInterface $channel, LocaleInterface $locale): ContextListInterface
@@ -63,7 +54,7 @@ class ProductItemContext implements ItemContextInterface
         if (!$product instanceof ProductInterface) {
             throw new InvalidArgumentException(sprintf(
                 'The class %s is not an instance of %s',
-                get_class($product),
+                $product::class,
                 ProductInterface::class,
             ));
         }

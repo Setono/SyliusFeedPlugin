@@ -45,12 +45,6 @@ use Throwable;
 use Twig\Environment;
 use Webmozart\Assert\Assert;
 
-/**
- * @psalm-suppress UndefinedDocblockClass
- * @psalm-suppress UndefinedClass
- * @psalm-suppress DeprecatedInterface
- * @psalm-suppress InternalMethod
- */
 final class GenerateBatchHandler implements MessageHandlerInterface
 {
     use GetChannelTrait;
@@ -59,59 +53,28 @@ final class GenerateBatchHandler implements MessageHandlerInterface
 
     private RequestContext $initialRequestContext;
 
-    private ObjectManager $feedManager;
+    private FilesystemInterface|FilesystemOperator $filesystem;
 
-    private FeedTypeRegistryInterface $feedTypeRegistry;
-
-    private Environment $twig;
-
-    /** @var FilesystemInterface|FilesystemOperator */
-    private $filesystem;
-
-    private FeedPathGeneratorInterface $temporaryFeedPathGenerator;
-
-    private EventDispatcherInterface $eventDispatcher;
-
-    private Registry $workflowRegistry;
-
-    private ValidatorInterface $validator;
-
-    private ViolationFactoryInterface $violationFactory;
-
-    private SerializerInterface $serializer;
-
-    private UrlGeneratorInterface $urlGenerator;
-
-    private LoggerInterface $logger;
-
-    /**
-     * @psalm-suppress UndefinedDocblockClass
-     *
-     * @param FilesystemOperator|FilesystemInterface $filesystem
-     */
     public function __construct(
         FeedRepositoryInterface $feedRepository,
         ChannelRepositoryInterface $channelRepository,
         RepositoryInterface $localeRepository,
-        ObjectManager $feedManager,
-        FeedTypeRegistryInterface $feedTypeRegistry,
-        Environment $twig,
+        private readonly ObjectManager $feedManager,
+        private readonly FeedTypeRegistryInterface $feedTypeRegistry,
+        private readonly Environment $twig,
         $filesystem,
-        FeedPathGeneratorInterface $temporaryFeedPathGenerator,
-        EventDispatcherInterface $eventDispatcher,
-        Registry $workflowRegistry,
-        ValidatorInterface $validator,
-        ViolationFactoryInterface $violationFactory,
-        SerializerInterface $serializer,
-        UrlGeneratorInterface $urlGenerator,
-        LoggerInterface $logger,
+        private readonly FeedPathGeneratorInterface $temporaryFeedPathGenerator,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly Registry $workflowRegistry,
+        private readonly ValidatorInterface $validator,
+        private readonly ViolationFactoryInterface $violationFactory,
+        private readonly SerializerInterface $serializer,
+        private readonly UrlGeneratorInterface $urlGenerator,
+        private readonly LoggerInterface $logger,
     ) {
         $this->feedRepository = $feedRepository;
         $this->channelRepository = $channelRepository;
         $this->localeRepository = $localeRepository;
-        $this->feedManager = $feedManager;
-        $this->feedTypeRegistry = $feedTypeRegistry;
-        $this->twig = $twig;
         if (interface_exists(FilesystemInterface::class) && $filesystem instanceof FilesystemInterface) {
             $this->filesystem = $filesystem;
         } elseif ($filesystem instanceof FilesystemOperator) {
@@ -123,14 +86,6 @@ final class GenerateBatchHandler implements MessageHandlerInterface
                 FilesystemOperator::class,
             ));
         }
-        $this->temporaryFeedPathGenerator = $temporaryFeedPathGenerator;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->workflowRegistry = $workflowRegistry;
-        $this->validator = $validator;
-        $this->violationFactory = $violationFactory;
-        $this->serializer = $serializer;
-        $this->urlGenerator = $urlGenerator;
-        $this->logger = $logger;
     }
 
     public function __invoke(GenerateBatch $message): void

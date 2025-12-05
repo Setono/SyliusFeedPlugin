@@ -15,18 +15,12 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Workflow\Event\TransitionEvent;
 use Webmozart\Assert\Assert;
 
-/**
- * @psalm-suppress UndefinedDocblockClass
- * @psalm-suppress UndefinedClass
- */
 final class DeleteGeneratedFilesSubscriber implements EventSubscriberInterface
 {
     /** @var FilesystemInterface|FilesystemOperator */
     private $filesystem;
 
     /**
-     * @psalm-suppress UndefinedDocblockClass
-     *
      * @param FilesystemInterface|FilesystemOperator $filesystem
      */
     public function __construct($filesystem)
@@ -67,7 +61,7 @@ final class DeleteGeneratedFilesSubscriber implements EventSubscriberInterface
             } else {
                 $filesystem->deleteDirectory($feed->getCode());
             }
-        } catch (RootViolationException|UnableToDeleteDirectory $e) {
+        } catch (RootViolationException|UnableToDeleteDirectory) {
         }
     }
 }

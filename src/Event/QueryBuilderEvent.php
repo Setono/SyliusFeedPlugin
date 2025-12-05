@@ -11,24 +11,12 @@ use Sylius\Component\Locale\Model\LocaleInterface;
 
 final class QueryBuilderEvent
 {
-    private DataProviderInterface $dataProvider;
-
-    private QueryBuilder $queryBuilder;
-
-    private ChannelInterface $channel;
-
-    private LocaleInterface $locale;
-
     public function __construct(
-        DataProviderInterface $dataProvider,
-        QueryBuilder $queryBuilder,
-        ChannelInterface $channel,
-        LocaleInterface $locale,
+        private readonly DataProviderInterface $dataProvider,
+        private readonly QueryBuilder $queryBuilder,
+        private readonly ChannelInterface $channel,
+        private readonly LocaleInterface $locale,
     ) {
-        $this->dataProvider = $dataProvider;
-        $this->queryBuilder = $queryBuilder;
-        $this->channel = $channel;
-        $this->locale = $locale;
     }
 
     public function getDataProvider(): DataProviderInterface

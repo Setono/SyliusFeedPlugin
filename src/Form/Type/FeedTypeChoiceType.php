@@ -17,11 +17,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 final class FeedTypeChoiceType extends AbstractType
 {
-    private FeedTypeRegistryInterface $feedTypeRegistry;
-
-    public function __construct(FeedTypeRegistryInterface $feedTypeRegistry)
+    public function __construct(private readonly FeedTypeRegistryInterface $feedTypeRegistry)
     {
-        $this->feedTypeRegistry = $feedTypeRegistry;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -36,9 +33,7 @@ final class FeedTypeChoiceType extends AbstractType
                 'placeholder' => 'setono_sylius_feed.form.feed.feed_type_placeholder',
                 'label' => 'setono_sylius_feed.form.feed.feed_type',
                 'choices' => $this->feedTypeRegistry->all(),
-                'choice_label' => static function (FeedTypeInterface $choice): string {
-                    return 'setono_sylius_feed.feed_type.' . $choice->getCode();
-                },
+                'choice_label' => static fn (FeedTypeInterface $choice): string => 'setono_sylius_feed.feed_type.' . $choice->getCode(),
                 'choice_value' => 'code',
             ])
         ;

@@ -18,10 +18,6 @@ use Sylius\Component\Core\Model\ChannelInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Workflow\Event\TransitionEvent;
 
-/**
- * @psalm-suppress UndefinedDocblockClass
- * @psalm-suppress UndefinedClass
- */
 final class MoveGeneratedFeedSubscriber implements EventSubscriberInterface
 {
     /** @var FilesystemInterface|FilesystemOperator */
@@ -30,21 +26,15 @@ final class MoveGeneratedFeedSubscriber implements EventSubscriberInterface
     /** @var FilesystemInterface|FilesystemOperator */
     private $filesystem;
 
-    private FeedPathGeneratorInterface $temporaryFeedPathGenerator;
-
-    private FeedPathGeneratorInterface $feedPathGenerator;
-
     /**
-     * @psalm-suppress UndefinedDocblockClass
-     *
      * @param FilesystemInterface|FilesystemOperator $temporaryFilesystem
      * @param FilesystemInterface|FilesystemOperator $filesystem
      */
     public function __construct(
         $temporaryFilesystem,
         $filesystem,
-        FeedPathGeneratorInterface $temporaryFeedPathGenerator,
-        FeedPathGeneratorInterface $feedPathGenerator,
+        private readonly FeedPathGeneratorInterface $temporaryFeedPathGenerator,
+        private readonly FeedPathGeneratorInterface $feedPathGenerator,
     ) {
         if (interface_exists(FilesystemInterface::class) && $temporaryFilesystem instanceof FilesystemInterface) {
             $this->temporaryFilesystem = $temporaryFilesystem;
@@ -68,8 +58,6 @@ final class MoveGeneratedFeedSubscriber implements EventSubscriberInterface
                 FilesystemOperator::class,
             ));
         }
-        $this->temporaryFeedPathGenerator = $temporaryFeedPathGenerator;
-        $this->feedPathGenerator = $feedPathGenerator;
     }
 
     public static function getSubscribedEvents(): array
@@ -130,7 +118,7 @@ final class MoveGeneratedFeedSubscriber implements EventSubscriberInterface
 
                 try {
                     $filesystem->delete((string) $newPath);
-                } catch (FileNotFoundException|UnableToDeleteFile $e) {
+                } catch (FileNotFoundException|UnableToDeleteFile) {
                 }
 
                 if (interface_exists(FilesystemInterface::class) && $filesystem instanceof FilesystemInterface) {

@@ -22,4 +22,9 @@ return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->sets([
         LevelSetList::UP_TO_PHP_81,
     ]);
+
+    $rectorConfig->skip([
+        \Rector\Php81\Rector\Class_\SpatieEnumClassToEnumRector::class,
+        \Rector\Php81\Rector\MethodCall\SpatieEnumMethodCallToEnumConstRector::class,
+    ]);
 };

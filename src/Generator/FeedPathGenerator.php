@@ -11,11 +11,8 @@ use Webmozart\Assert\Assert;
 
 final class FeedPathGenerator implements FeedPathGeneratorInterface
 {
-    private FeedExtensionResolverInterface $feedExtensionResolver;
-
-    public function __construct(FeedExtensionResolverInterface $feedExtensionResolver)
+    public function __construct(private readonly FeedExtensionResolverInterface $feedExtensionResolver)
     {
-        $this->feedExtensionResolver = $feedExtensionResolver;
     }
 
     /**

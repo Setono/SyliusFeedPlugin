@@ -17,31 +17,22 @@ use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-/**
- * @psalm-suppress DeprecatedInterface
- */
 final class GenerateFeedHandler implements MessageHandlerInterface
 {
     use GetChannelTrait;
     use GetFeedTrait;
     use GetLocaleTrait;
 
-    private FeedTypeRegistryInterface $feedTypeRegistry;
-
-    private MessageBusInterface $commandBus;
-
     public function __construct(
         FeedRepositoryInterface $feedRepository,
         ChannelRepositoryInterface $channelRepository,
         RepositoryInterface $localeRepository,
-        FeedTypeRegistryInterface $feedTypeRegistry,
-        MessageBusInterface $commandBus,
+        private readonly FeedTypeRegistryInterface $feedTypeRegistry,
+        private readonly MessageBusInterface $commandBus,
     ) {
         $this->feedRepository = $feedRepository;
         $this->channelRepository = $channelRepository;
         $this->localeRepository = $localeRepository;
-        $this->feedTypeRegistry = $feedTypeRegistry;
-        $this->commandBus = $commandBus;
     }
 
     public function __invoke(GenerateFeed $message): void

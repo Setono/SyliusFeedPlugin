@@ -6,11 +6,8 @@ namespace Setono\SyliusFeedPlugin\Message\Command;
 
 final class ProcessFeed implements CommandInterface
 {
-    private int $feedId;
-
-    public function __construct(int $feedId)
+    public function __construct(private readonly int $feedId)
     {
-        $this->feedId = $feedId;
     }
 
     public function getFeedId(): int

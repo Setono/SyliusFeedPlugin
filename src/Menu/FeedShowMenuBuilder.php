@@ -14,25 +14,13 @@ use Symfony\Component\Workflow\Registry;
 
 final class FeedShowMenuBuilder
 {
-    private FactoryInterface $factory;
-
-    private EventDispatcherInterface $eventDispatcher;
-
-    private Registry $workflowRegistry;
-
     public function __construct(
-        FactoryInterface $factory,
-        EventDispatcherInterface $eventDispatcher,
-        Registry $workflowRegistry,
+        private readonly FactoryInterface $factory,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly Registry $workflowRegistry,
     ) {
-        $this->factory = $factory;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->workflowRegistry = $workflowRegistry;
     }
 
-    /**
-     * @psalm-suppress InternalMethod
-     */
     public function createMenu(array $options): ItemInterface
     {
         $menu = $this->factory->createItem('root');

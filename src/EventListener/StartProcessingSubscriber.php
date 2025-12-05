@@ -14,11 +14,8 @@ use Symfony\Component\Workflow\Event\TransitionEvent;
 
 final class StartProcessingSubscriber implements EventSubscriberInterface
 {
-    private FeedTypeRegistryInterface $feedTypeRegistry;
-
-    public function __construct(FeedTypeRegistryInterface $feedTypeRegistry)
+    public function __construct(private readonly FeedTypeRegistryInterface $feedTypeRegistry)
     {
-        $this->feedTypeRegistry = $feedTypeRegistry;
     }
 
     public static function getSubscribedEvents(): array

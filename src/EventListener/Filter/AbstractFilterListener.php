@@ -11,11 +11,8 @@ use Setono\SyliusFeedPlugin\Event\QueryBuilderEvent;
 
 abstract class AbstractFilterListener
 {
-    private string $class;
-
-    public function __construct(string $class)
+    public function __construct(private readonly string $class)
     {
-        $this->class = $class;
     }
 
     protected function isEligible(QueryBuilderEvent $event, array $additionalInstanceChecks = []): bool

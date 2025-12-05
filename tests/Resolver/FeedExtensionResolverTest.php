@@ -26,11 +26,11 @@ final class FeedExtensionResolverTest extends TestCase
         $feedType->method('getTemplate')->willReturn('template.twig.html');
 
         $feedTypeRegistry = $this->createMock(FeedTypeRegistryInterface::class);
-        $feedTypeRegistry->method('get')->with($this->equalTo('feed_type'))->willReturn($feedType);
+        $feedTypeRegistry->method('get')->with(self::equalTo('feed_type'))->willReturn($feedType);
 
         $resolver = new FeedExtensionResolver($feedTypeRegistry, $this->getTwig());
 
-        $this->assertSame('xml', $resolver->resolve($feed));
+        self::assertSame('xml', $resolver->resolve($feed));
     }
 
     private function getTwig(): Environment

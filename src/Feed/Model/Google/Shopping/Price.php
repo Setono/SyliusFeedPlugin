@@ -7,11 +7,11 @@ namespace Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping;
 use JsonSerializable;
 use Webmozart\Assert\Assert;
 
-final class Price implements JsonSerializable
+final class Price implements JsonSerializable, \Stringable
 {
-    private int $amount;
+    private readonly int $amount;
 
-    private string $currency;
+    private readonly string $currency;
 
     /**
      * @param object|string $currency

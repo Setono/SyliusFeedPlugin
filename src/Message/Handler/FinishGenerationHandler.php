@@ -29,48 +29,26 @@ use Throwable;
 use Twig\Environment;
 use Webmozart\Assert\Assert;
 
-/**
- * @psalm-suppress UndefinedDocblockClass
- * @psalm-suppress UndefinedClass
- * @psalm-suppress DeprecatedInterface
- * @psalm-suppress InternalMethod
- */
 final class FinishGenerationHandler implements MessageHandlerInterface
 {
     use GetFeedTrait;
 
-    private ObjectManager $feedManager;
-
-    /** @var FilesystemInterface|FilesystemOperator */
-    private $filesystem;
-
-    private Registry $workflowRegistry;
-
-    private Environment $twig;
-
-    private FeedTypeRegistryInterface $feedTypeRegistry;
-
-    private FeedPathGeneratorInterface $temporaryFeedPathGenerator;
-
-    private LoggerInterface $logger;
+    private FilesystemInterface|FilesystemOperator $filesystem;
 
     /**
-     * @psalm-suppress UndefinedDocblockClass
-     *
      * @param FilesystemInterface|FilesystemOperator $filesystem
      */
     public function __construct(
         FeedRepositoryInterface $feedRepository,
-        ObjectManager $feedManager,
+        private ObjectManager $feedManager,
         $filesystem,
-        Registry $workflowRegistry,
-        Environment $twig,
-        FeedTypeRegistryInterface $feedTypeRegistry,
-        FeedPathGeneratorInterface $temporaryFeedPathGenerator,
-        LoggerInterface $logger,
+        private readonly Registry $workflowRegistry,
+        private Environment $twig,
+        private readonly FeedTypeRegistryInterface $feedTypeRegistry,
+        private readonly FeedPathGeneratorInterface $temporaryFeedPathGenerator,
+        private readonly LoggerInterface $logger,
     ) {
         $this->feedRepository = $feedRepository;
-        $this->feedManager = $feedManager;
         if (interface_exists(FilesystemInterface::class) && $filesystem instanceof FilesystemInterface) {
             $this->filesystem = $filesystem;
         } elseif ($filesystem instanceof FilesystemOperator) {
@@ -82,11 +60,6 @@ final class FinishGenerationHandler implements MessageHandlerInterface
                 FilesystemOperator::class,
             ));
         }
-        $this->workflowRegistry = $workflowRegistry;
-        $this->twig = $twig;
-        $this->feedTypeRegistry = $feedTypeRegistry;
-        $this->temporaryFeedPathGenerator = $temporaryFeedPathGenerator;
-        $this->logger = $logger;
     }
 
     public function __invoke(FinishGeneration $message): void
@@ -115,7 +88,7 @@ final class FinishGenerationHandler implements MessageHandlerInterface
 
                     [$feedStart, $feedEnd] = $this->getFeedParts($feed, $feedType, $channel, $locale);
 
-                    fwrite($batchStream, $feedStart);
+                    fwrite($batchStream, (string) $feedStart);
 
                     $filesystem = $this->filesystem;
 
@@ -150,7 +123,7 @@ final class FinishGenerationHandler implements MessageHandlerInterface
                         $filesystem->delete($path);
                     }
 
-                    fwrite($batchStream, $feedEnd);
+                    fwrite($batchStream, (string) $feedEnd);
 
                     if (interface_exists(FilesystemInterface::class) && $filesystem instanceof FilesystemInterface) {
                         /** @var resource|false $res */
