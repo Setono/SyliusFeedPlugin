@@ -29,16 +29,10 @@ class Feed implements FeedInterface
 
     protected int $finishedBatches = 0;
 
-    /**
-     * @var Collection|ChannelInterface[]
-     * @psalm-var Collection<array-key, ChannelInterface>
-     */
+    /** @var Collection<array-key, ChannelInterface> */
     protected Collection $channels;
 
-    /**
-     * @var Collection|ViolationInterface[]
-     * @psalm-var Collection<array-key, ViolationInterface>
-     */
+    /** @var Collection<array-key, ViolationInterface> */
     protected Collection $violations;
 
     public function __construct()

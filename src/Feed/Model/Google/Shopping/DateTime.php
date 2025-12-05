@@ -7,7 +7,7 @@ namespace Setono\SyliusFeedPlugin\Feed\Model\Google\Shopping;
 use DateTime as BaseDateTime;
 use JsonSerializable;
 
-final class DateTime extends BaseDateTime implements JsonSerializable
+final class DateTime extends BaseDateTime implements JsonSerializable, \Stringable
 {
     public function __toString(): string
     {

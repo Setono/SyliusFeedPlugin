@@ -8,9 +8,9 @@ use InvalidArgumentException;
 
 final class UndefinedBlockException extends InvalidArgumentException implements ExceptionInterface
 {
-    private string $block;
+    private readonly string $block;
 
-    private array $requiredBlocks;
+    private readonly array $requiredBlocks;
 
     /**
      * @param array<array-key, string> $requiredBlocks

@@ -15,29 +15,23 @@ use Twig\TwigFunction;
 
 final class Extension extends AbstractExtension
 {
-    private RequestStack $requestStack;
-
-    private UrlGeneratorInterface $urlGenerator;
-
     public function __construct(
-        RequestStack $requestStack,
-        UrlGeneratorInterface $urlGenerator,
+        private readonly RequestStack $requestStack,
+        private readonly UrlGeneratorInterface $urlGenerator,
     ) {
-        $this->requestStack = $requestStack;
-        $this->urlGenerator = $urlGenerator;
     }
 
     public function getFilters(): array
     {
         return [
-            new TwigFilter('setono_sylius_feed_remove_empty_tags', [$this, 'removeEmptyTags']),
+            new TwigFilter('setono_sylius_feed_remove_empty_tags', $this->removeEmptyTags(...)),
         ];
     }
 
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('setono_sylius_feed_generate_feed_url', [$this, 'generateFeedUrl']),
+            new TwigFunction('setono_sylius_feed_generate_feed_url', $this->generateFeedUrl(...)),
         ];
     }
 

@@ -12,14 +12,10 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 final class SendFinishGenerationCommandSubscriber implements EventSubscriberInterface
 {
-    private FeedRepositoryInterface $feedRepository;
-
-    private MessageBusInterface $commandBus;
-
-    public function __construct(FeedRepositoryInterface $feedRepository, MessageBusInterface $commandBus)
-    {
-        $this->feedRepository = $feedRepository;
-        $this->commandBus = $commandBus;
+    public function __construct(
+        private readonly FeedRepositoryInterface $feedRepository,
+        private readonly MessageBusInterface $commandBus,
+    ) {
     }
 
     public static function getSubscribedEvents(): array

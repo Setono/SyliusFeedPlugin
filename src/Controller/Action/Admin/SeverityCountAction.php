@@ -10,14 +10,10 @@ use Twig\Environment;
 
 final class SeverityCountAction
 {
-    private ViolationRepositoryInterface $violationRepository;
-
-    private Environment $twig;
-
-    public function __construct(ViolationRepositoryInterface $violationRepository, Environment $twig)
-    {
-        $this->violationRepository = $violationRepository;
-        $this->twig = $twig;
+    public function __construct(
+        private readonly ViolationRepositoryInterface $violationRepository,
+        private readonly Environment $twig,
+    ) {
     }
 
     public function __invoke(int $feed = null): Response

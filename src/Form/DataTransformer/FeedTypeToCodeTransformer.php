@@ -14,11 +14,8 @@ use Symfony\Component\Form\Exception\UnexpectedTypeException;
  */
 final class FeedTypeToCodeTransformer implements DataTransformerInterface
 {
-    private FeedTypeRegistryInterface $feedTypeRegistry;
-
-    public function __construct(FeedTypeRegistryInterface $feedTypeRegistry)
+    public function __construct(private readonly FeedTypeRegistryInterface $feedTypeRegistry)
     {
-        $this->feedTypeRegistry = $feedTypeRegistry;
     }
 
     /**

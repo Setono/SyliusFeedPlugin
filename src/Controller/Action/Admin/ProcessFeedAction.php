@@ -13,32 +13,14 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-/**
- * @psalm-suppress UndefinedClass
- * @psalm-suppress MixedArgument
- * @psalm-suppress UndefinedInterfaceMethod
- * @psalm-suppress MixedAssignment
- */
 final class ProcessFeedAction
 {
-    private MessageBusInterface $commandBus;
-
-    private UrlGeneratorInterface $urlGenerator;
-
-    private FlashBagInterface|RequestStack $flashBag;
-
-    private TranslatorInterface $translator;
-
     public function __construct(
-        MessageBusInterface $commandBus,
-        UrlGeneratorInterface $urlGenerator,
-        FlashBagInterface|RequestStack $requestStackOrFlashBag,
-        TranslatorInterface $translator,
+        private readonly MessageBusInterface $commandBus,
+        private readonly UrlGeneratorInterface $urlGenerator,
+        private readonly FlashBagInterface|RequestStack $flashBag,
+        private readonly TranslatorInterface $translator,
     ) {
-        $this->commandBus = $commandBus;
-        $this->urlGenerator = $urlGenerator;
-        $this->flashBag = $requestStackOrFlashBag;
-        $this->translator = $translator;
     }
 
     public function __invoke(int $id): RedirectResponse

@@ -10,14 +10,10 @@ use Twig\Environment;
 
 final class FeedExtensionResolver implements FeedExtensionResolverInterface
 {
-    private FeedTypeRegistryInterface $feedTypeRegistry;
-
-    private Environment $twig;
-
-    public function __construct(FeedTypeRegistryInterface $feedTypeRegistry, Environment $twig)
-    {
-        $this->feedTypeRegistry = $feedTypeRegistry;
-        $this->twig = $twig;
+    public function __construct(
+        private readonly FeedTypeRegistryInterface $feedTypeRegistry,
+        private readonly Environment $twig,
+    ) {
     }
 
     public function resolve(FeedInterface $feed): string

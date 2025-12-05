@@ -9,11 +9,8 @@ use Twig\Environment;
 
 final class TemplateValidator implements TemplateValidatorInterface
 {
-    private Environment $twig;
-
-    public function __construct(Environment $twig)
+    public function __construct(private readonly Environment $twig)
     {
-        $this->twig = $twig;
     }
 
     public function validate(string $template): void

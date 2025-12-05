@@ -26,11 +26,11 @@ parameters:
 
     ignoreErrors:
         -
-            identifier: missingType.iterableValue
+            identifiers:
+                - missingType.iterableValue
+                - doctrine.associationType
+                - doctrine.columnType
+                - missingType.generics
         -
-            identifier: doctrine.associationType
-        -
-            identifier: doctrine.columnType
-        -
-            identifier: missingType.generics
-            path: src/Form
+            identifier: class.notFound
+            message: '#League\\Flysystem\\#'

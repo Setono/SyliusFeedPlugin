@@ -20,35 +20,17 @@ use Sylius\Component\Locale\Model\LocaleInterface;
 
 class DataProvider implements DataProviderInterface
 {
-    private BatcherFactoryInterface $batcherFactory;
-
-    private QueryRebuilderInterface $queryRebuilder;
-
-    private EventDispatcherInterface $eventDispatcher;
-
-    private ManagerRegistry $managerRegistry;
-
-    private string $class;
-
     /** @var CollectionBatcherInterface[] */
     private array $batchers = [];
 
-    private int $batchSize;
-
     public function __construct(
-        BatcherFactoryInterface $batcherFactory,
-        QueryRebuilderInterface $queryRebuilder,
-        EventDispatcherInterface $eventDispatcher,
-        ManagerRegistry $managerRegistry,
-        string $class,
-        int $batchSize = 100,
+        private readonly BatcherFactoryInterface $batcherFactory,
+        private readonly QueryRebuilderInterface $queryRebuilder,
+        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly ManagerRegistry $managerRegistry,
+        private readonly string $class,
+        private readonly int $batchSize = 100,
     ) {
-        $this->batcherFactory = $batcherFactory;
-        $this->queryRebuilder = $queryRebuilder;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->managerRegistry = $managerRegistry;
-        $this->class = $class;
-        $this->batchSize = $batchSize;
     }
 
     public function getClass(): string
@@ -69,10 +51,8 @@ class DataProvider implements DataProviderInterface
         return $this->getBatcher($channel, $locale)->getBatchCount($this->batchSize);
     }
 
-    /** @psalm-suppress MixedReturnTypeCoercion */
     public function getItems(BatchInterface $batch): iterable
     {
-        /** @psalm-suppress MixedReturnTypeCoercion */
         return $this->queryRebuilder->rebuild($batch)->getResult();
     }
 

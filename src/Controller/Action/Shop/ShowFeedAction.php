@@ -16,42 +16,22 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Mime\MimeTypesInterface;
 
-/**
- * @psalm-suppress UndefinedDocblockClass
- * @psalm-suppress UndefinedClass
- */
 final class ShowFeedAction
 {
-    private FeedRepositoryInterface $repository;
-
-    private ChannelContextInterface $channelContext;
-
-    private LocaleContextInterface $localeContext;
-
-    private FeedPathGeneratorInterface $feedPathGenerator;
-
     /** @var FilesystemInterface|FilesystemOperator */
     private $filesystem;
 
-    private MimeTypesInterface $mimeTypes;
-
     /**
-     * @psalm-suppress UndefinedDocblockClass
-     *
      * @param FilesystemInterface|FilesystemOperator $filesystem
      */
     public function __construct(
-        FeedRepositoryInterface $repository,
-        ChannelContextInterface $channelContext,
-        LocaleContextInterface $localeContext,
-        FeedPathGeneratorInterface $feedPathGenerator,
+        private readonly FeedRepositoryInterface $repository,
+        private readonly ChannelContextInterface $channelContext,
+        private readonly LocaleContextInterface $localeContext,
+        private readonly FeedPathGeneratorInterface $feedPathGenerator,
         $filesystem,
-        MimeTypesInterface $mimeTypes,
+        private readonly MimeTypesInterface $mimeTypes,
     ) {
-        $this->repository = $repository;
-        $this->channelContext = $channelContext;
-        $this->localeContext = $localeContext;
-        $this->feedPathGenerator = $feedPathGenerator;
         if (interface_exists(FilesystemInterface::class) && $filesystem instanceof FilesystemInterface) {
             $this->filesystem = $filesystem;
         } elseif ($filesystem instanceof FilesystemOperator) {
@@ -63,7 +43,6 @@ final class ShowFeedAction
                 FilesystemOperator::class,
             ));
         }
-        $this->mimeTypes = $mimeTypes;
     }
 
     public function __invoke(string $code): StreamedResponse

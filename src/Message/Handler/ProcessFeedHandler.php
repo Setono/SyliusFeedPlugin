@@ -19,38 +19,19 @@ use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Registry;
 
-/**
- * @psalm-suppress DeprecatedInterface
- * @psalm-suppress InternalMethod
- */
 final class ProcessFeedHandler implements MessageHandlerInterface
 {
     use GetFeedTrait;
 
-    private ObjectManager $feedManager;
-
-    private FeedTypeRegistryInterface $feedTypeRegistry;
-
-    private MessageBusInterface $commandBus;
-
-    private Registry $workflowRegistry;
-
-    private TemplateValidatorInterface $templateValidator;
-
     public function __construct(
         FeedRepositoryInterface $feedRepository,
-        ObjectManager $feedManager,
-        FeedTypeRegistryInterface $feedTypeRegistry,
-        MessageBusInterface $commandBus,
-        Registry $workflowRegistry,
-        TemplateValidatorInterface $templateValidator,
+        private readonly ObjectManager $feedManager,
+        private readonly FeedTypeRegistryInterface $feedTypeRegistry,
+        private readonly MessageBusInterface $commandBus,
+        private readonly Registry $workflowRegistry,
+        private readonly TemplateValidatorInterface $templateValidator,
     ) {
         $this->feedRepository = $feedRepository;
-        $this->feedManager = $feedManager;
-        $this->feedTypeRegistry = $feedTypeRegistry;
-        $this->commandBus = $commandBus;
-        $this->workflowRegistry = $workflowRegistry;
-        $this->templateValidator = $templateValidator;
     }
 
     public function __invoke(ProcessFeed $message): void

@@ -11,10 +11,6 @@ use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use SplFileInfo;
 use Webmozart\Assert\Assert;
 
-/**
- * @psalm-suppress UndefinedDocblockClass
- * @psalm-suppress UndefinedClass
- */
 final class TemporaryFeedPathGenerator implements FeedPathGeneratorInterface
 {
     public const BASE_FILENAME = '_feed';
@@ -36,8 +32,6 @@ final class TemporaryFeedPathGenerator implements FeedPathGeneratorInterface
     }
 
     /**
-     * @psalm-suppress UndefinedDocblockClass
-     *
      * @param FilesystemInterface|FilesystemOperator $filesystem
      */
     public static function getPartialFile(SplFileInfo $dir, $filesystem): SplFileInfo

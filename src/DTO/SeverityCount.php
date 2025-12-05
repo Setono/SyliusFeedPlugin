@@ -6,14 +6,8 @@ namespace Setono\SyliusFeedPlugin\DTO;
 
 final class SeverityCount
 {
-    private string $severity;
-
-    private int $count;
-
-    public function __construct(string $severity, int $count)
+    public function __construct(private readonly string $severity, private readonly int $count)
     {
-        $this->severity = $severity;
-        $this->count = $count;
     }
 
     public function getSeverity(): string

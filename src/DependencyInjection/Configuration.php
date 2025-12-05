@@ -19,10 +19,6 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 final class Configuration implements ConfigurationInterface
 {
-    /**
-     * @psalm-suppress MixedMethodCall
-     * @psalm-suppress UndefinedInterfaceMethod
-     */
     public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('setono_sylius_feed');
@@ -56,9 +52,6 @@ final class Configuration implements ConfigurationInterface
         return $treeBuilder;
     }
 
-    /**
-     * @psalm-suppress MixedMethodCall, UndefinedInterfaceMethod
-     */
     private function addResourcesSection(ArrayNodeDefinition $node): void
     {
         $node

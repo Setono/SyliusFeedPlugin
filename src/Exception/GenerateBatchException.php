@@ -10,7 +10,7 @@ use Webmozart\Assert\Assert;
 
 final class GenerateBatchException extends RuntimeException implements ExceptionInterface
 {
-    private string $originalMessage;
+    private readonly string $originalMessage;
 
     private ?int $feedId = null;
 

@@ -11,13 +11,12 @@ use Sylius\Bundle\UiBundle\Menu\Event\MenuBuilderEvent;
 
 final class FeedShowMenuBuilderEvent extends MenuBuilderEvent
 {
-    private FeedInterface $feed;
-
-    public function __construct(FactoryInterface $factory, ItemInterface $menu, FeedInterface $feed)
-    {
+    public function __construct(
+        FactoryInterface $factory,
+        ItemInterface $menu,
+        private readonly FeedInterface $feed,
+    ) {
         parent::__construct($factory, $menu);
-
-        $this->feed = $feed;
     }
 
     public function getFeed(): FeedInterface

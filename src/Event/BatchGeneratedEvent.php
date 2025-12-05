@@ -8,11 +8,8 @@ use Setono\SyliusFeedPlugin\Model\FeedInterface;
 
 final class BatchGeneratedEvent
 {
-    private FeedInterface $feed;
-
-    public function __construct(FeedInterface $feed)
+    public function __construct(private readonly FeedInterface $feed)
     {
-        $this->feed = $feed;
     }
 
     public function getFeed(): FeedInterface

@@ -14,7 +14,5 @@
 /infection.json.dist                export-ignore
 /node_modules                       export-ignore
 /phpunit.xml.dist                   export-ignore
-/psalm-baseline.xml                 export-ignore
-/psalm.xml                          export-ignore
 /rector.php                         export-ignore
 /tests                              export-ignore

@@ -11,30 +11,17 @@ use Sylius\Component\Locale\Model\LocaleInterface;
 
 final class GenerateBatchItemEvent
 {
-    private FeedInterface $feed;
-
-    private FeedTypeInterface $feedType;
-
-    private ChannelInterface $channel;
-
-    private LocaleInterface $locale;
-
-    /** @var object|array */
-    private $item;
-
-    private ?object $rootItem;
-
     /**
      * @param object|array $item
      */
-    public function __construct(FeedInterface $feed, FeedTypeInterface $feedType, ChannelInterface $channel, LocaleInterface $locale, $item, object $rootItem = null)
-    {
-        $this->feed = $feed;
-        $this->feedType = $feedType;
-        $this->channel = $channel;
-        $this->locale = $locale;
-        $this->item = $item;
-        $this->rootItem = $rootItem;
+    public function __construct(
+        private readonly FeedInterface $feed,
+        private readonly FeedTypeInterface $feedType,
+        private readonly ChannelInterface $channel,
+        private readonly LocaleInterface $locale,
+        private $item,
+        private readonly ?object $rootItem = null,
+    ) {
     }
 
     public function getFeed(): FeedInterface
