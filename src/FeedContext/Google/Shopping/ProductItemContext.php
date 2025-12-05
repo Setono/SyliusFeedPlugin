@@ -16,6 +16,7 @@ use Setono\SyliusFeedPlugin\FeedContext\ItemContextInterface;
 use Setono\SyliusFeedPlugin\Model\BrandAwareInterface;
 use Setono\SyliusFeedPlugin\Model\ColorAwareInterface;
 use Setono\SyliusFeedPlugin\Model\ConditionAwareInterface;
+use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Model\GtinAwareInterface;
 use Setono\SyliusFeedPlugin\Model\LocalizedBrandAwareInterface;
 use Setono\SyliusFeedPlugin\Model\LocalizedColorAwareInterface;
@@ -49,7 +50,7 @@ class ProductItemContext implements ItemContextInterface
     ) {
     }
 
-    public function getContextList(object $product, ChannelInterface $channel, LocaleInterface $locale): ContextListInterface
+    public function getContextList(object $product, ChannelInterface $channel, LocaleInterface $locale, FeedInterface $feed = null): ContextListInterface
     {
         if (!$product instanceof ProductInterface) {
             throw new InvalidArgumentException(sprintf(
