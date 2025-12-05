@@ -15,6 +15,9 @@ abstract class AbstractFilterListener
     {
     }
 
+    /**
+     * @param list<class-string> $additionalInstanceChecks
+     */
     protected function isEligible(QueryBuilderEvent $event, array $additionalInstanceChecks = []): bool
     {
         $class = $event->getDataProvider()->getClass();
@@ -39,7 +42,7 @@ abstract class AbstractFilterListener
             throw new InvalidArgumentException('This filter only works with one root alias');
         }
 
-        return reset($aliases);
+        return $aliases[0];
     }
 
     protected function getClassMetadata(QueryBuilderEvent $event): ClassMetadata

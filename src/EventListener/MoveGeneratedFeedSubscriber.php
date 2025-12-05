@@ -87,9 +87,8 @@ final class MoveGeneratedFeedSubscriber implements EventSubscriberInterface
                 );
                 $temporaryFilesystem = $this->temporaryFilesystem;
                 $temporaryPath = TemporaryFeedPathGenerator::getBaseFile($temporaryDir);
-                /** @var resource|false $tempFile */
                 $tempFile = $temporaryFilesystem->readStream((string) $temporaryPath);
-                if (false === $tempFile) {
+                if (!\is_resource($tempFile)) {
                     throw new \RuntimeException(sprintf(
                         'The file with path "%s" could not be found',
                         $temporaryPath,

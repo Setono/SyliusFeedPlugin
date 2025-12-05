@@ -23,6 +23,7 @@ final class ValidateDataProvidersPass implements CompilerPassInterface
                 throw new InvalidArgumentException(sprintf('The service %s needs the code attribute. Something like this: <tag name="setono_sylius_feed.data_provider" code="insert code here"/>', $id));
             }
 
+            /** @var array{code?: string} $attributes */
             foreach ($tagged as $attributes) {
                 if (!isset($attributes['code'])) {
                     throw new InvalidArgumentException(sprintf('The service %s needs the code attribute. Something like this: <tag name="setono_sylius_feed.data_provider" code="insert code here"/>', $id));

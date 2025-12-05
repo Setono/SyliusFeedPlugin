@@ -68,9 +68,8 @@ final class ShowFeedAction
             }
         }
 
-        /** @var resource|false $stream */
         $stream = $filesystem->readStream((string) $feedPath);
-        if (false === $stream) {
+        if (!\is_resource($stream)) {
             throw new RuntimeException(sprintf('An error occurred trying to read the feed file %s', $feedPath));
         }
 

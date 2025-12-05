@@ -11,8 +11,12 @@ use Symfony\Component\Validator\Constraint;
 
 final class FeedType implements FeedTypeInterface
 {
+    /** @var list<string> */
     private readonly array $validationGroups;
 
+    /**
+     * @param list<string> $validationGroups
+     */
     public function __construct(
         private readonly string $code,
         private readonly string $template,

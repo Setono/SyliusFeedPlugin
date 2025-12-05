@@ -88,7 +88,7 @@ final class FinishGenerationHandler implements MessageHandlerInterface
 
                     [$feedStart, $feedEnd] = $this->getFeedParts($feed, $feedType, $channel, $locale);
 
-                    fwrite($batchStream, (string) $feedStart);
+                    fwrite($batchStream, $feedStart);
 
                     $filesystem = $this->filesystem;
 
@@ -105,9 +105,8 @@ final class FinishGenerationHandler implements MessageHandlerInterface
                         }
                         /** @var string $path */
                         $path = $file['path'];
-                        /** @var resource|false $fp */
                         $fp = $filesystem->readStream($path);
-                        if (false === $fp) {
+                        if (!is_resource($fp)) {
                             throw new \RuntimeException(sprintf(
                                 'The file "%s" could not be opened as a resource',
                                 $path,
@@ -115,7 +114,7 @@ final class FinishGenerationHandler implements MessageHandlerInterface
                         }
 
                         while (!feof($fp)) {
-                            fwrite($batchStream, fread($fp, 8192));
+                            fwrite($batchStream, (string) fread($fp, 8192));
                         }
 
                         fclose($fp);
@@ -123,7 +122,7 @@ final class FinishGenerationHandler implements MessageHandlerInterface
                         $filesystem->delete($path);
                     }
 
-                    fwrite($batchStream, (string) $feedEnd);
+                    fwrite($batchStream, $feedEnd);
 
                     if (interface_exists(FilesystemInterface::class) && $filesystem instanceof FilesystemInterface) {
                         /** @var resource|false $res */
@@ -170,9 +169,18 @@ final class FinishGenerationHandler implements MessageHandlerInterface
     private function getBatchStream()
     {
         // needs to be w+ since we use the same stream later to read from
-        return fopen('php://temp', 'w+b');
+        $resource = fopen('php://temp', 'w+b');
+
+        if (!is_resource($resource)) {
+            throw new RuntimeException('Could not open the stream');
+        }
+
+        return $resource;
     }
 
+    /**
+     * @return non-empty-list<string>
+     */
     private function getFeedParts(
         FeedInterface $feed,
         FeedTypeInterface $feedType,

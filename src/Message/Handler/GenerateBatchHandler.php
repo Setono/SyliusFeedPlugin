@@ -276,7 +276,13 @@ final class GenerateBatchHandler implements MessageHandlerInterface
     private function openStream()
     {
         // needs to be w+ since we use the same stream later to read from
-        return fopen('php://temp', 'w+b');
+        $resource = fopen('php://temp', 'w+b');
+
+        if (!is_resource($resource)) {
+            throw new \RuntimeException('Could not open the stream');
+        }
+
+        return $resource;
     }
 
     private function applyErrorTransition(WorkflowInterface $workflow, FeedInterface $feed): void

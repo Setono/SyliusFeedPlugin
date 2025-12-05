@@ -1,3 +1,6 @@
+includes:
+	- phpstan-baseline.neon
+
 parameters:
     level: max
 
@@ -22,7 +25,7 @@ parameters:
         objectManagerLoader: tests/PHPStan/object_manager.php
 
     reportUnmatchedIgnoredErrors: false
-    treatPhpDocTypesAsCertain: false
+    treatPhpDocTypesAsCertain: true
 
     ignoreErrors:
         -
@@ -31,6 +34,7 @@ parameters:
                 - doctrine.associationType
                 - doctrine.columnType
                 - missingType.generics
+                - missingType.parameter
         -
             identifier: class.notFound
             message: '#League\\Flysystem\\#'

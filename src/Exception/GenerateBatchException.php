@@ -14,8 +14,8 @@ final class GenerateBatchException extends RuntimeException implements Exception
 
     private ?int $feedId = null;
 
-    /** @var mixed */
-    private $resourceId;
+    /** @var scalar|null */
+    private mixed $resourceId = null;
 
     private ?string $channelCode = null;
 
@@ -40,18 +40,12 @@ final class GenerateBatchException extends RuntimeException implements Exception
         $this->updateMessage();
     }
 
-    /**
-     * @return mixed
-     */
-    public function getResourceId()
+    public function getResourceId(): mixed
     {
         return $this->resourceId;
     }
 
-    /**
-     * @param mixed $resourceId
-     */
-    public function setResourceId($resourceId): void
+    public function setResourceId(mixed $resourceId): void
     {
         Assert::scalar($resourceId);
 

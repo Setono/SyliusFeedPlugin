@@ -19,8 +19,6 @@ class ViolationRepository extends EntityRepository implements ViolationRepositor
             $feed = (int) $feed->getId();
         }
 
-        Assert::nullOrInteger($feed);
-
         $qb = $this->createQueryBuilder('o')
             ->select('NEW Setono\SyliusFeedPlugin\DTO\SeverityCount(o.severity, count(o))')
             ->groupBy('o.severity')
@@ -32,6 +30,7 @@ class ViolationRepository extends EntityRepository implements ViolationRepositor
         }
 
         $res = $qb->getQuery()->getResult();
+        Assert::isArray($res);
         Assert::allIsInstanceOf($res, SeverityCount::class);
 
         return $res;

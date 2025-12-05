@@ -39,13 +39,14 @@ final class ViolationFactory implements ViolationFactoryInterface
         $violation->setChannel($channel);
         $violation->setLocale($locale);
         $violation->setMessage(
-            $constraintViolation->getPropertyPath() . ': ' . sprintf((string) $constraintViolation->getMessage(), $constraintViolation->getInvalidValue()),
+            /** @phpstan-ignore cast.string */
+            $constraintViolation->getPropertyPath() . ': ' . sprintf((string) $constraintViolation->getMessage(), (string) $constraintViolation->getInvalidValue()),
         );
         $violation->setData($data);
 
         if ($constraintViolation instanceof ConstraintViolation) {
             $constraint = $constraintViolation->getConstraint();
-            if (null !== $constraint && isset($constraint->payload['severity'])) {
+            if (null !== $constraint && is_array($constraint->payload) && isset($constraint->payload['severity']) && is_string($constraint->payload['severity'])) {
                 $violation->setSeverity($constraint->payload['severity']);
             }
         }

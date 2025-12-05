@@ -8,7 +8,7 @@ use Countable;
 use Traversable;
 
 /**
- * @extends Traversable<array-key, array>
+ * @extends Traversable<array-key, array|object>
  */
 interface ContextListInterface extends Traversable, Countable
 {
