@@ -1,0 +1,23 @@
+setono_sylius_feed:
+    google:
+        shopping:
+            product:
+                id:
+                    length_min: Diese Zeichenkette ist zu kurz. Sie muss mindestens 1 Zeichen haben
+                    length_max: Diese Zeichenkette ist zu lang. Sie darf höchstens 50 Zeichen haben
+                brand:
+                    not_blank: Die Marke ist leer
+                gtin:
+                    not_blank: Die GTIN ist leer
+                shipping:
+                    not_blank: Der Versand ist leer
+                title:
+                    not_blank: Der Titel darf nicht leer sein
+    feed:
+        code:
+            not_blank: Der Code darf nicht leer sein
+            unique: Der Code muss eindeutig sein
+        name:
+            not_blank: Der Name darf nicht leer sein
+        feed_type:
+            not_blank: Der Feed-Typ darf nicht leer sein

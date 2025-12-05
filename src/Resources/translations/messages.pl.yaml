@@ -1,0 +1,37 @@
+setono_sylius_feed:
+    feed_type:
+        google_shopping: Google Shopping
+    form:
+        feed:
+            name: Nazwa
+            feed_type: Typ kanału
+            feed_type_placeholder: Wybierz typ kanału...
+    ui:
+        click_to_copy: Kliknij, aby skopiować
+        count: Liczba
+        data: Dane
+        edit_feed: Edytuj kanał
+        feed: Kanał
+        feeds: Kanały
+        feed_type: Typ kanału
+        generate_feed: Generuj kanał
+        link: Link
+        link_copied: Link skopiowany
+        manage_feeds: Zarządzaj kanałami
+        message: Wiadomość
+        name: Nazwa
+        new_feed: Nowy kanał
+        processing: Przetwarzanie
+        ready: Gotowy
+        severity: Ważność
+        severities:
+            error: Błąd
+            notice: Uwaga
+            warning: Ostrzeżenie
+        state: Stan
+        unprocessed: Nieprzetworzony
+        unprocessed_feed_header: Kanał nie jest gotowy
+        unprocessed_feed_body: Kanał napotkał błąd lub nie został jeszcze przetworzony. Naciśnij przycisk generowania, aby rozpocząć przetwarzanie
+        view_all_violations: Zobacz wszystkie naruszenia, klikając <a href="%path%">tutaj</a>.
+        violation_summary: Podsumowanie naruszeń
+        violations: Naruszenia

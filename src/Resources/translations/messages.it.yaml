@@ -1,0 +1,37 @@
+setono_sylius_feed:
+    feed_type:
+        google_shopping: Google Shopping
+    form:
+        feed:
+            name: Nome
+            feed_type: Tipo di feed
+            feed_type_placeholder: Scegli il tipo di feed...
+    ui:
+        click_to_copy: Clicca per copiare
+        count: Conteggio
+        data: Dati
+        edit_feed: Modifica feed
+        feed: Feed
+        feeds: Feed
+        feed_type: Tipo di feed
+        generate_feed: Genera feed
+        link: Link
+        link_copied: Link copiato
+        manage_feeds: Gestisci feed
+        message: Messaggio
+        name: Nome
+        new_feed: Nuovo feed
+        processing: Elaborazione
+        ready: Pronto
+        severity: Gravità
+        severities:
+            error: Errore
+            notice: Avviso
+            warning: Attenzione
+        state: Stato
+        unprocessed: Non elaborato
+        unprocessed_feed_header: Il feed non è pronto
+        unprocessed_feed_body: Il feed ha avuto un errore o non è ancora stato elaborato. Premi il pulsante di generazione per avviare l'elaborazione
+        view_all_violations: Visualizza tutte le violazioni cliccando <a href="%path%">qui</a>.
+        violation_summary: Riepilogo delle violazioni
+        violations: Violazioni

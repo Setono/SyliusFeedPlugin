@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Setono\SyliusFeedPlugin\Resolver;
+namespace Setono\SyliusFeedPlugin\Tests\Resolver;
 
 use PHPUnit\Framework\TestCase;
 use Setono\SyliusFeedPlugin\FeedType\FeedTypeInterface;

@@ -1,0 +1,37 @@
+setono_sylius_feed:
+    feed_type:
+        google_shopping: Google Shopping
+    form:
+        feed:
+            name: Navn
+            feed_type: Feedtype
+            feed_type_placeholder: Velg feedtype...
+    ui:
+        click_to_copy: Klikk for å kopiere
+        count: Antall
+        data: Data
+        edit_feed: Rediger feed
+        feed: Feed
+        feeds: Feeder
+        feed_type: Feedtype
+        generate_feed: Generer feed
+        link: Lenke
+        link_copied: Lenke kopiert
+        manage_feeds: Administrer feeder
+        message: Melding
+        name: Navn
+        new_feed: Ny feed
+        processing: Behandler
+        ready: Klar
+        severity: Alvorlighetsgrad
+        severities:
+            error: Feil
+            notice: Merknad
+            warning: Advarsel
+        state: Tilstand
+        unprocessed: Ubehandlet
+        unprocessed_feed_header: Feed er ikke klar
+        unprocessed_feed_body: Feeden har enten feilet eller er ikke behandlet ennå. Trykk på generer-knappen for å starte behandlingen
+        view_all_violations: Se alle brudd ved å klikke <a href="%path%">her</a>.
+        violation_summary: Bruddoversikt
+        violations: Brudd

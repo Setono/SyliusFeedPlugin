@@ -1,0 +1,23 @@
+setono_sylius_feed:
+    google:
+        shopping:
+            product:
+                id:
+                    length_min: Ten ciąg znaków jest zbyt krótki. Musi mieć co najmniej 1 znak
+                    length_max: Ten ciąg znaków jest zbyt długi. Może mieć maksymalnie 50 znaków
+                brand:
+                    not_blank: Marka jest pusta
+                gtin:
+                    not_blank: GTIN jest pusty
+                shipping:
+                    not_blank: Wysyłka jest pusta
+                title:
+                    not_blank: Tytuł nie może być pusty
+    feed:
+        code:
+            not_blank: Kod nie może być pusty
+            unique: Kod musi być unikalny
+        name:
+            not_blank: Nazwa nie może być pusta
+        feed_type:
+            not_blank: Typ kanału nie może być pusty

@@ -1,0 +1,37 @@
+setono_sylius_feed:
+    feed_type:
+        google_shopping: Google Shopping
+    form:
+        feed:
+            name: Namn
+            feed_type: Flödestyp
+            feed_type_placeholder: Välj flödestyp...
+    ui:
+        click_to_copy: Klicka för att kopiera
+        count: Antal
+        data: Data
+        edit_feed: Redigera flöde
+        feed: Flöde
+        feeds: Flöden
+        feed_type: Flödestyp
+        generate_feed: Generera flöde
+        link: Länk
+        link_copied: Länk kopierad
+        manage_feeds: Hantera flöden
+        message: Meddelande
+        name: Namn
+        new_feed: Nytt flöde
+        processing: Bearbetar
+        ready: Redo
+        severity: Allvarlighetsgrad
+        severities:
+            error: Fel
+            notice: Meddelande
+            warning: Varning
+        state: Status
+        unprocessed: Obearbetad
+        unprocessed_feed_header: Flödet är inte redo
+        unprocessed_feed_body: Flödet har antingen misslyckats eller har inte bearbetats ännu. Tryck på genereringsknappen för att starta bearbetningen
+        view_all_violations: Se alla överträdelser genom att klicka <a href="%path%">här</a>.
+        violation_summary: Sammanfattning av överträdelser
+        violations: Överträdelser

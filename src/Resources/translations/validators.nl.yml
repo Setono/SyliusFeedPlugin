@@ -1,0 +1,23 @@
+setono_sylius_feed:
+    google:
+        shopping:
+            product:
+                id:
+                    length_min: Deze tekenreeks is te kort. Deze moet ten minste 1 teken bevatten
+                    length_max: Deze tekenreeks is te lang. Deze mag maximaal 50 tekens bevatten
+                brand:
+                    not_blank: Het merk is leeg
+                gtin:
+                    not_blank: De GTIN is leeg
+                shipping:
+                    not_blank: De verzending is leeg
+                title:
+                    not_blank: De titel mag niet leeg zijn
+    feed:
+        code:
+            not_blank: De code mag niet leeg zijn
+            unique: De code moet uniek zijn
+        name:
+            not_blank: De naam mag niet leeg zijn
+        feed_type:
+            not_blank: Het feedtype mag niet leeg zijn

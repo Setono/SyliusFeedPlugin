@@ -3,21 +3,21 @@ setono_sylius_feed:
         shopping:
             product:
                 id:
-                    length_min: This string is too short. It must have at most 1 character
-                    length_max: This string is too long. It must have at most 50 characters
+                    length_min: Denne streng er for kort. Den skal have mindst 1 tegn
+                    length_max: Denne streng er for lang. Den må højst have 50 tegn
                 brand:
-                    not_blank: The brand is blank
+                    not_blank: Mærket er tomt
                 gtin:
-                    not_blank: The GTIN is blank
+                    not_blank: GTIN er tomt
                 shipping:
-                    not_blank: The shipping is blank
+                    not_blank: Forsendelse er tomt
                 title:
-                    not_blank: The title should not be blank
+                    not_blank: Titlen må ikke være tom
     feed:
         code:
-            not_blank: The code cannot be blank
-            unique: The code must be unique
+            not_blank: Koden må ikke være tom
+            unique: Koden skal være unik
         name:
-            not_blank: The name cannot be blank
+            not_blank: Navnet må ikke være tomt
         feed_type:
-            not_blank: The feed type cannot be blank
+            not_blank: Feedtypen må ikke være tom

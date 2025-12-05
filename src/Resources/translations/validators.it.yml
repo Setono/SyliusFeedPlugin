@@ -1,0 +1,23 @@
+setono_sylius_feed:
+    google:
+        shopping:
+            product:
+                id:
+                    length_min: Questa stringa è troppo corta. Deve avere almeno 1 carattere
+                    length_max: Questa stringa è troppo lunga. Deve avere al massimo 50 caratteri
+                brand:
+                    not_blank: Il marchio è vuoto
+                gtin:
+                    not_blank: Il GTIN è vuoto
+                shipping:
+                    not_blank: La spedizione è vuota
+                title:
+                    not_blank: Il titolo non deve essere vuoto
+    feed:
+        code:
+            not_blank: Il codice non può essere vuoto
+            unique: Il codice deve essere unico
+        name:
+            not_blank: Il nome non può essere vuoto
+        feed_type:
+            not_blank: Il tipo di feed non può essere vuoto
