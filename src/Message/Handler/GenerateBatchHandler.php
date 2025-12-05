@@ -116,7 +116,8 @@ final class GenerateBatchHandler implements MessageHandlerInterface
 
             foreach ($items as $item) {
                 try {
-                    $contextList = $itemContext->getContextList($item, $channel, $locale);
+                    /** @phpstan-ignore arguments.count */
+                    $contextList = $itemContext->getContextList($item, $channel, $locale, $feed);
 
                     /** @var array|object $context */
                     foreach ($contextList as $context) {
