@@ -33,6 +33,8 @@ final class RegisterFilesystemPass implements CompilerPassInterface
 
         foreach (self::PARAMETERS as $parameter) {
             $parameterValue = $container->getParameter($parameter);
+            Assert::string($parameterValue);
+
             if (!$container->hasDefinition($parameterValue)) {
                 throw new InvalidArgumentException(sprintf('No service definition exists with id "%s"', $parameterValue));
             }

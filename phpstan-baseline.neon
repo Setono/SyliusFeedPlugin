@@ -1,0 +1,67 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Interface IteratorAggregate specifies template type TKey of interface Traversable as mixed but it''s already specified as \(int\|string\)\.$#'
+			identifier: generics.interfaceConflict
+			count: 1
+			path: src/FeedContext/ContextList.php
+
+		-
+			message: '#^Parameter \#1 \$context of method Setono\\SyliusFeedPlugin\\FeedContext\\ContextList\:\:add\(\) expects array\|object, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/FeedContext/ContextList.php
+
+		-
+			message: '#^PHPDoc tag @var with type Sylius\\Component\\Core\\Model\\ProductTranslationInterface\|null is not subtype of native type Sylius\\Component\\Resource\\Model\\TranslationInterface\|null\.$#'
+			identifier: varTag.nativeType
+			count: 1
+			path: src/FeedContext/Google/Shopping/ProductItemContext.php
+
+		-
+			message: '#^PHPDoc tag @var with type Sylius\\Component\\Taxonomy\\Model\\TaxonTranslationInterface\|null is not subtype of native type Sylius\\Component\\Resource\\Model\\TranslationInterface\|null\.$#'
+			identifier: varTag.nativeType
+			count: 1
+			path: src/FeedContext/Google/Shopping/ProductItemContext.php
+
+		-
+			message: '#^Parameter \#1 \$callback of function array_map expects \(callable\(Sylius\\Component\\Taxonomy\\Model\\TaxonInterface\)\: mixed\)\|null, Closure\(Sylius\\Component\\Core\\Model\\TaxonInterface\)\: string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/FeedContext/Google/Shopping/ProductItemContext.php
+
+		-
+			message: '#^Parameter \#1 \$price of method Setono\\SyliusFeedPlugin\\Feed\\Model\\Google\\Shopping\\Product\:\:setPrice\(\) expects Setono\\SyliusFeedPlugin\\Feed\\Model\\Google\\Shopping\\Price\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/FeedContext/Google/Shopping/ProductItemContext.php
+
+		-
+			message: '#^Parameter \#1 \$salePrice of method Setono\\SyliusFeedPlugin\\Feed\\Model\\Google\\Shopping\\Product\:\:setSalePrice\(\) expects Setono\\SyliusFeedPlugin\\Feed\\Model\\Google\\Shopping\\Price\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/FeedContext/Google/Shopping/ProductItemContext.php
+
+		-
+			message: '#^Parameter \#1 \$translatable of method Setono\\SyliusFeedPlugin\\FeedContext\\Google\\Shopping\\ProductItemContext\:\:getTranslation\(\) expects Sylius\\Component\\Resource\\Model\\TranslatableInterface, Sylius\\Component\\Core\\Model\\ProductInterface given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/FeedContext/Google/Shopping/ProductItemContext.php
+
+		-
+			message: '#^Parameter \#1 \$translatable of method Setono\\SyliusFeedPlugin\\FeedContext\\Google\\Shopping\\ProductItemContext\:\:getTranslation\(\) expects Sylius\\Component\\Resource\\Model\\TranslatableInterface, Sylius\\Component\\Core\\Model\\TaxonInterface given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/FeedContext/Google/Shopping/ProductItemContext.php
+
+		-
+			message: '#^Parameter \#2 \$currency of class Setono\\SyliusFeedPlugin\\Feed\\Model\\Google\\Shopping\\Price constructor expects string\|Stringable, Sylius\\Component\\Currency\\Model\\CurrencyInterface given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/FeedContext/Google/Shopping/ProductItemContext.php
+
+		-
+			message: '#^PHPDoc tag @var with type array\<array\{basename\: string, path\: string\}\>\|League\\Flysystem\\DirectoryListing\<League\\Flysystem\\StorageAttributes\> is not subtype of type League\\Flysystem\\DirectoryListing\<League\\Flysystem\\StorageAttributes\>\.$#'
+			identifier: varTag.type
+			count: 1
+			path: src/Message/Handler/FinishGenerationHandler.php

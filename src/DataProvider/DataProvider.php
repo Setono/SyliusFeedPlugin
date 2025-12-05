@@ -23,6 +23,9 @@ class DataProvider implements DataProviderInterface
     /** @var CollectionBatcherInterface[] */
     private array $batchers = [];
 
+    /**
+     * @param class-string $class
+     */
     public function __construct(
         private readonly BatcherFactoryInterface $batcherFactory,
         private readonly QueryRebuilderInterface $queryRebuilder,
@@ -53,6 +56,7 @@ class DataProvider implements DataProviderInterface
 
     public function getItems(BatchInterface $batch): iterable
     {
+        /** @phpstan-ignore return.type */
         return $this->queryRebuilder->rebuild($batch)->getResult();
     }
 

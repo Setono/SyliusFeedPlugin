@@ -37,7 +37,7 @@ final class Extension extends AbstractExtension
 
     public function removeEmptyTags(string $xml): string
     {
-        return preg_replace('#<[^/>][^>]*></[^>]+>#', '', $xml);
+        return (string) preg_replace('#<[^/>][^>]*></[^>]+>#', '', $xml);
     }
 
     public function generateFeedUrl(FeedInterface $feed, ChannelInterface $channel, LocaleInterface $locale): string

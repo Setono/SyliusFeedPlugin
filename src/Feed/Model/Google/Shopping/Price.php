@@ -14,7 +14,7 @@ final class Price implements JsonSerializable, \Stringable
     private readonly string $currency;
 
     /**
-     * @param object|string $currency
+     * @param \Stringable|string $currency
      */
     public function __construct(int $amount, $currency)
     {

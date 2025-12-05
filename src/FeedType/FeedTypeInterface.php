@@ -24,6 +24,8 @@ interface FeedTypeInterface
 
     /**
      * The validation groups used when validating each item
+     *
+     * @return list<string>
      */
     public function getValidationGroups(): array;
 }

@@ -17,7 +17,7 @@ interface FeedRepositoryInterface extends RepositoryInterface
     /**
      * Returns all enabled feeds
      *
-     * @return FeedInterface[]
+     * @return array<array-key, FeedInterface>
      */
     public function findEnabled(): array;
 

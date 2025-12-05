@@ -13,12 +13,16 @@ class FeedRepository extends EntityRepository implements FeedRepositoryInterface
 {
     public function findOneByCode(string $code): ?FeedInterface
     {
-        return $this->createQueryBuilder('o')
+        $result = $this->createQueryBuilder('o')
             ->where('o.code = :code')
             ->setParameter('code', $code)
             ->getQuery()
             ->getOneOrNullResult()
         ;
+
+        Assert::nullOrIsInstanceOf($result, FeedInterface::class);
+
+        return $result;
     }
 
     public function findEnabled(): array
@@ -29,6 +33,7 @@ class FeedRepository extends EntityRepository implements FeedRepositoryInterface
             ->getResult()
         ;
 
+        Assert::isArray($res);
         Assert::allIsInstanceOf($res, FeedInterface::class);
 
         return $res;

@@ -14,6 +14,8 @@ interface DataProviderInterface
 {
     /**
      * This will be the root class of the data provided by this data provider
+     *
+     * @return class-string
      */
     public function getClass(): string;
 
