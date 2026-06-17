@@ -14,9 +14,7 @@ use Sylius\Component\Resource\Model\TranslatableTrait;
 class Feed implements FeedInterface
 {
     use ToggleableTrait;
-    use TranslatableTrait {
-        __construct as private initializeTranslationsCollection;
-    }
+    use TranslatableTrait;
 
     protected ?int $id = null;
 
@@ -39,7 +37,9 @@ class Feed implements FeedInterface
 
     public function __construct()
     {
-        $this->initializeTranslationsCollection();
+        /** @var ArrayCollection<string, FeedTranslationInterface> $translations */
+        $translations = new ArrayCollection();
+        $this->translations = $translations;
 
         /** @var ArrayCollection<int, ChannelInterface> $channels */
         $channels = new ArrayCollection();
