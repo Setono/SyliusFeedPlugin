@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<doctrine-mapping xmlns="http://doctrine.apache.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine.apache.org/schemas/orm/doctrine-mapping
+                  http://doctrine.apache.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Setono\SyliusFeedPlugin\Model\FeedTranslation" table="setono_sylius_feed__feed_translation">
+        <unique-constraints>
+            <unique-constraint name="setono_sylius_feed__feed_translation_uniq_trans" columns="translatable_id,locale"/>
+        </unique-constraints>
+
+        <id name="id" type="integer">
+            <generator strategy="AUTO"/>
+        </id>
+
+        <field name="locale" type="string"/>
+        <field name="name" type="string" nullable="true"/>
+        <field name="slug" type="string" nullable="true"/>
+
+        <many-to-one field="translatable" target-entity="Setono\SyliusFeedPlugin\Model\Feed" inversed-by="translations">
+            <join-column name="translatable_id" referenced-column-name="id" nullable="false" on-delete="CASCADE"/>
+        </many-to-one>
+    </entity>
+</doctrine-mapping>

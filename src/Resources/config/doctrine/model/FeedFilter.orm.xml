@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<doctrine-mapping xmlns="http://doctrine.apache.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine.apache.org/schemas/orm/doctrine-mapping
+                  http://doctrine.apache.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Setono\SyliusFeedPlugin\Model\FeedFilter" table="setono_sylius_feed__feed_filter">
+        <id name="id" type="integer">
+            <generator strategy="AUTO"/>
+        </id>
+
+        <field name="field" type="string" nullable="true"/>
+        <field name="operator" type="string" nullable="true"/>
+        <field name="value" column="filter_value" type="json" nullable="true"/>
+        <field name="action" type="string"/>
+        <field name="stage" type="string"/>
+
+        <many-to-one field="source" target-entity="Setono\SyliusFeedPlugin\Model\FeedSource" inversed-by="filters">
+            <join-column name="source_id" referenced-column-name="id" nullable="false" on-delete="CASCADE"/>
+        </many-to-one>
+    </entity>
+</doctrine-mapping>
