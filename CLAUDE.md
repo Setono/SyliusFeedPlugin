@@ -49,6 +49,9 @@ composer fix-style
 # Run Rector (dry-run)
 vendor/bin/rector process --dry-run
 
+# Mutation testing (CI requires 100% MSI — see CI Gates below)
+vendor/bin/infection
+
 # Lint Symfony container (requires test application)
 (cd tests/Application && bin/console lint:container)
 
@@ -71,6 +74,16 @@ PHPStan is configured in `phpstan.neon` with:
 - **Doctrine Integration**: Uses object manager loader (`tests/PHPStan/object_manager.php`)
 - **Exclusions**: Test application directory and Configuration.php
 - **Baseline**: Generate with `composer analyse -- --generate-baseline` to track improvements
+
+### CI Gates & Compatibility
+
+These are enforced by `.github/workflows/build.yaml` and will fail the build if violated:
+
+- **100% mutation score**: `infection.json.dist` sets `minMsi` and `minCoveredMsi` to `100.00`. New `src/` code must be covered well enough that Infection kills every mutant — partial test coverage is not enough.
+- **PHP 8.1 is the floor**: the package supports PHP `>=8.1`, and CI runs against 8.1/8.2/8.3 with Symfony `~6.4`. Coding-standards run on **8.1** and Rector targets `LevelSetList::UP_TO_PHP_81`, so do **not** use syntax/features newer than 8.1.
+- **`lowest` and `highest` dependencies** are both tested — avoid relying on behavior only present in newer versions of a `^`-constrained dependency.
+- **`composer normalize --dry-run`** must pass — keep `composer.json` normalized (run `composer normalize`).
+- **Dependency analysis** (`shipmonk/composer-dependency-analyser`, config in `composer-dependency-analyser.php`) checks that every used package is a direct dependency.
 
 ### Test Application
 The plugin includes a test Symfony application in `tests/Application/` for development and testing:
@@ -105,10 +118,22 @@ Examples:
 
 ### Feed Processing Flow
 
-1. `ProcessFeedsCommand` triggers `FeedProcessor::process()` which dispatches `ProcessFeed` messages for each enabled feed
-2. `ProcessFeedHandler` creates batches and dispatches `GenerateBatch` messages for each channel/locale combination
-3. `GenerateBatchHandler` processes items using the feed type's data provider, validates items, renders Twig templates, and writes to filesystem
-4. `FinishGenerationHandler` finalizes the feed when all batches complete
+The pipeline is a fan-out of async messages, and the *lifecycle* is driven by Symfony Workflow transition events — not by the handlers calling each other directly.
+
+1. `ProcessFeedsCommand` (`setono:sylius-feed:process`) calls `FeedProcessor::process()`, which dispatches one `ProcessFeed` per enabled feed.
+2. `ProcessFeedHandler` validates the feed type's template, applies the `process` transition, and dispatches one `GenerateFeed` per channel/locale combination.
+3. `GenerateFeedHandler` asks the feed type's `DataProvider` for batches (`getBatches()`) and dispatches one `GenerateBatch` per batch.
+4. `GenerateBatchHandler` resolves the batch's items, runs each through the item context, validates every context, renders the Twig `item` block, writes a **partial file** per channel/locale, then dispatches `BatchGeneratedEvent`.
+5. `FinishGenerationHandler` concatenates the partials into the final feed (wrapping them with the feed start/end rendered from `@SetonoSyliusFeedPlugin/Feed/feed.txt.twig`, split on the `<!-- ITEM_BOUNDARY -->` marker), deletes the partials, and applies the `processed` transition.
+
+**Completion detection is counter-based, not "last handler wins".** The total batch count is set on the feed when the `process` transition fires (`StartProcessingSubscriber` → `Feed::setBatches()`). On each `BatchGeneratedEvent`, `IncrementFinishedBatchesSubscriber` (priority 100) increments the counter, then `SendFinishGenerationCommandSubscriber` dispatches `FinishGeneration` only once `FeedRepository::batchesGenerated()` is true. This is what makes the flow safe under out-of-order async batch processing.
+
+**Workflow-transition subscribers** (`workflow.setono_sylius_feed.feed.transition.*`) handle side effects so handlers stay focused:
+- `process` → `StartProcessingSubscriber` resets and sets the batch count.
+- `processed` → `MoveGeneratedFeedSubscriber` moves the feed from the temporary filesystem to its final (public) location.
+- `errored` → `DeleteGeneratedFilesSubscriber` cleans up generated files.
+
+**Validation/violation behavior:** each context is validated with the feed type's validation groups. A violation with severity `error` causes that item to be **skipped** (not written to the feed); other severities are recorded as `Violation`s on the feed but the item is still written. Any thrown error transitions the feed to `error`.
 
 ### Key Components
 
