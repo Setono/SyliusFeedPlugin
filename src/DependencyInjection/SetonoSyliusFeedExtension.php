@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\DependencyInjection;
 
 use Setono\SyliusFeedPlugin\FeedType\FeedTypeInterface;
-use Setono\SyliusFeedPlugin\Filter\FilterOperatorInterface;
 use Setono\SyliusFeedPlugin\Lookup\LookupSourceInterface;
 use Setono\SyliusFeedPlugin\MappingPreset\MappingPresetInterface;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
+use Setono\SyliusFeedPlugin\Operator\OperatorInterface;
 use Setono\SyliusFeedPlugin\Transformation\TransformationInterface;
 use Setono\SyliusFeedPlugin\ValueResolver\ValueResolverInterface;
 use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
@@ -31,7 +31,7 @@ final class SetonoSyliusFeedExtension extends AbstractResourceExtension implemen
         ValueResolverInterface::class => 'setono_sylius_feed.value_resolver',
         LookupSourceInterface::class => 'setono_sylius_feed.lookup_source',
         TransformationInterface::class => 'setono_sylius_feed.transformation',
-        FilterOperatorInterface::class => 'setono_sylius_feed.filter_operator',
+        OperatorInterface::class => 'setono_sylius_feed.operator',
         FeedWriterInterface::class => 'setono_sylius_feed.writer',
     ];
 

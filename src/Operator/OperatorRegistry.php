@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Setono\SyliusFeedPlugin\ValueResolver;
+namespace Setono\SyliusFeedPlugin\Operator;
 
 use Setono\SyliusFeedPlugin\Registry\Registry;
 
 /**
- * @extends Registry<ValueResolverInterface>
+ * @extends Registry<OperatorInterface>
  */
-final class ValueResolverRegistry extends Registry implements ValueResolverRegistryInterface
+final class OperatorRegistry extends Registry implements OperatorRegistryInterface
 {
-    public function get(string $name): ValueResolverInterface
+    public function get(string $name): OperatorInterface
     {
         return $this->getByKey($name);
     }
@@ -27,7 +27,7 @@ final class ValueResolverRegistry extends Registry implements ValueResolverRegis
     }
 
     /**
-     * @param ValueResolverInterface $item
+     * @param OperatorInterface $item
      */
     protected function getKey(object $item): string
     {

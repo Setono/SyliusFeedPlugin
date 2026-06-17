@@ -12,6 +12,9 @@ use Setono\SyliusFeedPlugin\Filter\FilterSet;
  */
 interface DataSourceInterface
 {
+    /**
+     * @return class-string the source entity class this data source iterates
+     */
     public function getResourceClass(): string;
 
     /**

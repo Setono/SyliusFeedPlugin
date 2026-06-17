@@ -29,10 +29,10 @@
         </service>
         <service id="Setono\SyliusFeedPlugin\Transformation\TransformationRegistryInterface" alias="setono_sylius_feed.registry.transformation"/>
 
-        <service id="setono_sylius_feed.registry.filter_operator" class="Setono\SyliusFeedPlugin\Filter\FilterOperatorRegistry">
-            <argument type="tagged_iterator" tag="setono_sylius_feed.filter_operator"/>
+        <service id="setono_sylius_feed.registry.operator" class="Setono\SyliusFeedPlugin\Operator\OperatorRegistry">
+            <argument type="tagged_iterator" tag="setono_sylius_feed.operator"/>
         </service>
-        <service id="Setono\SyliusFeedPlugin\Filter\FilterOperatorRegistryInterface" alias="setono_sylius_feed.registry.filter_operator"/>
+        <service id="Setono\SyliusFeedPlugin\Operator\OperatorRegistryInterface" alias="setono_sylius_feed.registry.operator"/>
 
         <service id="setono_sylius_feed.registry.writer" class="Setono\SyliusFeedPlugin\Writer\FeedWriterRegistry">
             <argument type="tagged_iterator" tag="setono_sylius_feed.writer"/>

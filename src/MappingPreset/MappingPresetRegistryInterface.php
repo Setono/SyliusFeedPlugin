@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\MappingPreset;
 
-interface MappingPresetRegistryInterface
+/**
+ * @extends \IteratorAggregate<string, MappingPresetInterface>
+ */
+interface MappingPresetRegistryInterface extends \IteratorAggregate
 {
     public function get(string $code): MappingPresetInterface;
 

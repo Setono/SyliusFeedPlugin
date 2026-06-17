@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\FeedType;
 
-interface FeedTypeRegistryInterface
+/**
+ * @extends \IteratorAggregate<string, FeedTypeInterface>
+ */
+interface FeedTypeRegistryInterface extends \IteratorAggregate
 {
     public function get(string $code): FeedTypeInterface;
 

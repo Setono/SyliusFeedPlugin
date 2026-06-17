@@ -4,40 +4,33 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Lookup;
 
-use Webmozart\Assert\Assert;
+use Setono\SyliusFeedPlugin\Registry\Registry;
 
-final class LookupSourceRegistry implements LookupSourceRegistryInterface
+/**
+ * @extends Registry<LookupSourceInterface>
+ */
+final class LookupSourceRegistry extends Registry implements LookupSourceRegistryInterface
 {
-    /** @var array<string, LookupSourceInterface> */
-    private array $sources = [];
-
-    /**
-     * @param iterable<LookupSourceInterface> $sources
-     */
-    public function __construct(iterable $sources)
-    {
-        foreach ($sources as $source) {
-            $type = $source->getType();
-            Assert::keyNotExists($this->sources, $type, sprintf('A lookup source with type "%s" is already registered', $type));
-
-            $this->sources[$type] = $source;
-        }
-    }
-
     public function get(string $type): LookupSourceInterface
     {
-        Assert::keyExists($this->sources, $type, sprintf('No lookup source with type "%s" is registered', $type));
-
-        return $this->sources[$type];
+        return $this->getByKey($type);
     }
 
     public function has(string $type): bool
     {
-        return isset($this->sources[$type]);
+        return $this->hasKey($type);
     }
 
     public function all(): array
     {
-        return $this->sources;
+        return $this->items();
+    }
+
+    /**
+     * @param LookupSourceInterface $item
+     */
+    protected function getKey(object $item): string
+    {
+        return $item->getType();
     }
 }

@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Transformation;
 
-interface TransformationRegistryInterface
+/**
+ * @extends \IteratorAggregate<string, TransformationInterface>
+ */
+interface TransformationRegistryInterface extends \IteratorAggregate
 {
     public function get(string $type): TransformationInterface;
 

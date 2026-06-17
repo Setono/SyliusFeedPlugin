@@ -59,6 +59,7 @@ final class FeedContext
             return 'default';
         }
 
-        return implode('_', $parts);
+        // Lowercased so the key is stable across case-insensitive filesystems and in URLs.
+        return strtolower(implode('_', $parts));
     }
 }

@@ -23,7 +23,7 @@ final class FeedContextTest extends TestCase
 
         $context = new FeedContext($channel->reveal(), 'en_US', 'USD');
 
-        self::assertSame('default_en_US_USD', $context->key());
+        self::assertSame('default_en_us_usd', $context->key());
         self::assertSame('en_US', $context->getLocale());
         self::assertSame('USD', $context->getCurrencyCode());
         self::assertSame($channel->reveal(), $context->getChannel());
@@ -37,9 +37,9 @@ final class FeedContextTest extends TestCase
         $channel = $this->prophesize(ChannelInterface::class);
         $channel->getCode()->willReturn('web');
 
-        self::assertSame('web_en_US', (new FeedContext($channel->reveal(), 'en_US'))->key());
+        self::assertSame('web_en_us', (new FeedContext($channel->reveal(), 'en_US'))->key());
         self::assertSame('web', (new FeedContext($channel->reveal()))->key());
-        self::assertSame('da_DK', (new FeedContext(null, 'da_DK'))->key());
+        self::assertSame('da_dk', (new FeedContext(null, 'da_DK'))->key());
     }
 
     /**

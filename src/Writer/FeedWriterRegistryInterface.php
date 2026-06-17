@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Writer;
 
-interface FeedWriterRegistryInterface
+/**
+ * @extends \IteratorAggregate<string, FeedWriterInterface>
+ */
+interface FeedWriterRegistryInterface extends \IteratorAggregate
 {
     public function get(string $format): FeedWriterInterface;
 

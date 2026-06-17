@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Lookup;
 
-interface LookupSourceRegistryInterface
+/**
+ * @extends \IteratorAggregate<string, LookupSourceInterface>
+ */
+interface LookupSourceRegistryInterface extends \IteratorAggregate
 {
     public function get(string $type): LookupSourceInterface;
 

@@ -4,40 +4,33 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Writer;
 
-use Webmozart\Assert\Assert;
+use Setono\SyliusFeedPlugin\Registry\Registry;
 
-final class FeedWriterRegistry implements FeedWriterRegistryInterface
+/**
+ * @extends Registry<FeedWriterInterface>
+ */
+final class FeedWriterRegistry extends Registry implements FeedWriterRegistryInterface
 {
-    /** @var array<string, FeedWriterInterface> */
-    private array $writers = [];
-
-    /**
-     * @param iterable<FeedWriterInterface> $writers
-     */
-    public function __construct(iterable $writers)
-    {
-        foreach ($writers as $writer) {
-            $format = $writer->getFormat();
-            Assert::keyNotExists($this->writers, $format, sprintf('A feed writer for format "%s" is already registered', $format));
-
-            $this->writers[$format] = $writer;
-        }
-    }
-
     public function get(string $format): FeedWriterInterface
     {
-        Assert::keyExists($this->writers, $format, sprintf('No feed writer for format "%s" is registered', $format));
-
-        return $this->writers[$format];
+        return $this->getByKey($format);
     }
 
     public function has(string $format): bool
     {
-        return isset($this->writers[$format]);
+        return $this->hasKey($format);
     }
 
     public function all(): array
     {
-        return $this->writers;
+        return $this->items();
+    }
+
+    /**
+     * @param FeedWriterInterface $item
+     */
+    protected function getKey(object $item): string
+    {
+        return $item->getFormat();
     }
 }

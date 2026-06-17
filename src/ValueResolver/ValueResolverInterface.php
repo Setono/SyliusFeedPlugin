@@ -21,6 +21,9 @@ interface ValueResolverInterface
 
     public function getType(): FieldType;
 
+    /**
+     * @param class-string $resourceClass
+     */
     public function supports(string $resourceClass): bool;
 
     /**
