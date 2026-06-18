@@ -66,9 +66,10 @@ final class ProductVariantDataSource implements DataSourceInterface
 
         $channel = $context->getChannel();
         if ($channel instanceof ChannelInterface) {
+            // MEMBER OF (an EXISTS subquery) rather than a join, since Doctrine's toIterable() does
+            // not allow iterating over a query that joins a to-many association.
             $queryBuilder
-                ->innerJoin('product.channels', 'channel')
-                ->andWhere('channel = :channel')
+                ->andWhere(':channel MEMBER OF product.channels')
                 ->setParameter('channel', $channel);
         }
 

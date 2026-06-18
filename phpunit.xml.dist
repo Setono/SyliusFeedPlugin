@@ -19,4 +19,9 @@
         <env name="APP_ENV" value="test"/>
         <env name="SHELL_VERBOSITY" value="-1"/>
     </php>
+    <extensions>
+        <!-- Wraps each test in a transaction that is rolled back, so DB-backed functional tests
+             stay isolated and the schema is reused across tests. -->
+        <extension class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension"/>
+    </extensions>
 </phpunit>
