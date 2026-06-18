@@ -16,20 +16,10 @@ final class MappingPresetRegistry extends Registry implements MappingPresetRegis
         return $this->getByKey($code);
     }
 
-    public function has(string $code): bool
-    {
-        return $this->hasKey($code);
-    }
-
-    public function all(): array
-    {
-        return $this->items();
-    }
-
     public function forFeedType(string $feedType): array
     {
         return array_values(array_filter(
-            $this->items(),
+            $this->all(),
             static fn (MappingPresetInterface $preset): bool => $preset->supports($feedType),
         ));
     }

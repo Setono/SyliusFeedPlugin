@@ -16,16 +16,6 @@ final class LookupSourceRegistry extends Registry implements LookupSourceRegistr
         return $this->getByKey($type);
     }
 
-    public function has(string $type): bool
-    {
-        return $this->hasKey($type);
-    }
-
-    public function all(): array
-    {
-        return $this->items();
-    }
-
     /**
      * @param LookupSourceInterface $item
      */

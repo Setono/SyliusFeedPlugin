@@ -4,19 +4,14 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\MappingPreset;
 
+use Setono\SyliusFeedPlugin\Registry\RegistryInterface;
+
 /**
- * @extends \IteratorAggregate<string, MappingPresetInterface>
+ * @extends RegistryInterface<MappingPresetInterface>
  */
-interface MappingPresetRegistryInterface extends \IteratorAggregate
+interface MappingPresetRegistryInterface extends RegistryInterface
 {
     public function get(string $code): MappingPresetInterface;
-
-    public function has(string $code): bool;
-
-    /**
-     * @return array<string, MappingPresetInterface>
-     */
-    public function all(): array;
 
     /**
      * All presets that support the given feed type code (drives the admin target picker).

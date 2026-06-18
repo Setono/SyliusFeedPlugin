@@ -5,68 +5,49 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\DependencyInjection\Compiler;
 
 use InvalidArgumentException;
-use League\Flysystem\FilesystemInterface;
 use League\Flysystem\FilesystemOperator;
-use RuntimeException;
 use Symfony\Component\Config\Definition\Exception\InvalidDefinitionException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Webmozart\Assert\Assert;
 
+/**
+ * Aliases the configured storage parameters (feed, feed_tmp) to their Flysystem service ids and
+ * validates that each references a {@see FilesystemOperator}, so the rest of the plugin can depend
+ * on the alias rather than a concrete storage service.
+ */
 final class RegisterFilesystemPass implements CompilerPassInterface
 {
     private const PARAMETERS = ['setono_sylius_feed.storage.feed', 'setono_sylius_feed.storage.feed_tmp'];
 
     public function process(ContainerBuilder $container): void
     {
-        $hasAny = false;
-
         foreach (self::PARAMETERS as $parameter) {
-            if ($container->hasParameter($parameter)) {
-                $hasAny = true;
-            }
-        }
-
-        if (!$hasAny) {
-            return;
-        }
-
-        foreach (self::PARAMETERS as $parameter) {
-            $parameterValue = $container->getParameter($parameter);
-            Assert::string($parameterValue);
-
-            if (!$container->hasDefinition($parameterValue)) {
-                throw new InvalidArgumentException(sprintf('No service definition exists with id "%s"', $parameterValue));
+            if (!$container->hasParameter($parameter)) {
+                continue;
             }
 
-            $definitionClass = $container->getDefinition($parameterValue)->getClass();
-            Assert::notNull($definitionClass);
+            $serviceId = $container->getParameter($parameter);
+            Assert::string($serviceId);
 
-            if (interface_exists(FilesystemInterface::class)) {
-                if (!is_a($definitionClass, FilesystemInterface::class, true)) {
-                    throw new InvalidDefinitionException(sprintf(
-                        'The config parameter "%s" references a service %s, which is not an instance of %s. Fix this by creating a valid service that implements %s.',
-                        $parameter,
-                        $definitionClass,
-                        FilesystemInterface::class,
-                        FilesystemInterface::class,
-                    ));
-                }
-            } elseif (interface_exists(FilesystemOperator::class)) {
-                if (!is_a($definitionClass, FilesystemOperator::class, true)) {
-                    throw new InvalidDefinitionException(sprintf(
-                        'The config parameter "%s" references a service %s, which is not an instance of %s. Fix this by creating a valid service that implements %s.',
-                        $parameter,
-                        $definitionClass,
-                        FilesystemOperator::class,
-                        FilesystemOperator::class,
-                    ));
-                }
-            } else {
-                throw new RuntimeException('It looks like both of league/flysystem v1 and v2 are not installed!');
+            if (!$container->hasDefinition($serviceId)) {
+                throw new InvalidArgumentException(sprintf('No service definition exists with id "%s"', $serviceId));
             }
 
-            $container->setAlias($parameter, $parameterValue);
+            $class = $container->getDefinition($serviceId)->getClass();
+            Assert::notNull($class);
+
+            if (!is_a($class, FilesystemOperator::class, true)) {
+                throw new InvalidDefinitionException(sprintf(
+                    'The config parameter "%s" references the service "%s" of class "%s", which is not an instance of %s.',
+                    $parameter,
+                    $serviceId,
+                    $class,
+                    FilesystemOperator::class,
+                ));
+            }
+
+            $container->setAlias($parameter, $serviceId);
         }
     }
 }

@@ -4,17 +4,12 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Operator;
 
+use Setono\SyliusFeedPlugin\Registry\RegistryInterface;
+
 /**
- * @extends \IteratorAggregate<string, OperatorInterface>
+ * @extends RegistryInterface<OperatorInterface>
  */
-interface OperatorRegistryInterface extends \IteratorAggregate
+interface OperatorRegistryInterface extends RegistryInterface
 {
     public function get(string $name): OperatorInterface;
-
-    public function has(string $name): bool;
-
-    /**
-     * @return array<string, OperatorInterface>
-     */
-    public function all(): array;
 }

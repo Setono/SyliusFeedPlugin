@@ -81,7 +81,7 @@ PHPStan is configured in `phpstan.neon` with:
 - **Symfony Integration**: Uses console application loader (`tests/PHPStan/console_application.php`)
 - **Doctrine Integration**: Uses object manager loader (`tests/PHPStan/object_manager.php`)
 - **Exclusions**: Test application directory and Configuration.php
-- **Baseline**: Generate with `composer analyse -- --generate-baseline` to track improvements
+- **No baseline**: the rewrite keeps zero PHPStan errors, so there is intentionally no `phpstan-baseline.neon`. Fix issues at the source rather than reintroducing a baseline.
 
 ### CI Gates & Compatibility
 

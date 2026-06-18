@@ -4,17 +4,12 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Lookup;
 
+use Setono\SyliusFeedPlugin\Registry\RegistryInterface;
+
 /**
- * @extends \IteratorAggregate<string, LookupSourceInterface>
+ * @extends RegistryInterface<LookupSourceInterface>
  */
-interface LookupSourceRegistryInterface extends \IteratorAggregate
+interface LookupSourceRegistryInterface extends RegistryInterface
 {
     public function get(string $type): LookupSourceInterface;
-
-    public function has(string $type): bool;
-
-    /**
-     * @return array<string, LookupSourceInterface>
-     */
-    public function all(): array;
 }

@@ -4,17 +4,12 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Transformation;
 
+use Setono\SyliusFeedPlugin\Registry\RegistryInterface;
+
 /**
- * @extends \IteratorAggregate<string, TransformationInterface>
+ * @extends RegistryInterface<TransformationInterface>
  */
-interface TransformationRegistryInterface extends \IteratorAggregate
+interface TransformationRegistryInterface extends RegistryInterface
 {
     public function get(string $type): TransformationInterface;
-
-    public function has(string $type): bool;
-
-    /**
-     * @return array<string, TransformationInterface>
-     */
-    public function all(): array;
 }

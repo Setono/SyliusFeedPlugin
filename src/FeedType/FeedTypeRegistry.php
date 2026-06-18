@@ -16,16 +16,6 @@ final class FeedTypeRegistry extends Registry implements FeedTypeRegistryInterfa
         return $this->getByKey($code);
     }
 
-    public function has(string $code): bool
-    {
-        return $this->hasKey($code);
-    }
-
-    public function all(): array
-    {
-        return $this->items();
-    }
-
     /**
      * @param FeedTypeInterface $item
      */

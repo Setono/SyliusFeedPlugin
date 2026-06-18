@@ -4,17 +4,12 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\FeedType;
 
+use Setono\SyliusFeedPlugin\Registry\RegistryInterface;
+
 /**
- * @extends \IteratorAggregate<string, FeedTypeInterface>
+ * @extends RegistryInterface<FeedTypeInterface>
  */
-interface FeedTypeRegistryInterface extends \IteratorAggregate
+interface FeedTypeRegistryInterface extends RegistryInterface
 {
     public function get(string $code): FeedTypeInterface;
-
-    public function has(string $code): bool;
-
-    /**
-     * @return array<string, FeedTypeInterface>
-     */
-    public function all(): array;
 }

@@ -8,7 +8,8 @@ use Webmozart\Assert\Assert;
 
 /**
  * Base for the plugin's tagged-service registries: builds a code-keyed map from a tagged
- * iterator, guards against duplicate keys, and is iterable + countable by nature.
+ * iterator, guards against duplicate keys, and provides the shared iterable/countable lookup
+ * behaviour. Concrete registries only supply the key extractor and a type-narrowed `get()`.
  *
  * @template T of object
  * @implements \IteratorAggregate<string, T>
@@ -35,6 +36,32 @@ abstract class Registry implements \IteratorAggregate, \Countable
         }
     }
 
+    public function has(string $key): bool
+    {
+        return isset($this->items[$key]);
+    }
+
+    /**
+     * @return array<string, T>
+     */
+    public function all(): array
+    {
+        return $this->items;
+    }
+
+    /**
+     * @return \ArrayIterator<string, T>
+     */
+    public function getIterator(): \ArrayIterator
+    {
+        return new \ArrayIterator($this->items);
+    }
+
+    public function count(): int
+    {
+        return count($this->items);
+    }
+
     /**
      * @param T $item
      */
@@ -52,31 +79,5 @@ abstract class Registry implements \IteratorAggregate, \Countable
         );
 
         return $this->items[$key];
-    }
-
-    protected function hasKey(string $key): bool
-    {
-        return isset($this->items[$key]);
-    }
-
-    /**
-     * @return array<string, T>
-     */
-    protected function items(): array
-    {
-        return $this->items;
-    }
-
-    /**
-     * @return \ArrayIterator<string, T>
-     */
-    public function getIterator(): \ArrayIterator
-    {
-        return new \ArrayIterator($this->items);
-    }
-
-    public function count(): int
-    {
-        return count($this->items);
     }
 }

@@ -16,16 +16,6 @@ final class OperatorRegistry extends Registry implements OperatorRegistryInterfa
         return $this->getByKey($name);
     }
 
-    public function has(string $name): bool
-    {
-        return $this->hasKey($name);
-    }
-
-    public function all(): array
-    {
-        return $this->items();
-    }
-
     /**
      * @param OperatorInterface $item
      */

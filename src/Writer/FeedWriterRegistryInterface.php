@@ -4,17 +4,12 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Writer;
 
+use Setono\SyliusFeedPlugin\Registry\RegistryInterface;
+
 /**
- * @extends \IteratorAggregate<string, FeedWriterInterface>
+ * @extends RegistryInterface<FeedWriterInterface>
  */
-interface FeedWriterRegistryInterface extends \IteratorAggregate
+interface FeedWriterRegistryInterface extends RegistryInterface
 {
     public function get(string $format): FeedWriterInterface;
-
-    public function has(string $format): bool;
-
-    /**
-     * @return array<string, FeedWriterInterface>
-     */
-    public function all(): array;
 }

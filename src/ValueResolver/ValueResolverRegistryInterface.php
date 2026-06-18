@@ -4,17 +4,12 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\ValueResolver;
 
+use Setono\SyliusFeedPlugin\Registry\RegistryInterface;
+
 /**
- * @extends \IteratorAggregate<string, ValueResolverInterface>
+ * @extends RegistryInterface<ValueResolverInterface>
  */
-interface ValueResolverRegistryInterface extends \IteratorAggregate
+interface ValueResolverRegistryInterface extends RegistryInterface
 {
     public function get(string $name): ValueResolverInterface;
-
-    public function has(string $name): bool;
-
-    /**
-     * @return array<string, ValueResolverInterface>
-     */
-    public function all(): array;
 }

@@ -16,16 +16,6 @@ final class FeedWriterRegistry extends Registry implements FeedWriterRegistryInt
         return $this->getByKey($format);
     }
 
-    public function has(string $format): bool
-    {
-        return $this->hasKey($format);
-    }
-
-    public function all(): array
-    {
-        return $this->items();
-    }
-
     /**
      * @param FeedWriterInterface $item
      */
