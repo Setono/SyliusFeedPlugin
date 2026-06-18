@@ -39,6 +39,15 @@ Follow clean code principles and SOLID design patterns when working with this co
   autowiring-native and keeps ids predictable; prefer auto-registration prototypes (which already
   use FQCN ids) for tagged services.
 
+### Doctrine Access
+- **Never inject `EntityManagerInterface` (or a repository) directly into a service.** Inject
+  `Doctrine\Persistence\ManagerRegistry` and use the `Setono\Doctrine\ORMTrait` (from
+  `setono/doctrine-orm-trait`): add `use ORMTrait;`, assign `$this->managerRegistry = $managerRegistry;`
+  in the constructor, then call `$this->getManager($class)` / `$this->getRepository($class)`. The
+  trait resolves the correct manager per entity class and transparently re-opens a closed manager —
+  important for long-running/batch feed generation where one failure would otherwise close the EM
+  for the rest of the run. Test classes may still fetch the manager from the container directly.
+
 ## Development Commands
 
 ### Code Quality & Testing

@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\DataSource;
 
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\Persistence\ManagerRegistry;
+use Setono\Doctrine\ORMTrait;
 use Setono\SyliusFeedPlugin\Context\FeedContext;
 use Setono\SyliusFeedPlugin\Filter\FilterSet;
 use Sylius\Component\Core\Model\ChannelInterface;
@@ -19,15 +20,18 @@ use Webmozart\Assert\Assert;
  */
 final class ProductVariantDataSource implements DataSourceInterface
 {
+    use ORMTrait;
+
     private const BATCH_SIZE = 1000;
 
     /**
      * @param class-string $resourceClass
      */
     public function __construct(
-        private readonly EntityManagerInterface $entityManager,
+        ManagerRegistry $managerRegistry,
         private readonly string $resourceClass,
     ) {
+        $this->managerRegistry = $managerRegistry;
     }
 
     public function getResourceClass(): string
@@ -37,6 +41,8 @@ final class ProductVariantDataSource implements DataSourceInterface
 
     public function getItems(FeedContext $context, FilterSet $filters): iterable
     {
+        $manager = $this->getManager($this->resourceClass);
+
         $iteration = 0;
         foreach ($this->createQueryBuilder($context)->getQuery()->toIterable() as $variant) {
             Assert::object($variant);
@@ -44,7 +50,7 @@ final class ProductVariantDataSource implements DataSourceInterface
             yield $variant;
 
             if (0 === (++$iteration % self::BATCH_SIZE)) {
-                $this->entityManager->clear();
+                $manager->clear();
             }
         }
     }
@@ -59,7 +65,8 @@ final class ProductVariantDataSource implements DataSourceInterface
 
     private function createQueryBuilder(FeedContext $context): QueryBuilder
     {
-        $queryBuilder = $this->entityManager->getRepository($this->resourceClass)
+        $queryBuilder = $this->getManager($this->resourceClass)
+            ->getRepository($this->resourceClass)
             ->createQueryBuilder('variant')
             ->innerJoin('variant.product', 'product')
             ->andWhere('product.enabled = true');
