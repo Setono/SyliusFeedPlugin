@@ -4,28 +4,40 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\FeedType;
 
-use Setono\SyliusFeedPlugin\DataProvider\DataProviderInterface;
-use Setono\SyliusFeedPlugin\FeedContext\FeedContextInterface;
-use Setono\SyliusFeedPlugin\FeedContext\ItemContextInterface;
+use Setono\SyliusFeedPlugin\DataSource\DataSourceInterface;
+use Setono\SyliusFeedPlugin\Mapping\FieldDefinition;
+use Setono\SyliusFeedPlugin\Mapping\ScopeDimension;
 
+/**
+ * A pluggable definition binding a source resource, its scope dimensions, and its available
+ * source fields (§5). Owns only the source side — output formats and default mappings live in
+ * MappingPresets.
+ *
+ * Collected into the FeedTypeRegistry via the `setono_sylius_feed.feed_type` tag.
+ */
 interface FeedTypeInterface
 {
-    public function __toString(): string;
-
+    /**
+     * e.g. "product_variant", "product", "order".
+     */
     public function getCode(): string;
 
-    public function getTemplate(): string;
+    /**
+     * A translation key.
+     */
+    public function getLabel(): string;
 
-    public function getDataProvider(): DataProviderInterface;
-
-    public function getFeedContext(): FeedContextInterface;
-
-    public function getItemContext(): ItemContextInterface;
+    public function getDataSource(): DataSourceInterface;
 
     /**
-     * The validation groups used when validating each item
-     *
-     * @return list<string>
+     * @return list<ScopeDimension>
      */
-    public function getValidationGroups(): array;
+    public function getScopeDimensions(): array;
+
+    /**
+     * The source fields; drives the mapping UI.
+     *
+     * @return array<string, FieldDefinition> keyed by field name
+     */
+    public function getAvailableFields(): array;
 }

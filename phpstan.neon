@@ -1,6 +1,3 @@
-includes:
-	- phpstan-baseline.neon
-
 parameters:
     level: max
 
@@ -35,6 +32,3 @@ parameters:
                 - doctrine.columnType
                 - missingType.generics
                 - missingType.parameter
-        -
-            identifier: class.notFound
-            message: '#League\\Flysystem\\#'

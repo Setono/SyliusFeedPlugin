@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<doctrine-mapping xmlns="http://doctrine.apache.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine.apache.org/schemas/orm/doctrine-mapping
+                  http://doctrine.apache.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Setono\SyliusFeedPlugin\Model\FeedSource" table="setono_sylius_feed__feed_source">
+        <id name="id" type="integer">
+            <generator strategy="AUTO"/>
+        </id>
+
+        <field name="feedType" column="feed_type" type="string" nullable="true"/>
+        <field name="position" type="integer" nullable="true"/>
+
+        <many-to-one field="feed" target-entity="Setono\SyliusFeedPlugin\Model\Feed" inversed-by="sources">
+            <join-column name="feed_id" referenced-column-name="id" nullable="false" on-delete="CASCADE"/>
+        </many-to-one>
+
+        <one-to-many field="fields" target-entity="Setono\SyliusFeedPlugin\Model\FeedField" mapped-by="source" orphan-removal="true">
+            <cascade>
+                <cascade-all/>
+            </cascade>
+            <order-by>
+                <order-by-field name="position" direction="ASC"/>
+            </order-by>
+        </one-to-many>
+
+        <one-to-many field="filters" target-entity="Setono\SyliusFeedPlugin\Model\FeedFilter" mapped-by="source" orphan-removal="true">
+            <cascade>
+                <cascade-all/>
+            </cascade>
+        </one-to-many>
+    </entity>
+</doctrine-mapping>

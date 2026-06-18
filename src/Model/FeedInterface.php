@@ -5,55 +5,65 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\Model;
 
 use Doctrine\Common\Collections\Collection;
-use Sylius\Component\Channel\Model\ChannelsAwareInterface;
+use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Resource\Model\CodeAwareInterface;
 use Sylius\Component\Resource\Model\ResourceInterface;
 use Sylius\Component\Resource\Model\ToggleableInterface;
+use Sylius\Component\Resource\Model\TranslatableInterface;
 
-interface FeedInterface extends ChannelsAwareInterface, CodeAwareInterface, ResourceInterface, ToggleableInterface
+interface FeedInterface extends ResourceInterface, CodeAwareInterface, ToggleableInterface, TranslatableInterface
 {
-    public function __toString(): string;
-
     public function getId(): ?int;
 
-    public function getCode(): string;
+    public function getName(): ?string;
+
+    public function setName(?string $name): void;
+
+    public function getSlug(): ?string;
+
+    public function setSlug(?string $slug): void;
+
+    public function getFormat(): ?string;
+
+    public function setFormat(?string $format): void;
+
+    /**
+     * @return Collection<int, ChannelInterface>
+     */
+    public function getChannels(): Collection;
+
+    public function addChannel(ChannelInterface $channel): void;
+
+    public function removeChannel(ChannelInterface $channel): void;
+
+    public function hasChannel(ChannelInterface $channel): bool;
 
     public function getState(): string;
 
     public function setState(string $state): void;
 
-    public function isErrored(): bool;
-
-    public function getName(): ?string;
-
-    public function setName(string $name): void;
-
-    public function getFeedType(): ?string;
-
-    public function setFeedType(string $feedType): void;
-
-    public function getBatches(): int;
-
-    public function setBatches(int $batches): void;
-
-    public function getFinishedBatches(): int;
+    /**
+     * @return array<string, mixed>
+     */
+    public function getFormatConfig(): array;
 
     /**
-     * This will reset the batches and finished batches
-     * Use this method when processing starts
+     * @param array<string, mixed> $formatConfig
      */
-    public function resetBatches(): void;
+    public function setFormatConfig(array $formatConfig): void;
 
     /**
-     * @return Collection|ViolationInterface[]
+     * @return Collection<int, FeedSourceInterface>
      */
-    public function getViolations(): Collection;
+    public function getSources(): Collection;
 
-    public function addViolation(ViolationInterface $violation): void;
+    public function addSource(FeedSourceInterface $source): void;
 
-    public function removeViolation(ViolationInterface $violation): void;
+    public function removeSource(FeedSourceInterface $source): void;
 
-    public function hasViolation(ViolationInterface $violation): bool;
+    public function hasSource(FeedSourceInterface $source): bool;
 
-    public function clearViolations(): void;
+    public function getLastGeneratedAt(): ?\DateTimeInterface;
+
+    public function setLastGeneratedAt(?\DateTimeInterface $lastGeneratedAt): void;
 }

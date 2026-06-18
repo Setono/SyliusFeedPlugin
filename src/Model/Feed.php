@@ -7,44 +7,47 @@ namespace Setono\SyliusFeedPlugin\Model;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
-use Sylius\Component\Channel\Model\ChannelInterface;
+use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Resource\Model\ToggleableTrait;
-use Symfony\Component\Uid\Uuid;
+use Sylius\Component\Resource\Model\TranslatableTrait;
 
 class Feed implements FeedInterface
 {
     use ToggleableTrait;
+    use TranslatableTrait;
 
     protected ?int $id = null;
 
-    protected string $code;
+    protected ?string $code = null;
 
-    protected string $state = FeedGraph::STATE_UNPROCESSED;
+    protected ?string $format = null;
 
-    protected ?string $name = null;
-
-    protected ?string $feedType = null;
-
-    protected int $batches = 0;
-
-    protected int $finishedBatches = 0;
-
-    /** @var Collection<array-key, ChannelInterface> */
+    /** @var Collection<int, ChannelInterface> */
     protected Collection $channels;
 
-    /** @var Collection<array-key, ViolationInterface> */
-    protected Collection $violations;
+    protected string $state = FeedGraph::STATE_READY;
+
+    /** @var array<string, mixed> */
+    protected array $formatConfig = [];
+
+    /** @var Collection<int, FeedSourceInterface> */
+    protected Collection $sources;
+
+    protected ?\DateTimeInterface $lastGeneratedAt = null;
 
     public function __construct()
     {
-        $this->code = (string) Uuid::v4();
-        $this->channels = new ArrayCollection();
-        $this->violations = new ArrayCollection();
-    }
+        /** @var ArrayCollection<string, FeedTranslationInterface> $translations */
+        $translations = new ArrayCollection();
+        $this->translations = $translations;
 
-    public function __toString(): string
-    {
-        return (string) $this->getName();
+        /** @var ArrayCollection<int, ChannelInterface> $channels */
+        $channels = new ArrayCollection();
+        $this->channels = $channels;
+
+        /** @var ArrayCollection<int, FeedSourceInterface> $sources */
+        $sources = new ArrayCollection();
+        $this->sources = $sources;
     }
 
     public function getId(): ?int
@@ -52,70 +55,44 @@ class Feed implements FeedInterface
         return $this->id;
     }
 
-    public function getCode(): string
+    public function getCode(): ?string
     {
         return $this->code;
     }
 
     public function setCode(?string $code): void
     {
-        $this->code = (string) $code;
-    }
-
-    public function getState(): string
-    {
-        return $this->state;
-    }
-
-    public function setState(string $state): void
-    {
-        $this->state = $state;
-    }
-
-    public function isErrored(): bool
-    {
-        return FeedGraph::STATE_ERROR === $this->state;
+        $this->code = $code;
     }
 
     public function getName(): ?string
     {
-        return $this->name;
+        return $this->getFeedTranslation()->getName();
     }
 
-    public function setName(string $name): void
+    public function setName(?string $name): void
     {
-        $this->name = $name;
+        $this->getFeedTranslation()->setName($name);
     }
 
-    public function getFeedType(): ?string
+    public function getSlug(): ?string
     {
-        return $this->feedType;
+        return $this->getFeedTranslation()->getSlug();
     }
 
-    public function setFeedType(string $feedType): void
+    public function setSlug(?string $slug): void
     {
-        $this->feedType = $feedType;
+        $this->getFeedTranslation()->setSlug($slug);
     }
 
-    public function getBatches(): int
+    public function getFormat(): ?string
     {
-        return $this->batches;
+        return $this->format;
     }
 
-    public function setBatches(int $batches): void
+    public function setFormat(?string $format): void
     {
-        $this->batches = $batches;
-    }
-
-    public function getFinishedBatches(): int
-    {
-        return $this->finishedBatches;
-    }
-
-    public function resetBatches(): void
-    {
-        $this->batches = 0;
-        $this->finishedBatches = 0;
+        $this->format = $format;
     }
 
     public function getChannels(): Collection
@@ -142,38 +119,72 @@ class Feed implements FeedInterface
         return $this->channels->contains($channel);
     }
 
-    public function getViolations(): Collection
+    public function getState(): string
     {
-        return $this->violations;
+        return $this->state;
     }
 
-    public function addViolation(ViolationInterface $violation): void
+    public function setState(string $state): void
     {
-        if (!$this->hasViolation($violation)) {
-            $violation->setFeed($this);
-            $this->violations->add($violation);
+        $this->state = $state;
+    }
+
+    public function getFormatConfig(): array
+    {
+        return $this->formatConfig;
+    }
+
+    public function setFormatConfig(array $formatConfig): void
+    {
+        $this->formatConfig = $formatConfig;
+    }
+
+    public function getSources(): Collection
+    {
+        return $this->sources;
+    }
+
+    public function addSource(FeedSourceInterface $source): void
+    {
+        if (!$this->hasSource($source)) {
+            $source->setFeed($this);
+            $this->sources->add($source);
         }
     }
 
-    public function removeViolation(ViolationInterface $violation): void
+    public function removeSource(FeedSourceInterface $source): void
     {
-        if ($this->hasViolation($violation)) {
-            $violation->setFeed(null);
-            $this->violations->removeElement($violation);
+        if ($this->hasSource($source)) {
+            $source->setFeed(null);
+            $this->sources->removeElement($source);
         }
     }
 
-    public function hasViolation(ViolationInterface $violation): bool
+    public function hasSource(FeedSourceInterface $source): bool
     {
-        return $this->violations->contains($violation);
+        return $this->sources->contains($source);
     }
 
-    public function clearViolations(): void
+    public function getLastGeneratedAt(): ?\DateTimeInterface
     {
-        foreach ($this->violations as $violation) {
-            $violation->setFeed(null);
-        }
+        return $this->lastGeneratedAt;
+    }
 
-        $this->violations->clear();
+    public function setLastGeneratedAt(?\DateTimeInterface $lastGeneratedAt): void
+    {
+        $this->lastGeneratedAt = $lastGeneratedAt;
+    }
+
+    protected function createTranslation(): FeedTranslationInterface
+    {
+        return new FeedTranslation();
+    }
+
+    private function getFeedTranslation(): FeedTranslationInterface
+    {
+        /** @var FeedTranslationInterface $translation */
+        $translation = $this->getTranslation();
+
+        return $translation;
     }
 }
