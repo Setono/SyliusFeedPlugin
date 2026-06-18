@@ -8,15 +8,16 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Setono\Doctrine\ORMTrait;
 use Setono\SyliusFeedPlugin\Context\FeedContext;
+use Setono\SyliusFeedPlugin\Doctrine\BatchIterator;
 use Setono\SyliusFeedPlugin\Filter\FilterSet;
 use Sylius\Component\Core\Model\ChannelInterface;
-use Webmozart\Assert\Assert;
 
 /**
- * Streams product variants joined to enabled, channel-assigned products (§8.1). Iterates with
- * Doctrine's {@see \Doctrine\ORM\Query::toIterable()} and clears the entity manager every batch
- * so memory stays bounded for large catalogs (§6.3). Query-pushable filters land in M6; for now
- * only the enabled/channel constraints are applied at the query level.
+ * Streams product variants joined to enabled, channel-assigned products (§8.1). Iterates in
+ * bounded-memory batches via {@see BatchIterator} (clears the entity manager every batch), so a
+ * large catalog stays within budget even though associations are lazy-loaded per row (§6.3).
+ * Query-pushable filters land in M6; for now only the enabled/channel constraints are applied at
+ * the query level.
  */
 final class ProductVariantDataSource implements DataSourceInterface
 {
@@ -41,18 +42,11 @@ final class ProductVariantDataSource implements DataSourceInterface
 
     public function getItems(FeedContext $context, FilterSet $filters): iterable
     {
-        $manager = $this->getManager($this->resourceClass);
-
-        $iteration = 0;
-        foreach ($this->createQueryBuilder($context)->getQuery()->toIterable() as $variant) {
-            Assert::object($variant);
-
-            yield $variant;
-
-            if (0 === (++$iteration % self::BATCH_SIZE)) {
-                $manager->clear();
-            }
-        }
+        return BatchIterator::iterate(
+            $this->createQueryBuilder($context)->getQuery(),
+            $this->getManager($this->resourceClass),
+            self::BATCH_SIZE,
+        );
     }
 
     public function count(FeedContext $context, FilterSet $filters): int
