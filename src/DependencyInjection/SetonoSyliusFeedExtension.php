@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\DependencyInjection;
 
 use Setono\SyliusFeedPlugin\FeedType\FeedTypeInterface;
+use Setono\SyliusFeedPlugin\Format\FormatInterface;
 use Setono\SyliusFeedPlugin\Lookup\LookupSourceInterface;
 use Setono\SyliusFeedPlugin\MappingPreset\MappingPresetInterface;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
@@ -33,6 +34,7 @@ final class SetonoSyliusFeedExtension extends AbstractResourceExtension implemen
         TransformationInterface::class => 'setono_sylius_feed.transformation',
         OperatorInterface::class => 'setono_sylius_feed.operator',
         FeedWriterInterface::class => 'setono_sylius_feed.writer',
+        FormatInterface::class => 'setono_sylius_feed.format',
     ];
 
     public function load(array $configs, ContainerBuilder $container): void

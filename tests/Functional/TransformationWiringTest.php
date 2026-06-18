@@ -6,6 +6,7 @@ namespace Setono\SyliusFeedPlugin\Tests\Functional;
 
 use Setono\SyliusFeedPlugin\Transformation\MoneyFormat;
 use Setono\SyliusFeedPlugin\Transformation\StripTags;
+use Setono\SyliusFeedPlugin\Transformation\TransformationRegistry;
 use Setono\SyliusFeedPlugin\Transformation\TransformationRegistryInterface;
 use Setono\SyliusFeedPlugin\Transformation\Truncate;
 
@@ -20,7 +21,7 @@ final class TransformationWiringTest extends FunctionalTestCase
      */
     public function it_collects_the_built_in_transformations(): void
     {
-        $registry = self::getContainer()->get('setono_sylius_feed.registry.transformation');
+        $registry = self::getContainer()->get(TransformationRegistry::class);
 
         self::assertInstanceOf(TransformationRegistryInterface::class, $registry);
         self::assertInstanceOf(Truncate::class, $registry->get('truncate'));

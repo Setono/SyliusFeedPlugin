@@ -8,6 +8,7 @@ use Setono\SyliusFeedPlugin\ValueResolver\Product\AvailabilityResolver;
 use Setono\SyliusFeedPlugin\ValueResolver\Product\ChannelPriceResolver;
 use Setono\SyliusFeedPlugin\ValueResolver\Product\IdResolver;
 use Setono\SyliusFeedPlugin\ValueResolver\Product\ItemGroupIdResolver;
+use Setono\SyliusFeedPlugin\ValueResolver\ValueResolverRegistry;
 use Setono\SyliusFeedPlugin\ValueResolver\ValueResolverRegistryInterface;
 
 /**
@@ -21,7 +22,7 @@ final class ValueResolverWiringTest extends FunctionalTestCase
      */
     public function it_collects_the_product_value_resolvers(): void
     {
-        $registry = self::getContainer()->get('setono_sylius_feed.registry.value_resolver');
+        $registry = self::getContainer()->get(ValueResolverRegistry::class);
 
         self::assertInstanceOf(ValueResolverRegistryInterface::class, $registry);
         self::assertInstanceOf(IdResolver::class, $registry->get('id'));

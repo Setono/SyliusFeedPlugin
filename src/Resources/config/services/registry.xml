@@ -4,39 +4,44 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <service id="setono_sylius_feed.registry.feed_type" class="Setono\SyliusFeedPlugin\FeedType\FeedTypeRegistry" public="true">
+        <service id="Setono\SyliusFeedPlugin\FeedType\FeedTypeRegistry" public="true">
             <argument type="tagged_iterator" tag="setono_sylius_feed.feed_type"/>
         </service>
-        <service id="Setono\SyliusFeedPlugin\FeedType\FeedTypeRegistryInterface" alias="setono_sylius_feed.registry.feed_type"/>
+        <service id="Setono\SyliusFeedPlugin\FeedType\FeedTypeRegistryInterface" alias="Setono\SyliusFeedPlugin\FeedType\FeedTypeRegistry"/>
 
-        <service id="setono_sylius_feed.registry.mapping_preset" class="Setono\SyliusFeedPlugin\MappingPreset\MappingPresetRegistry" public="true">
+        <service id="Setono\SyliusFeedPlugin\MappingPreset\MappingPresetRegistry" public="true">
             <argument type="tagged_iterator" tag="setono_sylius_feed.mapping_preset"/>
         </service>
-        <service id="Setono\SyliusFeedPlugin\MappingPreset\MappingPresetRegistryInterface" alias="setono_sylius_feed.registry.mapping_preset"/>
+        <service id="Setono\SyliusFeedPlugin\MappingPreset\MappingPresetRegistryInterface" alias="Setono\SyliusFeedPlugin\MappingPreset\MappingPresetRegistry"/>
 
-        <service id="setono_sylius_feed.registry.value_resolver" class="Setono\SyliusFeedPlugin\ValueResolver\ValueResolverRegistry" public="true">
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\ValueResolverRegistry" public="true">
             <argument type="tagged_iterator" tag="setono_sylius_feed.value_resolver"/>
         </service>
-        <service id="Setono\SyliusFeedPlugin\ValueResolver\ValueResolverRegistryInterface" alias="setono_sylius_feed.registry.value_resolver"/>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\ValueResolverRegistryInterface" alias="Setono\SyliusFeedPlugin\ValueResolver\ValueResolverRegistry"/>
 
-        <service id="setono_sylius_feed.registry.lookup_source" class="Setono\SyliusFeedPlugin\Lookup\LookupSourceRegistry" public="true">
+        <service id="Setono\SyliusFeedPlugin\Lookup\LookupSourceRegistry" public="true">
             <argument type="tagged_iterator" tag="setono_sylius_feed.lookup_source"/>
         </service>
-        <service id="Setono\SyliusFeedPlugin\Lookup\LookupSourceRegistryInterface" alias="setono_sylius_feed.registry.lookup_source"/>
+        <service id="Setono\SyliusFeedPlugin\Lookup\LookupSourceRegistryInterface" alias="Setono\SyliusFeedPlugin\Lookup\LookupSourceRegistry"/>
 
-        <service id="setono_sylius_feed.registry.transformation" class="Setono\SyliusFeedPlugin\Transformation\TransformationRegistry" public="true">
+        <service id="Setono\SyliusFeedPlugin\Transformation\TransformationRegistry" public="true">
             <argument type="tagged_iterator" tag="setono_sylius_feed.transformation"/>
         </service>
-        <service id="Setono\SyliusFeedPlugin\Transformation\TransformationRegistryInterface" alias="setono_sylius_feed.registry.transformation"/>
+        <service id="Setono\SyliusFeedPlugin\Transformation\TransformationRegistryInterface" alias="Setono\SyliusFeedPlugin\Transformation\TransformationRegistry"/>
 
-        <service id="setono_sylius_feed.registry.operator" class="Setono\SyliusFeedPlugin\Operator\OperatorRegistry" public="true">
+        <service id="Setono\SyliusFeedPlugin\Operator\OperatorRegistry" public="true">
             <argument type="tagged_iterator" tag="setono_sylius_feed.operator"/>
         </service>
-        <service id="Setono\SyliusFeedPlugin\Operator\OperatorRegistryInterface" alias="setono_sylius_feed.registry.operator"/>
+        <service id="Setono\SyliusFeedPlugin\Operator\OperatorRegistryInterface" alias="Setono\SyliusFeedPlugin\Operator\OperatorRegistry"/>
 
-        <service id="setono_sylius_feed.registry.writer" class="Setono\SyliusFeedPlugin\Writer\FeedWriterRegistry" public="true">
+        <service id="Setono\SyliusFeedPlugin\Writer\FeedWriterRegistry" public="true">
             <argument type="tagged_iterator" tag="setono_sylius_feed.writer"/>
         </service>
-        <service id="Setono\SyliusFeedPlugin\Writer\FeedWriterRegistryInterface" alias="setono_sylius_feed.registry.writer"/>
+        <service id="Setono\SyliusFeedPlugin\Writer\FeedWriterRegistryInterface" alias="Setono\SyliusFeedPlugin\Writer\FeedWriterRegistry"/>
+
+        <service id="Setono\SyliusFeedPlugin\Format\FormatRegistry" public="true">
+            <argument type="tagged_iterator" tag="setono_sylius_feed.format"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Format\FormatRegistryInterface" alias="Setono\SyliusFeedPlugin\Format\FormatRegistry"/>
     </services>
 </container>

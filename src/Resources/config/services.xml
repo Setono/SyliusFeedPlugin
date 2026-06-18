@@ -7,6 +7,8 @@
         <import resource="services/transformation.xml"/>
         <import resource="services/value_resolver.xml"/>
         <import resource="services/mapping_preset.xml"/>
+        <import resource="services/writer.xml"/>
+        <import resource="services/format.xml"/>
         <import resource="services/context.xml"/>
     </imports>
 </container>

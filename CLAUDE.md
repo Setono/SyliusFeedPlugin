@@ -31,6 +31,14 @@ Follow clean code principles and SOLID design patterns when working with this co
 - Ensure tests are isolated and don't depend on external state
 - Test both happy path and edge cases
 
+### Service Definitions
+- **Use the FQCN as the service id.** Register a service under its fully-qualified class name
+  (e.g. `<service id="Setono\SyliusFeedPlugin\FeedType\FeedTypeRegistry">`), not a custom dotted
+  id like `setono_sylius_feed.registry.feed_type`. Point each interface at its implementation with
+  an FQCN alias (`<service id="…\FeedTypeRegistryInterface" alias="…\FeedTypeRegistry"/>`). This is
+  autowiring-native and keeps ids predictable; prefer auto-registration prototypes (which already
+  use FQCN ids) for tagged services.
+
 ## Development Commands
 
 ### Code Quality & Testing
