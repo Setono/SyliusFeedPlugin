@@ -32,7 +32,6 @@ return [
     
     League\FlysystemBundle\FlysystemBundle::class => ['all' => true],
     Setono\SyliusFeedPlugin\SetonoSyliusFeedPlugin::class => ['all' => true],
-    Setono\DoctrineORMBatcherBundle\SetonoDoctrineORMBatcherBundle::class => ['all' => true],
     
     // It is important to add plugin before the grid bundle
     Sylius\Bundle\GridBundle\SyliusGridBundle::class => ['all' => true],
