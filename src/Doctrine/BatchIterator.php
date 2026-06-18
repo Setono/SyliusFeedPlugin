@@ -55,6 +55,9 @@ final class BatchIterator
         $class = $entity::class;
         $identifier = $manager->getClassMetadata($class)->getIdentifierValues($entity);
 
-        return $manager->find($class, $identifier) ?? $entity;
+        $fresh = $manager->find($class, $identifier);
+        Assert::notNull($fresh, sprintf('Could not re-fetch %s while batch-iterating', $class));
+
+        return $fresh;
     }
 }
