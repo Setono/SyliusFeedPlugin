@@ -17,7 +17,11 @@ Follow clean code principles and SOLID design patterns when working with this co
 - Write code that is easy to test and extend
 
 ### Testing Requirements
-- Write unit tests for all new functionality (if it makes sense)
+- **Every feature must be tested.** A feature is not "done" until it ships with tests that exercise it. Write **unit tests for all new classes/behaviour**, and add **functional tests whenever the code crosses a Sylius/Doctrine/container/HTTP boundary** — DI/service wiring, Doctrine mappings, the workflow, value resolvers/data sources against real entities, writers' streamed output, public routes, and admin actions. Use a functional test when a unit test cannot meaningfully prove the behaviour.
+- **The test suite is split into two PHPUnit suites** (see `phpunit.xml.dist`):
+  - `tests/Unit/` (suite `unit`) — fast, isolated tests with no kernel/container/database; mirror the `src/` namespace structure.
+  - `tests/Functional/` (suite `functional`) — boot the test-application kernel by extending `Setono\SyliusFeedPlugin\Tests\Functional\FunctionalTestCase`.
+  - Run one suite via `composer phpunit-unit` / `composer phpunit-functional`; `composer phpunit` runs both.
 - Follow the BDD-style naming convention for test methods (e.g., `it_should_do_something_when_condition_is_met`)
 - **MUST use Prophecy for mocking** - Use the `ProphecyTrait` and `$this->prophesize()` for all mocks, NOT PHPUnit's `$this->createMock()`
 - **Form testing** - Use Symfony's best practices for form testing as documented at https://symfony.com/doc/current/form/unit_testing.html
@@ -31,11 +35,15 @@ Follow clean code principles and SOLID design patterns when working with this co
 
 ### Code Quality & Testing
 ```bash
-# Run tests
+# Run all tests (unit + functional)
 composer phpunit
 
-# Run a single test
-vendor/bin/phpunit tests/Resolver/FeedExtensionResolverTest.php
+# Run only one suite
+composer phpunit-unit
+composer phpunit-functional
+
+# Run a single test file
+vendor/bin/phpunit tests/Unit/Context/FeedContextTest.php
 
 # Static analysis (PHPStan at max level)
 composer analyse
@@ -49,7 +57,7 @@ composer fix-style
 # Run Rector (dry-run)
 vendor/bin/rector process --dry-run
 
-# Mutation testing (CI requires 100% MSI — see CI Gates below)
+# Mutation testing (currently non-blocking in CI — see CI Gates below)
 vendor/bin/infection
 
 # Lint Symfony container (requires test application)
@@ -79,7 +87,7 @@ PHPStan is configured in `phpstan.neon` with:
 
 These are enforced by `.github/workflows/build.yaml` and will fail the build if violated:
 
-- **100% mutation score**: `infection.json.dist` sets `minMsi` and `minCoveredMsi` to `100.00`. New `src/` code must be covered well enough that Infection kills every mutant — partial test coverage is not enough.
+- **Mutation testing is currently non-blocking.** `infection.json.dist` still sets `minMsi`/`minCoveredMsi` to `100.00`, but the `mutation-tests` CI job runs with `continue-on-error: true` during the rewrite, so it does not fail the build. Mutation coverage is therefore not enforced right now — rely on the "every feature must be tested" rule above instead.
 - **PHP 8.1 is the floor**: the package supports PHP `>=8.1`, and CI runs against 8.1/8.2/8.3 with Symfony `~6.4`. Coding-standards run on **8.1** and Rector targets `LevelSetList::UP_TO_PHP_81`, so do **not** use syntax/features newer than 8.1.
 - **`lowest` and `highest` dependencies** are both tested — avoid relying on behavior only present in newer versions of a `^`-constrained dependency.
 - **`composer normalize --dry-run`** must pass — keep `composer.json` normalized (run `composer normalize`).
