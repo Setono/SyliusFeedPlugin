@@ -27,14 +27,33 @@ final class GoogleShoppingItemTest extends TestCase
     {
         $item = $this->createItem();
         $item->setId('SKU-1');
+        $item->setItemGroupId('PROD-1');
         $item->setTitle('Acme Shoe');
+        $item->setDescription('A very nice shoe');
+        $item->setLink('https://example.com/p/1');
+        $item->setImageLink('https://example.com/i/1.jpg');
+        $item->setPrice('9.99 USD');
+        $item->setSalePrice('7.99 USD');
+        $item->setBrand('Acme');
+        $item->setGtin('5701234567890');
 
         self::assertSame('SKU-1', $item->getId());
+        self::assertSame('PROD-1', $item->getItemGroupId());
         self::assertSame('Acme Shoe', $item->getTitle());
+        self::assertSame('A very nice shoe', $item->getDescription());
+        self::assertSame('https://example.com/p/1', $item->getLink());
+        self::assertSame('https://example.com/i/1.jpg', $item->getImageLink());
+        self::assertSame('9.99 USD', $item->getPrice());
+        self::assertSame('7.99 USD', $item->getSalePrice());
+        self::assertSame('Acme', $item->getBrand());
+        self::assertSame('5701234567890', $item->getGtin());
 
-        // the typed accessors and the generic bag are the same source of truth
+        // the typed accessors and the generic bag are the same source of truth, in insertion order
         self::assertSame('SKU-1', $item->get(GoogleShoppingItem::ID));
-        self::assertSame(['g:id' => 'SKU-1', 'g:title' => 'Acme Shoe'], $item->all());
+        self::assertSame(
+            ['g:id', 'g:item_group_id', 'g:title', 'g:description', 'g:link', 'g:image_link', 'g:price', 'g:sale_price', 'g:brand', 'g:gtin'],
+            array_keys($item->all()),
+        );
     }
 
     /**
