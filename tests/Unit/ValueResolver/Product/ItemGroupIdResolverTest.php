@@ -7,6 +7,7 @@ namespace Setono\SyliusFeedPlugin\Tests\Unit\ValueResolver\Product;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Setono\SyliusFeedPlugin\Context\FeedContext;
+use Setono\SyliusFeedPlugin\Mapping\FieldType;
 use Setono\SyliusFeedPlugin\ValueResolver\Product\ItemGroupIdResolver;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
@@ -31,7 +32,10 @@ final class ItemGroupIdResolverTest extends TestCase
     public function it_describes_itself(): void
     {
         self::assertSame('item_group_id', $this->resolver->getName());
+        self::assertSame('setono_sylius_feed.value_resolver.item_group_id', $this->resolver->getLabel());
+        self::assertSame(FieldType::STRING, $this->resolver->getType());
         self::assertTrue($this->resolver->supports(ProductVariantInterface::class));
+        self::assertFalse($this->resolver->supports(\stdClass::class));
     }
 
     /**

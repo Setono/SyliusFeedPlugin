@@ -7,6 +7,7 @@ namespace Setono\SyliusFeedPlugin\Tests\Unit\ValueResolver\Product;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Setono\SyliusFeedPlugin\Context\FeedContext;
+use Setono\SyliusFeedPlugin\Mapping\FieldType;
 use Setono\SyliusFeedPlugin\ValueResolver\Product\AvailabilityResolver;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 
@@ -32,6 +33,26 @@ final class AvailabilityResolverTest extends TestCase
         $variant->getOnHold()->willReturn($onHold);
 
         return $variant->reveal();
+    }
+
+    /**
+     * @test
+     */
+    public function it_describes_itself(): void
+    {
+        self::assertSame('availability', $this->resolver->getName());
+        self::assertSame('setono_sylius_feed.value_resolver.availability', $this->resolver->getLabel());
+        self::assertSame(FieldType::STRING, $this->resolver->getType());
+        self::assertTrue($this->resolver->supports(ProductVariantInterface::class));
+        self::assertFalse($this->resolver->supports(\stdClass::class));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_null_for_an_unsupported_entity(): void
+    {
+        self::assertNull($this->resolver->resolve(new \stdClass(), new FeedContext()));
     }
 
     /**

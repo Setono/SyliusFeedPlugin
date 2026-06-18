@@ -31,6 +31,7 @@ final class IdResolverTest extends TestCase
     public function it_describes_itself(): void
     {
         self::assertSame('id', $this->resolver->getName());
+        self::assertSame('setono_sylius_feed.value_resolver.id', $this->resolver->getLabel());
         self::assertSame(FieldType::STRING, $this->resolver->getType());
         self::assertTrue($this->resolver->supports(ProductVariantInterface::class));
         self::assertFalse($this->resolver->supports(\stdClass::class));
