@@ -6,16 +6,16 @@ namespace Setono\SyliusFeedPlugin\DataSource;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
-use DoctrineBatchUtils\BatchProcessing\SimpleBatchIteratorAggregate;
 use Setono\SyliusFeedPlugin\Context\FeedContext;
 use Setono\SyliusFeedPlugin\Filter\FilterSet;
 use Sylius\Component\Core\Model\ChannelInterface;
+use Webmozart\Assert\Assert;
 
 /**
- * Streams product variants joined to enabled, channel-assigned products (§8.1). Iterates in
- * batches via ocramius/doctrine-batch-utils, which clears the entity manager every batch so memory
- * stays bounded for large catalogs (§6.3). Query-pushable filters land in M6; for now only the
- * enabled/channel constraints are applied at the query level.
+ * Streams product variants joined to enabled, channel-assigned products (§8.1). Iterates with
+ * Doctrine's {@see \Doctrine\ORM\Query::toIterable()} and clears the entity manager every batch
+ * so memory stays bounded for large catalogs (§6.3). Query-pushable filters land in M6; for now
+ * only the enabled/channel constraints are applied at the query level.
  */
 final class ProductVariantDataSource implements DataSourceInterface
 {
@@ -37,13 +37,16 @@ final class ProductVariantDataSource implements DataSourceInterface
 
     public function getItems(FeedContext $context, FilterSet $filters): iterable
     {
-        /** @var iterable<object> $items */
-        $items = SimpleBatchIteratorAggregate::fromQuery(
-            $this->createQueryBuilder($context)->getQuery(),
-            self::BATCH_SIZE,
-        );
+        $iteration = 0;
+        foreach ($this->createQueryBuilder($context)->getQuery()->toIterable() as $variant) {
+            Assert::object($variant);
 
-        return $items;
+            yield $variant;
+
+            if (0 === (++$iteration % self::BATCH_SIZE)) {
+                $this->entityManager->clear();
+            }
+        }
     }
 
     public function count(FeedContext $context, FilterSet $filters): int
