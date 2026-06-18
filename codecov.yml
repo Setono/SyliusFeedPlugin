@@ -1,0 +1,6 @@
+# The Doctrine-backed data source streams via Query::toIterable(), which can only be exercised
+# against a real database (the Query class is final and cannot be unit-tested). It is covered by
+# integration/manual runs rather than the unit suite, so it is excluded from coverage reporting
+# until the integration job runs PHPUnit against a database.
+ignore:
+    - "src/DataSource/ProductVariantDataSource.php"

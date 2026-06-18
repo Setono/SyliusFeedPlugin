@@ -36,7 +36,7 @@ final class FeedTypeWiringTest extends FunctionalTestCase
 
         self::assertInstanceOf(MappingPresetRegistry::class, $registry);
         self::assertInstanceOf(GoogleShoppingMappingPreset::class, $registry->get('google_shopping'));
-        self::assertSame([GoogleShoppingMappingPreset::class], array_map('get_class', $registry->forFeedType('product_variant')));
+        self::assertSame([GoogleShoppingMappingPreset::class], array_map(get_class(...), $registry->forFeedType('product_variant')));
     }
 
     /**
