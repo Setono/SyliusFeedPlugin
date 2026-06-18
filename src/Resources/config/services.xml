@@ -10,5 +10,8 @@
         <import resource="services/writer.xml"/>
         <import resource="services/format.xml"/>
         <import resource="services/context.xml"/>
+        <import resource="services/feed_type.xml"/>
+        <import resource="services/generator.xml"/>
+        <import resource="services/command.xml"/>
     </imports>
 </container>

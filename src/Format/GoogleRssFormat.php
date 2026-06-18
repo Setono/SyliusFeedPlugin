@@ -28,6 +28,7 @@ final class GoogleRssFormat implements FormatInterface
             'namespaces' => ['g' => 'http://base.google.com/ns/1.0'],
             'wrapperElement' => 'channel',
             'itemElement' => 'item',
+            'requiredFields' => ['g:id', 'g:title', 'g:description', 'g:link', 'g:image_link', 'g:availability', 'g:price'],
         ];
     }
 }
