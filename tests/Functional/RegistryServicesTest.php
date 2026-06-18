@@ -44,8 +44,9 @@ final class RegistryServicesTest extends FunctionalTestCase
         $registry = self::getContainer()->get($serviceId);
 
         self::assertInstanceOf($expectedClass, $registry);
-        // No extension-point services are tagged yet in M0, so each registry is empty but wired.
+        // Registries are iterable + countable; individual built-in services are asserted in their
+        // own wiring tests as milestones add them.
         self::assertInstanceOf(\Countable::class, $registry);
-        self::assertCount(0, $registry);
+        self::assertInstanceOf(\IteratorAggregate::class, $registry);
     }
 }
