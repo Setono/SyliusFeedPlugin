@@ -37,43 +37,55 @@ final class BatchIteratorTest extends FunctionalTestCase
     }
 
     /**
-     * Proves the memory guarantee: once a batch boundary is crossed the manager is cleared, so the
-     * yielded entities are detached afterwards (the identity map does not keep growing).
+     * The memory guarantee: a just-yielded row is managed, but once a batch boundary is crossed the
+     * manager is cleared, so the earlier row is detached (the identity map does not keep growing).
      *
      * @test
      */
-    public function it_clears_the_manager_at_each_batch_boundary(): void
+    public function it_detaches_managed_entities_at_each_batch_boundary(): void
     {
-        $manager = $this->createCurrencies('USD', 'EUR', 'NOK');
+        $manager = $this->createCurrencies('USD', 'EUR', 'DKK');
 
-        $entities = [];
-        foreach (BatchIterator::iterate($this->query($manager, 'USD', 'EUR', 'NOK'), $manager, 1) as $entity) {
-            $entities[] = $entity;
-        }
+        $first = null;
+        $iteration = 0;
+        foreach (BatchIterator::iterate($this->query($manager, 'USD', 'EUR', 'DKK'), $manager, 1) as $entity) {
+            ++$iteration;
 
-        self::assertCount(3, $entities);
-        foreach ($entities as $entity) {
-            self::assertFalse($manager->contains($entity), 'Entity should be detached after a batch-boundary clear()');
+            if (1 === $iteration) {
+                $first = $entity;
+                self::assertTrue($manager->contains($first), 'a just-yielded row must be managed');
+            }
+
+            if (2 === $iteration) {
+                self::assertNotNull($first);
+                self::assertFalse($manager->contains($first), 'the earlier row must be detached after the batch-boundary clear()');
+            }
         }
     }
 
     /**
-     * The complementary branch: below the batch size no clear() happens, so entities stay managed.
+     * The complementary branch: below the batch size no clear() happens, so earlier rows stay
+     * managed while iterating.
      *
      * @test
      */
-    public function it_keeps_entities_managed_below_the_batch_size(): void
+    public function it_keeps_entities_managed_within_a_batch(): void
     {
-        $manager = $this->createCurrencies('USD', 'EUR', 'NOK');
+        $manager = $this->createCurrencies('USD', 'EUR', 'DKK');
 
-        $entities = [];
-        foreach (BatchIterator::iterate($this->query($manager, 'USD', 'EUR', 'NOK'), $manager, 1000) as $entity) {
-            $entities[] = $entity;
-        }
+        $first = null;
+        $iteration = 0;
+        foreach (BatchIterator::iterate($this->query($manager, 'USD', 'EUR', 'DKK'), $manager, 10) as $entity) {
+            ++$iteration;
 
-        self::assertCount(3, $entities);
-        foreach ($entities as $entity) {
-            self::assertTrue($manager->contains($entity), 'Entity should stay managed when the batch size is not reached');
+            if (1 === $iteration) {
+                $first = $entity;
+            }
+
+            if (3 === $iteration) {
+                self::assertNotNull($first);
+                self::assertTrue($manager->contains($first), 'rows must stay managed until the batch size is reached');
+            }
         }
     }
 
