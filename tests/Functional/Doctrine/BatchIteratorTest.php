@@ -96,7 +96,10 @@ final class BatchIteratorTest extends FunctionalTestCase
     {
         $manager = $this->entityManager();
 
-        $results = iterator_to_array(BatchIterator::iterate($this->query($manager, 'XYZ'), $manager, 5));
+        $results = [];
+        foreach (BatchIterator::iterate($this->query($manager, 'XYZ'), $manager, 5) as $entity) {
+            $results[] = $entity;
+        }
 
         self::assertSame([], $results);
     }
