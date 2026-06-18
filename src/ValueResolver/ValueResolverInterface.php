@@ -27,7 +27,8 @@ interface ValueResolverInterface
     public function supports(string $resourceClass): bool;
 
     /**
-     * @return scalar|array<array-key, mixed>|null
+     * Returns the resolved value — a scalar, a list, or null. Implementations narrow this to
+     * their concrete type.
      */
     public function resolve(object $entity, FeedContext $context): mixed;
 }

@@ -5,5 +5,7 @@
     <imports>
         <import resource="services/registry.xml"/>
         <import resource="services/transformation.xml"/>
+        <import resource="services/value_resolver.xml"/>
+        <import resource="services/context.xml"/>
     </imports>
 </container>
