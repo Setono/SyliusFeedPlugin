@@ -77,4 +77,27 @@ final class MainImageResolverTest extends TestCase
 
         self::assertNull($resolver->resolve($variant->reveal(), new FeedContext()));
     }
+
+    /**
+     * @test
+     */
+    public function it_returns_null_for_an_unsupported_entity(): void
+    {
+        $resolver = new MainImageResolver($this->prophesize(CacheManager::class)->reveal());
+
+        self::assertNull($resolver->resolve(new \stdClass(), new FeedContext()));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_null_when_the_variant_has_no_product(): void
+    {
+        $variant = $this->prophesize(ProductVariantInterface::class);
+        $variant->getProduct()->willReturn(null);
+
+        $resolver = new MainImageResolver($this->prophesize(CacheManager::class)->reveal());
+
+        self::assertNull($resolver->resolve($variant->reveal(), new FeedContext()));
+    }
 }

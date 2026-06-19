@@ -31,6 +31,9 @@ final class FeedGraph
 
     public const TRANSITION_RESET = 'reset';
 
+    /**
+     * @codeCoverageIgnore the class is a static holder; the private constructor only prevents instantiation
+     */
     private function __construct()
     {
     }

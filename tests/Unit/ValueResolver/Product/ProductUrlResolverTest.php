@@ -63,4 +63,46 @@ final class ProductUrlResolverTest extends TestCase
             $resolver->resolve($variant->reveal(), new FeedContext(null, 'en_US')),
         );
     }
+
+    /**
+     * @test
+     */
+    public function it_returns_null_without_a_locale(): void
+    {
+        $resolver = new ProductUrlResolver($this->prophesize(UrlGeneratorInterface::class)->reveal());
+
+        self::assertNull($resolver->resolve($this->prophesize(ProductVariantInterface::class)->reveal(), new FeedContext()));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_null_when_the_variant_has_no_product(): void
+    {
+        $variant = $this->prophesize(ProductVariantInterface::class);
+        $variant->getProduct()->willReturn(null);
+
+        $resolver = new ProductUrlResolver($this->prophesize(UrlGeneratorInterface::class)->reveal());
+
+        self::assertNull($resolver->resolve($variant->reveal(), new FeedContext(null, 'en_US')));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_null_when_the_product_has_no_slug(): void
+    {
+        $translation = $this->prophesize(ProductTranslationInterface::class);
+        $translation->getSlug()->willReturn(null);
+
+        $product = $this->prophesize(ProductInterface::class);
+        $product->getTranslation('en_US')->willReturn($translation->reveal());
+
+        $variant = $this->prophesize(ProductVariantInterface::class);
+        $variant->getProduct()->willReturn($product->reveal());
+
+        $resolver = new ProductUrlResolver($this->prophesize(UrlGeneratorInterface::class)->reveal());
+
+        self::assertNull($resolver->resolve($variant->reveal(), new FeedContext(null, 'en_US')));
+    }
 }

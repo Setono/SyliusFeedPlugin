@@ -65,4 +65,12 @@ final class IsConfigurableResolverTest extends TestCase
     {
         self::assertFalse($this->resolver->resolve($this->variantWithVariantCount(1), new FeedContext()));
     }
+
+    /**
+     * @test
+     */
+    public function it_returns_null_for_an_unsupported_entity(): void
+    {
+        self::assertNull($this->resolver->resolve(new \stdClass(), new FeedContext()));
+    }
 }

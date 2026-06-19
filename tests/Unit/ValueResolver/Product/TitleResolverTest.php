@@ -63,4 +63,15 @@ final class TitleResolverTest extends TestCase
     {
         self::assertNull($this->resolver->resolve($this->prophesize(ProductVariantInterface::class)->reveal(), new FeedContext()));
     }
+
+    /**
+     * @test
+     */
+    public function it_returns_null_when_the_variant_has_no_product(): void
+    {
+        $variant = $this->prophesize(ProductVariantInterface::class);
+        $variant->getProduct()->willReturn(null);
+
+        self::assertNull($this->resolver->resolve($variant->reveal(), new FeedContext(null, 'en_US')));
+    }
 }

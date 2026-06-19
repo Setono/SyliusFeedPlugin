@@ -78,4 +78,17 @@ final class OnSaleResolverTest extends TestCase
     {
         self::assertFalse($this->resolver->resolve($this->prophesize(ProductVariantInterface::class)->reveal(), new FeedContext()));
     }
+
+    /**
+     * @test
+     */
+    public function it_is_false_without_channel_pricing(): void
+    {
+        $channel = $this->prophesize(ChannelInterface::class)->reveal();
+
+        $variant = $this->prophesize(ProductVariantInterface::class);
+        $variant->getChannelPricingForChannel($channel)->willReturn(null);
+
+        self::assertFalse($this->resolver->resolve($variant->reveal(), new FeedContext($channel)));
+    }
 }

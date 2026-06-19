@@ -6,6 +6,13 @@
         <include>
             <directory suffix=".php">src/</directory>
         </include>
+        <exclude>
+            <!-- Compile-time bundle plumbing: executed while the container is compiled (and then
+                 cached before the test run), so it is never re-executed during the coverage'd
+                 tests. It is exercised by the functional wiring tests, not unit-testable. -->
+            <directory suffix=".php">src/DependencyInjection</directory>
+            <file>src/SetonoSyliusFeedPlugin.php</file>
+        </exclude>
     </coverage>
     <testsuites>
         <testsuite name="unit">

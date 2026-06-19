@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\Tests\Unit\Model;
 
 use PHPUnit\Framework\TestCase;
+use Setono\SyliusFeedPlugin\Model\Feed;
 use Setono\SyliusFeedPlugin\Model\FeedField;
 use Setono\SyliusFeedPlugin\Model\FeedFilter;
 use Setono\SyliusFeedPlugin\Model\FeedSource;
@@ -80,5 +81,21 @@ final class FeedSourceTest extends TestCase
 
         self::assertFalse($source->hasFilter($filter));
         self::assertNull($filter->getSource());
+    }
+
+    /**
+     * @test
+     */
+    public function it_holds_its_owning_feed(): void
+    {
+        $source = new FeedSource();
+        self::assertNull($source->getFeed());
+
+        $feed = new Feed();
+        $source->setFeed($feed);
+        self::assertSame($feed, $source->getFeed());
+
+        $source->setFeed(null);
+        self::assertNull($source->getFeed());
     }
 }

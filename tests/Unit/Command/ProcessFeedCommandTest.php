@@ -95,4 +95,20 @@ final class ProcessFeedCommandTest extends TestCase
         self::assertSame(Command::SUCCESS, $exitCode);
         self::assertStringContainsString('No feeds', $tester->getDisplay());
     }
+
+    /**
+     * @test
+     */
+    public function it_skips_repository_results_that_are_not_feeds(): void
+    {
+        $repository = $this->prophesize(RepositoryInterface::class);
+        $repository->findBy(['enabled' => true])->willReturn([new \stdClass()]);
+
+        $contextFactory = $this->prophesize(ContextFactoryInterface::class);
+        $generator = $this->prophesize(FeedGeneratorInterface::class);
+
+        $tester = new CommandTester(new ProcessFeedCommand($repository->reveal(), $contextFactory->reveal(), $generator->reveal()));
+
+        self::assertSame(Command::SUCCESS, $tester->execute([]));
+    }
 }
