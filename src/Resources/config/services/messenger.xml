@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<container xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://symfony.com/schema/dic/services"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <defaults autowire="true" autoconfigure="true">
+            <bind key="$commandBus" type="service" id="setono_sylius_feed.command_bus"/>
+            <bind key="$feedRepository" type="service" id="setono_sylius_feed.repository.feed"/>
+            <bind key="$channelRepository" type="service" id="sylius.repository.channel"/>
+            <bind key="$feedTmpFilesystem" type="service" id="setono_sylius_feed.storage.feed_tmp"/>
+            <bind key="$feedFilesystem" type="service" id="setono_sylius_feed.storage.feed"/>
+        </defaults>
+
+        <!-- Handlers are routed to the command bus via the #[AsMessageHandler] attribute. -->
+        <service id="Setono\SyliusFeedPlugin\MessageHandler\ProcessFeedHandler"/>
+        <service id="Setono\SyliusFeedPlugin\MessageHandler\GenerateFeedContextHandler"/>
+
+        <!-- Workflow transition side-effects (auto-tagged as kernel.event_subscriber). -->
+        <service id="Setono\SyliusFeedPlugin\EventListener\Workflow\MoveGeneratedFeedSubscriber"/>
+        <service id="Setono\SyliusFeedPlugin\EventListener\Workflow\DeleteGeneratedFilesSubscriber"/>
+    </services>
+</container>

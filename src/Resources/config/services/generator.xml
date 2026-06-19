@@ -5,7 +5,9 @@
 
     <services>
         <defaults autowire="true" autoconfigure="true">
-            <bind key="$feedFilesystem" type="service" id="setono_sylius_feed.storage.feed"/>
+            <!-- The generator streams to the temporary filesystem; the `complete` transition moves
+                 the finished files to the canonical filesystem atomically. -->
+            <bind key="$feedFilesystem" type="service" id="setono_sylius_feed.storage.feed_tmp"/>
         </defaults>
 
         <service id="Setono\SyliusFeedPlugin\Validator\RequiredFieldsValidator"/>

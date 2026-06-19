@@ -8,14 +8,13 @@ use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Setono\SyliusFeedPlugin\Command\ProcessFeedCommand;
-use Setono\SyliusFeedPlugin\Context\ContextFactoryInterface;
-use Setono\SyliusFeedPlugin\Context\FeedContext;
-use Setono\SyliusFeedPlugin\Generator\FeedGeneratorInterface;
-use Setono\SyliusFeedPlugin\Generator\GenerationResult;
+use Setono\SyliusFeedPlugin\Message\Command\ProcessFeed;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
  * @covers \Setono\SyliusFeedPlugin\Command\ProcessFeedCommand
@@ -27,6 +26,7 @@ final class ProcessFeedCommandTest extends TestCase
     private function feed(): FeedInterface
     {
         $feed = $this->prophesize(FeedInterface::class);
+        $feed->getId()->willReturn(1);
         $feed->getCode()->willReturn('google');
 
         return $feed->reveal();
@@ -35,47 +35,39 @@ final class ProcessFeedCommandTest extends TestCase
     /**
      * @test
      */
-    public function it_generates_each_enabled_feed_across_its_contexts(): void
+    public function it_dispatches_a_process_message_for_each_enabled_feed(): void
     {
         $feed = $this->feed();
 
         $repository = $this->prophesize(RepositoryInterface::class);
         $repository->findBy(['enabled' => true])->willReturn([$feed]);
 
-        $contextFactory = $this->prophesize(ContextFactoryInterface::class);
-        $contextFactory->create($feed)->willReturn([new FeedContext(null, 'en_US', 'USD')]);
+        $commandBus = $this->prophesize(MessageBusInterface::class);
+        $commandBus->dispatch(Argument::type(ProcessFeed::class))->willReturn(new Envelope(new \stdClass()))->shouldBeCalledOnce();
 
-        $generator = $this->prophesize(FeedGeneratorInterface::class);
-        $generator->generate($feed, Argument::type(FeedContext::class))->willReturn(new GenerationResult('google/en_us_usd.xml', 5, 1));
-
-        $tester = new CommandTester(new ProcessFeedCommand($repository->reveal(), $contextFactory->reveal(), $generator->reveal()));
+        $tester = new CommandTester(new ProcessFeedCommand($repository->reveal(), $commandBus->reveal()));
         $exitCode = $tester->execute([]);
 
         self::assertSame(Command::SUCCESS, $exitCode);
         self::assertStringContainsString('google', $tester->getDisplay());
-        self::assertStringContainsString('5 items', $tester->getDisplay());
     }
 
     /**
      * @test
      */
-    public function it_generates_only_the_requested_feed(): void
+    public function it_dispatches_only_the_requested_feed(): void
     {
         $feed = $this->feed();
 
         $repository = $this->prophesize(RepositoryInterface::class);
         $repository->findOneBy(['code' => 'google'])->willReturn($feed);
 
-        $contextFactory = $this->prophesize(ContextFactoryInterface::class);
-        $contextFactory->create($feed)->willReturn([new FeedContext()]);
+        $commandBus = $this->prophesize(MessageBusInterface::class);
+        $commandBus->dispatch(Argument::type(ProcessFeed::class))->willReturn(new Envelope(new \stdClass()))->shouldBeCalledOnce();
 
-        $generator = $this->prophesize(FeedGeneratorInterface::class);
-        $generator->generate($feed, Argument::type(FeedContext::class))->willReturn(new GenerationResult('google/default.xml', 2, 0));
+        $tester = new CommandTester(new ProcessFeedCommand($repository->reveal(), $commandBus->reveal()));
 
-        $tester = new CommandTester(new ProcessFeedCommand($repository->reveal(), $contextFactory->reveal(), $generator->reveal()));
-        $exitCode = $tester->execute(['--feed' => 'google']);
-
-        self::assertSame(Command::SUCCESS, $exitCode);
+        self::assertSame(Command::SUCCESS, $tester->execute(['--feed' => 'google']));
     }
 
     /**
@@ -86,10 +78,10 @@ final class ProcessFeedCommandTest extends TestCase
         $repository = $this->prophesize(RepositoryInterface::class);
         $repository->findBy(['enabled' => true])->willReturn([]);
 
-        $contextFactory = $this->prophesize(ContextFactoryInterface::class);
-        $generator = $this->prophesize(FeedGeneratorInterface::class);
+        $commandBus = $this->prophesize(MessageBusInterface::class);
+        $commandBus->dispatch(Argument::cetera())->shouldNotBeCalled();
 
-        $tester = new CommandTester(new ProcessFeedCommand($repository->reveal(), $contextFactory->reveal(), $generator->reveal()));
+        $tester = new CommandTester(new ProcessFeedCommand($repository->reveal(), $commandBus->reveal()));
         $exitCode = $tester->execute([]);
 
         self::assertSame(Command::SUCCESS, $exitCode);
@@ -104,10 +96,10 @@ final class ProcessFeedCommandTest extends TestCase
         $repository = $this->prophesize(RepositoryInterface::class);
         $repository->findBy(['enabled' => true])->willReturn([new \stdClass()]);
 
-        $contextFactory = $this->prophesize(ContextFactoryInterface::class);
-        $generator = $this->prophesize(FeedGeneratorInterface::class);
+        $commandBus = $this->prophesize(MessageBusInterface::class);
+        $commandBus->dispatch(Argument::cetera())->shouldNotBeCalled();
 
-        $tester = new CommandTester(new ProcessFeedCommand($repository->reveal(), $contextFactory->reveal(), $generator->reveal()));
+        $tester = new CommandTester(new ProcessFeedCommand($repository->reveal(), $commandBus->reveal()));
 
         self::assertSame(Command::SUCCESS, $tester->execute([]));
     }

@@ -66,4 +66,19 @@ interface FeedInterface extends ResourceInterface, CodeAwareInterface, Toggleabl
     public function getLastGeneratedAt(): ?\DateTimeInterface;
 
     public function setLastGeneratedAt(?\DateTimeInterface $lastGeneratedAt): void;
+
+    /**
+     * The total number of contexts in the current generation run (set when processing starts).
+     */
+    public function getContextCount(): ?int;
+
+    public function setContextCount(?int $contextCount): void;
+
+    /**
+     * The number of contexts generated so far in the current run; completion is reached when it
+     * equals {@see getContextCount()}.
+     */
+    public function getCompletedContextCount(): int;
+
+    public function setCompletedContextCount(int $completedContextCount): void;
 }

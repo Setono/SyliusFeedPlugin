@@ -1,1 +1,2 @@
-# The plugin's public feed route is introduced in M2; there is nothing to import yet.
+setono_sylius_feed:
+    resource: "@SetonoSyliusFeedPlugin/Resources/config/routing.yaml"
