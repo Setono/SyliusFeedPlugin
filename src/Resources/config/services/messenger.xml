@@ -4,20 +4,35 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <defaults autowire="true" autoconfigure="true">
-            <bind key="$commandBus" type="service" id="setono_sylius_feed.command_bus"/>
-            <bind key="$feedRepository" type="service" id="setono_sylius_feed.repository.feed"/>
-            <bind key="$channelRepository" type="service" id="sylius.repository.channel"/>
-            <bind key="$feedTmpFilesystem" type="service" id="setono_sylius_feed.storage.feed_tmp"/>
-            <bind key="$feedFilesystem" type="service" id="setono_sylius_feed.storage.feed"/>
-        </defaults>
+        <!-- Handlers are routed to the plugin command bus via an explicit messenger.message_handler tag. -->
+        <service id="Setono\SyliusFeedPlugin\MessageHandler\ProcessFeedHandler">
+            <argument type="service" id="doctrine"/>
+            <argument type="service" id="setono_sylius_feed.repository.feed"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Context\ContextFactoryInterface"/>
+            <argument type="service" id="setono_sylius_feed.command_bus"/>
+            <argument type="service" id="workflow.registry"/>
+            <tag name="messenger.message_handler" bus="setono_sylius_feed.command_bus"/>
+        </service>
 
-        <!-- Handlers are routed to the command bus via the #[AsMessageHandler] attribute. -->
-        <service id="Setono\SyliusFeedPlugin\MessageHandler\ProcessFeedHandler"/>
-        <service id="Setono\SyliusFeedPlugin\MessageHandler\GenerateFeedContextHandler"/>
+        <service id="Setono\SyliusFeedPlugin\MessageHandler\GenerateFeedContextHandler">
+            <argument type="service" id="doctrine"/>
+            <argument type="service" id="setono_sylius_feed.repository.feed"/>
+            <argument type="service" id="sylius.repository.channel"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Generator\FeedGeneratorInterface"/>
+            <argument type="service" id="workflow.registry"/>
+            <tag name="messenger.message_handler" bus="setono_sylius_feed.command_bus"/>
+        </service>
 
-        <!-- Workflow transition side-effects (auto-tagged as kernel.event_subscriber). -->
-        <service id="Setono\SyliusFeedPlugin\EventListener\Workflow\MoveGeneratedFeedSubscriber"/>
-        <service id="Setono\SyliusFeedPlugin\EventListener\Workflow\DeleteGeneratedFilesSubscriber"/>
+        <!-- Workflow transition side-effects. -->
+        <service id="Setono\SyliusFeedPlugin\EventListener\Workflow\MoveGeneratedFeedSubscriber">
+            <argument type="service" id="setono_sylius_feed.storage.feed_tmp"/>
+            <argument type="service" id="setono_sylius_feed.storage.feed"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="Setono\SyliusFeedPlugin\EventListener\Workflow\DeleteGeneratedFilesSubscriber">
+            <argument type="service" id="setono_sylius_feed.storage.feed_tmp"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
     </services>
 </container>

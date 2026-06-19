@@ -12,7 +12,6 @@ use Setono\SyliusFeedPlugin\Message\Command\ProcessFeed;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
-use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Registry;
 
@@ -21,7 +20,6 @@ use Symfony\Component\Workflow\Registry;
  * contexts to generate, and fans out one {@see GenerateFeedContext} per context. A feed with no
  * contexts completes immediately.
  */
-#[AsMessageHandler(bus: 'setono_sylius_feed.command_bus')]
 final class ProcessFeedHandler
 {
     use ORMTrait;
@@ -38,7 +36,7 @@ final class ProcessFeedHandler
 
     public function __invoke(ProcessFeed $message): void
     {
-        $feed = $this->feedRepository->find($message->feedId);
+        $feed = $this->feedRepository->find($message->feed);
         if (!$feed instanceof FeedInterface) {
             return;
         }
@@ -66,7 +64,7 @@ final class ProcessFeedHandler
 
         foreach ($contexts as $context) {
             $this->commandBus->dispatch(new GenerateFeedContext(
-                (int) $feed->getId(),
+                $feed,
                 $context->getChannel()?->getCode(),
                 $context->getLocale(),
                 $context->getCurrencyCode(),

@@ -4,8 +4,8 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <defaults autowire="true" autoconfigure="true"/>
-
-        <service id="Setono\SyliusFeedPlugin\Currency\ContextCurrencyConverter"/>
+        <service id="Setono\SyliusFeedPlugin\Currency\ContextCurrencyConverter">
+            <argument type="service" id="sylius.currency_converter"/>
+        </service>
     </services>
 </container>

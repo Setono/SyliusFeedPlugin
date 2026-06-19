@@ -4,12 +4,14 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <defaults autowire="true" autoconfigure="true"/>
-
-        <!-- Feed writers are auto-tagged (setono_sylius_feed.writer) via _instanceof and collected by
-             the registry. The interface and the manually-wired registry are excluded. -->
+        <!-- Feed writers are auto-registered and explicitly tagged (no autowire/autoconfigure); the
+             registry collects them via the setono_sylius_feed.writer tag. The interfaces, the
+             manually-wired registry and the writer-config value object are excluded (an explicit tag
+             applies to every prototyped class, so non-writers must be excluded). -->
         <prototype namespace="Setono\SyliusFeedPlugin\Writer\"
                    resource="../../../Writer/"
-                   exclude="../../../Writer/{FeedWriterInterface.php,FeedWriterRegistryInterface.php,FeedWriterRegistry.php}"/>
+                   exclude="../../../Writer/{FeedWriterInterface.php,FeedWriterRegistryInterface.php,FeedWriterRegistry.php,WriterConfigInterface.php,XmlWriterConfig.php}">
+            <tag name="setono_sylius_feed.writer"/>
+        </prototype>
     </services>
 </container>

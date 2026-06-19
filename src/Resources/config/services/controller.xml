@@ -4,11 +4,9 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <defaults autowire="true" autoconfigure="true">
-            <bind key="$feedFilesystem" type="service" id="setono_sylius_feed.storage.feed"/>
-        </defaults>
-
         <service id="Setono\SyliusFeedPlugin\Controller\ShowFeedAction">
+            <argument type="service" id="setono_sylius_feed.repository.feed"/>
+            <argument type="service" id="setono_sylius_feed.storage.feed"/>
             <tag name="controller.service_arguments"/>
         </service>
     </services>

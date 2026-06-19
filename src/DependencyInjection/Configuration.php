@@ -7,6 +7,7 @@ namespace Setono\SyliusFeedPlugin\DependencyInjection;
 use Setono\SyliusFeedPlugin\Model\Feed;
 use Setono\SyliusFeedPlugin\Model\FeedSource;
 use Setono\SyliusFeedPlugin\Model\FeedTranslation;
+use Setono\SyliusFeedPlugin\Repository\FeedRepository;
 use Sylius\Bundle\ResourceBundle\Controller\ResourceController;
 use Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository;
 use Sylius\Bundle\ResourceBundle\Form\Type\DefaultResourceType;
@@ -69,7 +70,7 @@ final class Configuration implements ConfigurationInterface
                                         ->scalarNode('model')->defaultValue(Feed::class)->cannotBeEmpty()->end()
                                         ->scalarNode('interface')->defaultValue(Feed::class)->cannotBeEmpty()->end()
                                         ->scalarNode('controller')->defaultValue(ResourceController::class)->cannotBeEmpty()->end()
-                                        ->scalarNode('repository')->defaultValue(EntityRepository::class)->cannotBeEmpty()->end()
+                                        ->scalarNode('repository')->defaultValue(FeedRepository::class)->cannotBeEmpty()->end()
                                         ->scalarNode('factory')->defaultValue(TranslatableFactory::class)->end()
                                         ->scalarNode('form')->defaultValue(DefaultResourceType::class)->cannotBeEmpty()->end()
                                     ->end()

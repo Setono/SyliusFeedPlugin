@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\Message\Command;
 
 use Setono\SyliusFeedPlugin\Message\CommandInterface;
+use Setono\SyliusFeedPlugin\Model\FeedInterface;
 
 /**
  * Starts generating a feed: applies the `process` transition and fans out one
@@ -12,7 +13,10 @@ use Setono\SyliusFeedPlugin\Message\CommandInterface;
  */
 final class ProcessFeed implements CommandInterface
 {
-    public function __construct(public readonly int $feedId)
+    public readonly int $feed;
+
+    public function __construct(int|FeedInterface $feed)
     {
+        $this->feed = $feed instanceof FeedInterface ? (int) $feed->getId() : $feed;
     }
 }

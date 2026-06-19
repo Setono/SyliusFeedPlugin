@@ -4,12 +4,13 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <defaults autowire="true" autoconfigure="true"/>
-
-        <!-- Mapping presets are auto-tagged (setono_sylius_feed.mapping_preset) via _instanceof and
-             collected by the registry. The interface and the manually-wired registry are excluded. -->
+        <!-- Mapping presets are auto-registered and explicitly tagged (no autowire/autoconfigure);
+             the registry collects them via the setono_sylius_feed.mapping_preset tag. The interface
+             and the manually-wired registry are excluded. -->
         <prototype namespace="Setono\SyliusFeedPlugin\MappingPreset\"
                    resource="../../../MappingPreset/"
-                   exclude="../../../MappingPreset/{MappingPresetInterface.php,MappingPresetRegistryInterface.php,MappingPresetRegistry.php}"/>
+                   exclude="../../../MappingPreset/{MappingPresetInterface.php,MappingPresetRegistryInterface.php,MappingPresetRegistry.php}">
+            <tag name="setono_sylius_feed.mapping_preset"/>
+        </prototype>
     </services>
 </container>

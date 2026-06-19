@@ -52,7 +52,7 @@ final class ProcessFeedCommand extends Command
                 continue;
             }
 
-            $this->commandBus->dispatch(new ProcessFeed((int) $feed->getId()));
+            $this->commandBus->dispatch(new ProcessFeed($feed));
 
             $io->writeln(sprintf('<info>%s</info>: dispatched for processing', (string) $feed->getCode()));
         }

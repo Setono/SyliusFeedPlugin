@@ -4,15 +4,15 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <defaults autowire="true" autoconfigure="true">
-            <bind key="$resourceClass">%sylius.model.product_variant.class%</bind>
-        </defaults>
+        <service id="Setono\SyliusFeedPlugin\DataSource\ProductVariantDataSource">
+            <argument type="service" id="doctrine"/>
+            <argument>%sylius.model.product_variant.class%</argument>
+        </service>
 
-        <service id="Setono\SyliusFeedPlugin\DataSource\ProductVariantDataSource"/>
-
-        <!-- Auto-tagged as setono_sylius_feed.feed_type via _instanceof. -->
         <service id="Setono\SyliusFeedPlugin\FeedType\ProductVariantFeedType">
             <argument type="service" id="Setono\SyliusFeedPlugin\DataSource\ProductVariantDataSource"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\ValueResolver\ValueResolverRegistryInterface"/>
+            <tag name="setono_sylius_feed.feed_type"/>
         </service>
     </services>
 </container>

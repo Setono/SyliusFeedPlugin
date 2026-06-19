@@ -4,12 +4,13 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <defaults autowire="true" autoconfigure="true"/>
-
-        <!-- Formats are auto-tagged (setono_sylius_feed.format) via _instanceof and collected by the
-             registry. The interface and the manually-wired registry are excluded. -->
+        <!-- Formats are auto-registered and explicitly tagged (no autowire/autoconfigure); the
+             registry collects them via the setono_sylius_feed.format tag. The interface and the
+             manually-wired registry are excluded. -->
         <prototype namespace="Setono\SyliusFeedPlugin\Format\"
                    resource="../../../Format/"
-                   exclude="../../../Format/{FormatInterface.php,FormatRegistryInterface.php,FormatRegistry.php}"/>
+                   exclude="../../../Format/{FormatInterface.php,FormatRegistryInterface.php,FormatRegistry.php}">
+            <tag name="setono_sylius_feed.format"/>
+        </prototype>
     </services>
 </container>

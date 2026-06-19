@@ -4,15 +4,21 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <defaults autowire="true" autoconfigure="true">
-            <!-- The generator streams to the temporary filesystem; the `complete` transition moves
-                 the finished files to the canonical filesystem atomically. -->
-            <bind key="$feedFilesystem" type="service" id="setono_sylius_feed.storage.feed_tmp"/>
-        </defaults>
-
         <service id="Setono\SyliusFeedPlugin\Validator\RequiredFieldsValidator"/>
 
-        <service id="Setono\SyliusFeedPlugin\Generator\FeedGenerator" public="true"/>
+        <!-- The generator streams to the temporary filesystem; the `complete` transition moves the
+             finished files to the canonical filesystem atomically. -->
+        <service id="Setono\SyliusFeedPlugin\Generator\FeedGenerator" public="true">
+            <argument type="service" id="Setono\SyliusFeedPlugin\FeedType\FeedTypeRegistryInterface"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\MappingPreset\MappingPresetRegistryInterface"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Format\FormatRegistryInterface"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Writer\FeedWriterRegistryInterface"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Transformation\TransformationChain"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Validator\RequiredFieldsValidator"/>
+            <argument type="service" id="event_dispatcher"/>
+            <argument type="service" id="router"/>
+            <argument type="service" id="setono_sylius_feed.storage.feed_tmp"/>
+        </service>
         <service id="Setono\SyliusFeedPlugin\Generator\FeedGeneratorInterface" alias="Setono\SyliusFeedPlugin\Generator\FeedGenerator"/>
     </services>
 </container>

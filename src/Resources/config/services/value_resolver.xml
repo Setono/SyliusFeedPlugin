@@ -4,14 +4,23 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <defaults autowire="true" autoconfigure="true">
+        <!-- No autowire/autoconfigure: resolver dependencies are bound explicitly by name/type and
+             the registry tag is applied explicitly below. -->
+        <defaults>
             <bind key="$cacheManager" type="service" id="liip_imagine.cache.manager"/>
+            <bind key="Setono\SyliusFeedPlugin\Currency\ContextCurrencyConverter"
+                  type="service" id="Setono\SyliusFeedPlugin\Currency\ContextCurrencyConverter"/>
+            <bind key="Symfony\Component\Routing\Generator\UrlGeneratorInterface"
+                  type="service" id="router"/>
         </defaults>
 
-        <!-- Value resolvers are auto-tagged (setono_sylius_feed.value_resolver) via _instanceof and
-             collected by the registry. The interface and the manually-wired registry are excluded. -->
+        <!-- Value resolvers are auto-registered and explicitly tagged (setono_sylius_feed.value_resolver);
+             the registry collects them via that tag. The interface and the manually-wired registry
+             are excluded. -->
         <prototype namespace="Setono\SyliusFeedPlugin\ValueResolver\"
                    resource="../../../ValueResolver/"
-                   exclude="../../../ValueResolver/{ValueResolverInterface.php,ValueResolverRegistryInterface.php,ValueResolverRegistry.php}"/>
+                   exclude="../../../ValueResolver/{ValueResolverInterface.php,ValueResolverRegistryInterface.php,ValueResolverRegistry.php}">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </prototype>
     </services>
 </container>
