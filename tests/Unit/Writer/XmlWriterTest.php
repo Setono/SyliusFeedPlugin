@@ -48,6 +48,7 @@ final class XmlWriterTest extends TestCase
         $item->set('g:title', 'Acme & Co <Shoe>');
         $item->set('g:additional_image_link', ['https://example.com/a.jpg', 'https://example.com/b.jpg']);
         $item->set('g:shipping', ['g:country' => 'US', 'g:price' => '0 USD']);
+        $item->set('g:identifier_exists', true);
         $item->set('g:absent', null);
         $writer->writeItem($item);
 
@@ -77,6 +78,9 @@ final class XmlWriterTest extends TestCase
 
         // a map becomes a nested element
         self::assertStringContainsString('<g:shipping><g:country>US</g:country><g:price>0 USD</g:price></g:shipping>', $xml);
+
+        // a bool becomes a true/false element
+        self::assertStringContainsString('<g:identifier_exists>true</g:identifier_exists>', $xml);
 
         // null values are not emitted
         self::assertStringNotContainsString('g:absent', $xml);
