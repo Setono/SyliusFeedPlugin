@@ -32,10 +32,11 @@ final class XmlWriterTest extends TestCase
         self::assertIsResource($stream);
 
         $context = new FeedContext();
-        $config = array_merge(
-            (new GoogleRssFormat())->getConfig(),
-            ['preamble' => ['title' => 'Test feed', 'link' => 'https://example.com', 'description' => 'A feed']],
-        );
+        $config = (new GoogleRssFormat())->getConfig()->withFeedMetadata([
+            'title' => 'Test feed',
+            'link' => 'https://example.com',
+            'description' => 'A feed',
+        ]);
 
         $writer = new XmlWriter();
         $writer->open($stream, $context, $config);

@@ -12,7 +12,7 @@ use Webmozart\Assert\Assert;
  * Streams an XML feed using PHP's {@see \XMLWriter} in memory mode, flushing its buffer to the
  * output stream after the preamble and after every item, so the full document is never held in
  * memory (§6.3). The structural shape (root, namespaces, wrapper, item element, preamble) comes
- * entirely from the format config, so every XML format reuses this one writer (§7).
+ * entirely from the typed {@see XmlWriterConfig}, so every XML format reuses this one writer (§7).
  *
  * Per-item serialization is generic: a scalar becomes one element, a list becomes repeated
  * elements, and a map becomes a nested element — the writer never switches on the item subclass.
@@ -24,18 +24,19 @@ final class XmlWriter implements FeedWriterInterface
 
     private ?\XMLWriter $writer = null;
 
-    /** @var array<string, mixed> */
-    private array $config = [];
+    private ?XmlWriterConfig $config = null;
 
     public function getFormat(): string
     {
         return 'xml';
     }
 
-    public function open($stream, FeedContext $context, array $formatConfig): void
+    public function open($stream, FeedContext $context, WriterConfigInterface $config): void
     {
+        Assert::isInstanceOf($config, XmlWriterConfig::class);
+
         $this->stream = $stream;
-        $this->config = $formatConfig;
+        $this->config = $config;
 
         $writer = new \XMLWriter();
         $writer->openMemory();
@@ -46,24 +47,25 @@ final class XmlWriter implements FeedWriterInterface
     public function writePreamble(): void
     {
         $writer = $this->getWriter();
+        $config = $this->getConfig();
+
         $writer->startDocument('1.0', 'UTF-8');
-        $writer->startElement($this->stringConfig('rootElement', 'feed'));
+        $writer->startElement($config->rootElement);
 
-        foreach ($this->arrayConfig('rootAttributes') as $name => $value) {
-            $writer->writeAttribute((string) $name, $this->toString($value));
+        foreach ($config->rootAttributes as $name => $value) {
+            $writer->writeAttribute($name, $value);
         }
 
-        foreach ($this->arrayConfig('namespaces') as $prefix => $uri) {
-            $writer->writeAttribute('' === (string) $prefix ? 'xmlns' : 'xmlns:' . $prefix, $this->toString($uri));
+        foreach ($config->namespaces as $prefix => $uri) {
+            $writer->writeAttribute('' === $prefix ? 'xmlns' : 'xmlns:' . $prefix, $uri);
         }
 
-        $wrapper = $this->nullableStringConfig('wrapperElement');
-        if (null !== $wrapper) {
-            $writer->startElement($wrapper);
+        if (null !== $config->wrapperElement) {
+            $writer->startElement($config->wrapperElement);
         }
 
-        foreach ($this->arrayConfig('preamble') as $name => $value) {
-            $writer->writeElement((string) $name, $this->toString($value));
+        foreach ($config->preamble as $name => $value) {
+            $writer->writeElement($name, $value);
         }
 
         $this->flush();
@@ -72,7 +74,7 @@ final class XmlWriter implements FeedWriterInterface
     public function writeItem(FeedItem $item): void
     {
         $writer = $this->getWriter();
-        $writer->startElement($this->stringConfig('itemElement', 'item'));
+        $writer->startElement($this->getConfig()->itemElement);
 
         foreach ($item->all() as $field => $value) {
             $this->writeField($writer, $field, $value);
@@ -86,7 +88,7 @@ final class XmlWriter implements FeedWriterInterface
     {
         $writer = $this->getWriter();
 
-        if (null !== $this->nullableStringConfig('wrapperElement')) {
+        if (null !== $this->getConfig()->wrapperElement) {
             $writer->endElement();
         }
 
@@ -100,7 +102,7 @@ final class XmlWriter implements FeedWriterInterface
         $this->flush();
         $this->writer = null;
         $this->stream = null;
-        $this->config = [];
+        $this->config = null;
     }
 
     private function writeField(\XMLWriter $writer, string $name, mixed $value): void
@@ -155,28 +157,11 @@ final class XmlWriter implements FeedWriterInterface
         return $this->writer;
     }
 
-    private function stringConfig(string $key, string $default): string
+    private function getConfig(): XmlWriterConfig
     {
-        $value = $this->config[$key] ?? $default;
+        Assert::notNull($this->config, 'The writer must be opened before use');
 
-        return is_string($value) ? $value : $default;
-    }
-
-    private function nullableStringConfig(string $key): ?string
-    {
-        $value = $this->config[$key] ?? null;
-
-        return is_string($value) ? $value : null;
-    }
-
-    /**
-     * @return array<array-key, mixed>
-     */
-    private function arrayConfig(string $key): array
-    {
-        $value = $this->config[$key] ?? [];
-
-        return is_array($value) ? $value : [];
+        return $this->config;
     }
 
     private function toString(mixed $value): string

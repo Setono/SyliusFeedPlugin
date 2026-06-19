@@ -183,7 +183,6 @@ final class FeedGeneratorMemoryTest extends TestCase
         $feed = $this->prophesize(FeedInterface::class);
         $feed->getCode()->willReturn('google');
         $feed->getFormat()->willReturn('google_rss');
-        $feed->getFormatConfig()->willReturn([]);
         $feed->getSources()->willReturn(new ArrayCollection([$source->reveal()]));
 
         return $feed->reveal();

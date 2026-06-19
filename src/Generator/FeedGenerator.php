@@ -48,8 +48,8 @@ final class FeedGenerator implements FeedGeneratorInterface
         $format = $this->formatRegistry->get((string) $feed->getFormat());
         $writer = $this->writerRegistry->get($format->getWriter());
 
-        $config = array_merge($format->getConfig(), $feed->getFormatConfig(), ['preamble' => $this->buildPreamble($feed, $context)]);
-        $requiredFields = $this->requiredFields($config);
+        $config = $format->getConfig()->withFeedMetadata($this->buildFeedMetadata($feed, $context));
+        $requiredFields = $format->getRequiredFields();
 
         $this->applyRequestContext($context);
 
@@ -176,9 +176,12 @@ final class FeedGenerator implements FeedGeneratorInterface
     }
 
     /**
+     * Feed-level document metadata for the writer's preamble (e.g. the RSS channel title/link/
+     * description). Writers that have no preamble ignore it.
+     *
      * @return array<string, string>
      */
-    private function buildPreamble(FeedInterface $feed, FeedContext $context): array
+    private function buildFeedMetadata(FeedInterface $feed, FeedContext $context): array
     {
         $title = (string) $feed->getCode();
 
@@ -189,25 +192,6 @@ final class FeedGenerator implements FeedGeneratorInterface
         }
 
         return ['title' => $title, 'link' => $link, 'description' => $title];
-    }
-
-    /**
-     * @param array<string, mixed> $config
-     *
-     * @return list<string>
-     */
-    private function requiredFields(array $config): array
-    {
-        $fields = [];
-        if (isset($config['requiredFields']) && is_array($config['requiredFields'])) {
-            foreach ($config['requiredFields'] as $field) {
-                if (is_string($field)) {
-                    $fields[] = $field;
-                }
-            }
-        }
-
-        return $fields;
     }
 
     private function applyRequestContext(FeedContext $context): void

@@ -23,9 +23,8 @@ interface FeedWriterInterface
 
     /**
      * @param resource $stream
-     * @param array<string, mixed> $formatConfig
      */
-    public function open($stream, FeedContext $context, array $formatConfig): void;
+    public function open($stream, FeedContext $context, WriterConfigInterface $config): void;
 
     /**
      * Doc prolog + root/channel header (CSV: header row). Skipped in body-only/chunk mode.

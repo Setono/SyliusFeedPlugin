@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Format;
 
+use Setono\SyliusFeedPlugin\Writer\WriterConfigInterface;
+
 /**
  * A named structural format (§7): binds a format code (e.g. `google_rss`) to a writer family
  * (`xml`/`csv`) and the structural config that writer needs (root/namespaces/wrapper/item, or
@@ -24,9 +26,15 @@ interface FormatInterface
     public function getWriter(): string;
 
     /**
-     * Structural defaults merged under the feed's own `formatConfig`.
-     *
-     * @return array<string, mixed>
+     * The typed structural configuration for {@see getWriter()}'s writer family.
      */
-    public function getConfig(): array;
+    public function getConfig(): WriterConfigInterface;
+
+    /**
+     * Output fields an item must carry (non-empty) to be included in the feed; an empty list means
+     * no requirement. This is a validation concern, kept separate from the structural writer config.
+     *
+     * @return list<string>
+     */
+    public function getRequiredFields(): array;
 }
