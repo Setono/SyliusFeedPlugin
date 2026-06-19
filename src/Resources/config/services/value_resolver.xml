@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<container xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://symfony.com/schema/dic/services"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <defaults autowire="true" autoconfigure="true">
+            <bind key="$cacheManager" type="service" id="liip_imagine.cache.manager"/>
+        </defaults>
+
+        <!-- Value resolvers are auto-tagged (setono_sylius_feed.value_resolver) via _instanceof and
+             collected by the registry. The interface and the manually-wired registry are excluded. -->
+        <prototype namespace="Setono\SyliusFeedPlugin\ValueResolver\"
+                   resource="../../../ValueResolver/"
+                   exclude="../../../ValueResolver/{ValueResolverInterface.php,ValueResolverRegistryInterface.php,ValueResolverRegistry.php}"/>
+    </services>
+</container>

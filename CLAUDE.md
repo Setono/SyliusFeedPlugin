@@ -20,8 +20,8 @@ Follow clean code principles and SOLID design patterns when working with this co
 - **Every feature must be tested.** A feature is not "done" until it ships with tests that exercise it. Write **unit tests for all new classes/behaviour**, and add **functional tests whenever the code crosses a Sylius/Doctrine/container/HTTP boundary** — DI/service wiring, Doctrine mappings, the workflow, value resolvers/data sources against real entities, writers' streamed output, public routes, and admin actions. Use a functional test when a unit test cannot meaningfully prove the behaviour.
 - **The test suite is split into two PHPUnit suites** (see `phpunit.xml.dist`):
   - `tests/Unit/` (suite `unit`) — fast, isolated tests with no kernel/container/database; mirror the `src/` namespace structure.
-  - `tests/Functional/` (suite `functional`) — boot the test-application kernel by extending `Setono\SyliusFeedPlugin\Tests\Functional\FunctionalTestCase`.
-  - Run one suite via `composer phpunit-unit` / `composer phpunit-functional`; `composer phpunit` runs both.
+  - `tests/Functional/` (suite `functional`) — boot the test-application kernel by extending `Setono\SyliusFeedPlugin\Tests\Functional\FunctionalTestCase`. May use the **database**: `dama/doctrine-test-bundle` wraps each test in a transaction that is rolled back (requires `doctrine.dbal.use_savepoints: true`), so persist freely and the DB stays clean. The schema must exist first (`doctrine:schema:create`).
+  - Run one suite via `composer phpunit-unit` / `composer phpunit-functional`; `composer phpunit` runs both. The **unit** suite needs no database; the **functional** suite does — in CI it runs in the `integration-tests` job (and the coverage job), not `unit-tests`.
 - Follow the BDD-style naming convention for test methods (e.g., `it_should_do_something_when_condition_is_met`)
 - **MUST use Prophecy for mocking** - Use the `ProphecyTrait` and `$this->prophesize()` for all mocks, NOT PHPUnit's `$this->createMock()`
 - **Form testing** - Use Symfony's best practices for form testing as documented at https://symfony.com/doc/current/form/unit_testing.html
@@ -30,6 +30,23 @@ Follow clean code principles and SOLID design patterns when working with this co
   - Test form submission, validation, and data transformation
 - Ensure tests are isolated and don't depend on external state
 - Test both happy path and edge cases
+
+### Service Definitions
+- **Use the FQCN as the service id.** Register a service under its fully-qualified class name
+  (e.g. `<service id="Setono\SyliusFeedPlugin\FeedType\FeedTypeRegistry">`), not a custom dotted
+  id like `setono_sylius_feed.registry.feed_type`. Point each interface at its implementation with
+  an FQCN alias (`<service id="…\FeedTypeRegistryInterface" alias="…\FeedTypeRegistry"/>`). This is
+  autowiring-native and keeps ids predictable; prefer auto-registration prototypes (which already
+  use FQCN ids) for tagged services.
+
+### Doctrine Access
+- **Never inject `EntityManagerInterface` (or a repository) directly into a service.** Inject
+  `Doctrine\Persistence\ManagerRegistry` and use the `Setono\Doctrine\ORMTrait` (from
+  `setono/doctrine-orm-trait`): add `use ORMTrait;`, assign `$this->managerRegistry = $managerRegistry;`
+  in the constructor, then call `$this->getManager($class)` / `$this->getRepository($class)`. The
+  trait resolves the correct manager per entity class and transparently re-opens a closed manager —
+  important for long-running/batch feed generation where one failure would otherwise close the EM
+  for the rest of the run. Test classes may still fetch the manager from the container directly.
 
 ## Development Commands
 

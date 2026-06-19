@@ -12,3 +12,6 @@ doctrine:
         charset: UTF8
 
         url: '%env(resolve:DATABASE_URL)%'
+
+        # Required by dama/doctrine-test-bundle (nested transactions via savepoints).
+        use_savepoints: true

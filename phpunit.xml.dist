@@ -6,6 +6,13 @@
         <include>
             <directory suffix=".php">src/</directory>
         </include>
+        <exclude>
+            <!-- Compile-time bundle plumbing: executed while the container is compiled (and then
+                 cached before the test run), so it is never re-executed during the coverage'd
+                 tests. It is exercised by the functional wiring tests, not unit-testable. -->
+            <directory suffix=".php">src/DependencyInjection</directory>
+            <file>src/SetonoSyliusFeedPlugin.php</file>
+        </exclude>
     </coverage>
     <testsuites>
         <testsuite name="unit">
@@ -19,4 +26,9 @@
         <env name="APP_ENV" value="test"/>
         <env name="SHELL_VERBOSITY" value="-1"/>
     </php>
+    <extensions>
+        <!-- Wraps each test in a transaction that is rolled back, so DB-backed functional tests
+             stay isolated and the schema is reused across tests. -->
+        <extension class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension"/>
+    </extensions>
 </phpunit>
