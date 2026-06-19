@@ -96,13 +96,33 @@ final class FeedGeneratorTest extends TestCase
         self::assertStringContainsString('<g:item_group_id>PROD-1</g:item_group_id>', $xml);
     }
 
-    private function createGenerator(): FeedGenerator
+    /**
+     * With no matching preset there are no field mappings, so every item lacks the required output
+     * fields and is excluded — the feed is still written, just empty.
+     *
+     * @test
+     */
+    public function it_excludes_items_that_are_missing_required_fields(): void
+    {
+        $generator = $this->createGenerator(presets: []);
+
+        $result = $generator->generate($this->feed(), new FeedContext($this->channel(), 'en_US', 'USD'));
+
+        self::assertSame(0, $result->itemCount);
+        self::assertSame(2, $result->excludedCount);
+        self::assertStringNotContainsString('<item>', $this->filesystem->read($result->path));
+    }
+
+    /**
+     * @param list<\Setono\SyliusFeedPlugin\MappingPreset\MappingPresetInterface>|null $presets
+     */
+    private function createGenerator(?array $presets = null): FeedGenerator
     {
         $feedTypeRegistry = $this->prophesize(FeedTypeRegistryInterface::class);
         $feedTypeRegistry->get('product_variant')->willReturn($this->feedType());
 
         $presetRegistry = $this->prophesize(MappingPresetRegistryInterface::class);
-        $presetRegistry->forFeedType('product_variant')->willReturn([new GoogleShoppingMappingPreset()]);
+        $presetRegistry->forFeedType('product_variant')->willReturn($presets ?? [new GoogleShoppingMappingPreset()]);
 
         $formatRegistry = $this->prophesize(FormatRegistryInterface::class);
         $formatRegistry->get('google_rss')->willReturn(new GoogleRssFormat());

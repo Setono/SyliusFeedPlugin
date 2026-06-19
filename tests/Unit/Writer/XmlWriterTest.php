@@ -49,6 +49,8 @@ final class XmlWriterTest extends TestCase
         $item->set('g:additional_image_link', ['https://example.com/a.jpg', 'https://example.com/b.jpg']);
         $item->set('g:shipping', ['g:country' => 'US', 'g:price' => '0 USD']);
         $item->set('g:identifier_exists', true);
+        $item->set('g:quantity', 42);
+        $item->set('g:unsupported', new \stdClass());
         $item->set('g:absent', null);
         $writer->writeItem($item);
 
@@ -82,6 +84,12 @@ final class XmlWriterTest extends TestCase
         // a bool becomes a true/false element
         self::assertStringContainsString('<g:identifier_exists>true</g:identifier_exists>', $xml);
 
+        // an int (or float) is stringified
+        self::assertStringContainsString('<g:quantity>42</g:quantity>', $xml);
+
+        // an unsupported (non-scalar) value falls through to an empty element
+        self::assertStringContainsString('<g:unsupported></g:unsupported>', $xml);
+
         // null values are not emitted
         self::assertStringNotContainsString('g:absent', $xml);
     }
@@ -111,5 +119,16 @@ final class XmlWriterTest extends TestCase
         self::assertIsString($xml);
 
         self::assertStringContainsString('xmlns="http://www.w3.org/2005/Atom"', $xml);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_be_closed_without_being_opened(): void
+    {
+        $writer = new XmlWriter();
+        $writer->close(); // flush() must be a no-op when the writer was never opened
+
+        self::assertSame('xml', $writer->getFormat());
     }
 }

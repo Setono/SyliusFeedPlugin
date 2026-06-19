@@ -134,12 +134,8 @@ final class FeedGenerator implements FeedGeneratorInterface
             return true;
         }
 
-        // M1 supports the "true" operator (the FieldMapping::onlyIf shorthand). The full operator
-        // vocabulary is wired in M6.
-        if ('true' !== $condition['operator']) {
-            return true;
-        }
-
+        // M1 conditions are the FieldMapping::onlyIf shorthand (operator "true"): emit the field
+        // only when the referenced field resolves truthy. The full operator vocabulary lands in M6.
         $field = $condition['field'];
         $value = isset($availableFields[$field]) ? $availableFields[$field]->getResolver()->resolve($entity, $context) : null;
 
@@ -208,9 +204,13 @@ final class FeedGenerator implements FeedGeneratorInterface
     private function openStream()
     {
         $stream = fopen('php://temp', 'w+b');
+
+        // Defensive: an in-memory stream cannot be made to fail on demand, so this is uncoverable.
+        // @codeCoverageIgnoreStart
         if (!is_resource($stream)) {
             throw new \RuntimeException('Could not open a temporary stream');
         }
+        // @codeCoverageIgnoreEnd
 
         return $stream;
     }
