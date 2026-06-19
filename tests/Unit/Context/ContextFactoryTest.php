@@ -64,12 +64,14 @@ final class ContextFactoryTest extends TestCase
 
     /**
      * @param list<LocaleInterface> $locales
+     * @param list<CurrencyInterface>|null $currencies enabled currencies; defaults to just the base currency
      */
-    private function channel(array $locales, ?CurrencyInterface $baseCurrency, ?LocaleInterface $defaultLocale = null): ChannelInterface
+    private function channel(array $locales, ?CurrencyInterface $baseCurrency, ?LocaleInterface $defaultLocale = null, ?array $currencies = null): ChannelInterface
     {
         $channel = $this->prophesize(ChannelInterface::class);
         $channel->getLocales()->willReturn(new ArrayCollection($locales));
         $channel->getBaseCurrency()->willReturn($baseCurrency);
+        $channel->getCurrencies()->willReturn(new ArrayCollection($currencies ?? array_filter([$baseCurrency])));
         $channel->getDefaultLocale()->willReturn($defaultLocale);
 
         return $channel->reveal();
@@ -130,6 +132,37 @@ final class ContextFactoryTest extends TestCase
 
         self::assertCount(1, $contexts);
         self::assertSame('en_US', $contexts[0]->getLocale());
+    }
+
+    /**
+     * @test
+     */
+    public function it_fans_out_over_each_enabled_currency_of_the_channel(): void
+    {
+        $factory = $this->factoryForSingleSource([ScopeDimension::CHANNEL, ScopeDimension::LOCALE, ScopeDimension::CURRENCY]);
+        $usd = $this->currency('USD');
+        $eur = $this->currency('EUR');
+        $channel = $this->channel([$this->locale('en_US')], $usd, null, [$usd, $eur]);
+
+        $contexts = $factory->create($this->feed([$channel]));
+
+        self::assertCount(2, $contexts);
+        self::assertSame('USD', $contexts[0]->getCurrencyCode());
+        self::assertSame('EUR', $contexts[1]->getCurrencyCode());
+    }
+
+    /**
+     * @test
+     */
+    public function it_falls_back_to_the_base_currency_when_the_channel_has_no_currencies(): void
+    {
+        $factory = $this->factoryForSingleSource([ScopeDimension::CHANNEL, ScopeDimension::LOCALE, ScopeDimension::CURRENCY]);
+        $channel = $this->channel([$this->locale('en_US')], $this->currency('USD'), null, []);
+
+        $contexts = $factory->create($this->feed([$channel]));
+
+        self::assertCount(1, $contexts);
+        self::assertSame('USD', $contexts[0]->getCurrencyCode());
     }
 
     /**
