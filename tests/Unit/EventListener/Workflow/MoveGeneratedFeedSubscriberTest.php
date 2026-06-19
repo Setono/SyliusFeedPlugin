@@ -44,11 +44,13 @@ final class MoveGeneratedFeedSubscriberTest extends TestCase
         $stream = fopen('php://temp', 'r');
         self::assertIsResource($stream);
 
+        $listing = (static function (): \Generator {
+            yield new DirectoryAttributes('google/nested'); // not a file -> skipped
+            yield new FileAttributes('google/web_en_us_usd.xml');
+        })();
+
         $temporary = $this->prophesize(FilesystemOperator::class);
-        $temporary->listContents('google', true)->willReturn(new DirectoryListing([
-            new DirectoryAttributes('google/nested'), // not a file -> skipped
-            new FileAttributes('google/web_en_us_usd.xml'),
-        ]));
+        $temporary->listContents('google', true)->willReturn(new DirectoryListing($listing));
         $temporary->readStream('google/web_en_us_usd.xml')->willReturn($stream);
         $temporary->deleteDirectory('google')->shouldBeCalled();
 
