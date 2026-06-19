@@ -9,6 +9,7 @@ use Setono\SyliusFeedPlugin\Context\FeedContext;
 use Setono\SyliusFeedPlugin\Format\GoogleRssFormat;
 use Setono\SyliusFeedPlugin\Item\FeedItem;
 use Setono\SyliusFeedPlugin\Writer\XmlWriter;
+use Setono\SyliusFeedPlugin\Writer\XmlWriterConfig;
 
 /**
  * @covers \Setono\SyliusFeedPlugin\Writer\XmlWriter
@@ -79,5 +80,32 @@ final class XmlWriterTest extends TestCase
 
         // null values are not emitted
         self::assertStringNotContainsString('g:absent', $xml);
+    }
+
+    /**
+     * @test
+     */
+    public function it_declares_a_default_namespace_for_an_empty_prefix(): void
+    {
+        $stream = fopen('php://temp', 'w+b');
+        self::assertIsResource($stream);
+
+        $config = new XmlWriterConfig(
+            rootElement: 'feed',
+            namespaces: ['' => 'http://www.w3.org/2005/Atom'],
+        );
+
+        $writer = new XmlWriter();
+        $writer->open($stream, new FeedContext(), $config);
+        $writer->writePreamble();
+        $writer->writeEpilogue();
+        $writer->close();
+
+        rewind($stream);
+        $xml = stream_get_contents($stream);
+        fclose($stream);
+        self::assertIsString($xml);
+
+        self::assertStringContainsString('xmlns="http://www.w3.org/2005/Atom"', $xml);
     }
 }
