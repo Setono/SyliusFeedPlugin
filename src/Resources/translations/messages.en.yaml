@@ -1,0 +1,11 @@
+setono_sylius_feed:
+    ui:
+        feeds: Feeds
+        manage_feeds: Manage feeds
+        state: State
+        last_generated_at: Last generated at
+    form:
+        feed:
+            name: Name
+            slug: Slug
+            format: Format

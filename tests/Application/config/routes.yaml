@@ -1,2 +1,6 @@
 setono_sylius_feed:
     resource: "@SetonoSyliusFeedPlugin/Resources/config/routes.yaml"
+
+setono_sylius_feed_admin:
+    resource: "@SetonoSyliusFeedPlugin/Resources/config/routes/admin.yaml"
+    prefix: '/%sylius_admin.path_name%'

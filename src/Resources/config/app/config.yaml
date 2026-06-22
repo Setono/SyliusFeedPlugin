@@ -16,3 +16,42 @@ framework:
     messenger:
         buses:
             setono_sylius_feed.command_bus: ~
+
+sylius_grid:
+    grids:
+        setono_sylius_feed_feed:
+            driver:
+                name: doctrine/orm
+                options:
+                    class: '%setono_sylius_feed.model.feed.class%'
+            fields:
+                code:
+                    type: string
+                    label: sylius.ui.code
+                    sortable: ~
+                format:
+                    type: string
+                    label: setono_sylius_feed.form.feed.format
+                state:
+                    type: string
+                    label: setono_sylius_feed.ui.state
+                lastGeneratedAt:
+                    type: datetime
+                    label: setono_sylius_feed.ui.last_generated_at
+                    sortable: ~
+                    options:
+                        format: 'Y-m-d H:i'
+                enabled:
+                    type: twig
+                    label: sylius.ui.enabled
+                    options:
+                        template: '@SyliusUi/Grid/Field/enabled.html.twig'
+            actions:
+                main:
+                    create:
+                        type: create
+                item:
+                    update:
+                        type: update
+                    delete:
+                        type: delete
