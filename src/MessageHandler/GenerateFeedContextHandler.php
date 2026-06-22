@@ -65,12 +65,12 @@ final class GenerateFeedContextHandler
     private function buildContext(GenerateFeedContext $message): FeedContext
     {
         $channel = null;
-        if (null !== $message->channelCode) {
-            $candidate = $this->channelRepository->findOneBy(['code' => $message->channelCode]);
+        if (null !== $message->channel) {
+            $candidate = $this->channelRepository->findOneBy(['code' => $message->channel]);
             $channel = $candidate instanceof ChannelInterface ? $candidate : null;
         }
 
-        return new FeedContext($channel, $message->locale, $message->currencyCode);
+        return new FeedContext($channel, $message->locale, $message->currency);
     }
 
     private function fail(int $feedId): void

@@ -19,11 +19,11 @@ final class GenerateFeedContext implements CommandInterface
 {
     public readonly int $feed;
 
-    public readonly ?string $channelCode;
+    public readonly ?string $channel;
 
     public readonly ?string $locale;
 
-    public readonly ?string $currencyCode;
+    public readonly ?string $currency;
 
     public function __construct(
         int|FeedInterface $feed,
@@ -32,8 +32,8 @@ final class GenerateFeedContext implements CommandInterface
         CurrencyInterface|string|null $currency = null,
     ) {
         $this->feed = $feed instanceof FeedInterface ? (int) $feed->getId() : $feed;
-        $this->channelCode = $channel instanceof ChannelInterface ? $channel->getCode() : $channel;
+        $this->channel = $channel instanceof ChannelInterface ? $channel->getCode() : $channel;
         $this->locale = $locale instanceof LocaleInterface ? $locale->getCode() : $locale;
-        $this->currencyCode = $currency instanceof CurrencyInterface ? $currency->getCode() : $currency;
+        $this->currency = $currency instanceof CurrencyInterface ? $currency->getCode() : $currency;
     }
 }
