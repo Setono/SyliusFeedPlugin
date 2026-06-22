@@ -38,18 +38,20 @@ Follow clean code principles and SOLID design patterns when working with this co
   - Run the test app over HTTPS via `symfony server:start -d` in `tests/Application` (note the
     port it reports — it is **not** necessarily `:8000` if another project already holds that port).
     Log in at `/admin/login` with `sylius` / `sylius` (load fixtures first:
-    `bin/console sylius:fixtures:load -n --env=dev`). Build assets with `yarn build` — the test app
-    matches the Setono plugin skeleton exactly (dart-sass via `@sylius-ui/frontend`, no node-sass,
-    no version pins). Use **Node 20** (`tests/Application/.nvmrc`): `@sylius-ui/frontend@1.0.3`
-    requires `^14||^16||^18||^20` (so not Node 22) while the dart-sass it pulls requires Node ≥20.19
-    (so not 16/18) — Node 20 is the only version satisfying both. With Node 20 active (`nvm use`), a
-    clean `yarn install && yarn build` works on Apple Silicon. If you see a `node-sass`/arm64 error,
-    it's a stale `node_modules` — delete it and reinstall.
-    - **Known limitation:** `@sylius-ui/frontend@1.0.3`'s admin bundle throws `dirtyForms is not a
-      function` at runtime (a jQuery-plugin attachment bug, present in the unmodified skeleton too),
-      which halts Sylius's admin JS — so in-browser *clicks* (collection "Add", grid link actions)
-      don't work. Plugin pages/actions still work via direct navigation; verify those, and exercise
-      collection/click behaviour through the functional test suite.
+    `bin/console sylius:fixtures:load -n --env=dev`). Build assets with `yarn build`. The test app
+    **inlines `@sylius-ui/frontend`'s build dependencies** directly in `package.json` (instead of the
+    meta-package) so versions are controllable, with two deliberate pins:
+    - `sass` is pinned to **`1.77.8`** (dart-sass; the latest requires Node ≥20.19, which would force
+      Node 20+) so the build runs on Node 18.
+    - a `resolutions` entry dedupes **`jquery` to `3.7.1`**. Without it, `jquery.dirtyforms` (dep
+      `"jquery": ">=1.4.2"`) and `semantic-ui-css` each pull their own `jquery@4`, so the plugin
+      attaches `.dirtyForms` to a different jQuery instance than Sylius's admin entry uses → the
+      admin JS throws `dirtyForms is not a function` and **silently breaks every admin form
+      interaction** (collection add/remove, etc.). One jQuery fixes it.
+
+    `tests/Application/.nvmrc` pins **Node 18**. With Node 18 active (`nvm use`), a clean
+    `yarn install && yarn build` works on Apple Silicon (`node-sass` is not used). If you see a
+    `node-sass`/arm64 error, it's a stale `node_modules` — delete it and reinstall.
   - The plugin's messages must be routed to an async transport in the app (see the test app's
     `config/packages/dev/setono_sylius_feed.yaml`) so "Generate now" queues a run; process it with
     `bin/console messenger:consume main`. (The functional test suite keeps them synchronous.)
