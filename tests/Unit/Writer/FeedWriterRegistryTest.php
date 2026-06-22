@@ -9,9 +9,6 @@ use Prophecy\PhpUnit\ProphecyTrait;
 use Setono\SyliusFeedPlugin\Writer\FeedWriterInterface;
 use Setono\SyliusFeedPlugin\Writer\FeedWriterRegistry;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\Writer\FeedWriterRegistry
- */
 final class FeedWriterRegistryTest extends TestCase
 {
     use ProphecyTrait;

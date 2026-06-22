@@ -9,9 +9,6 @@ use Prophecy\PhpUnit\ProphecyTrait;
 use Setono\SyliusFeedPlugin\ValueResolver\ValueResolverInterface;
 use Setono\SyliusFeedPlugin\ValueResolver\ValueResolverRegistry;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\ValueResolver\ValueResolverRegistry
- */
 final class ValueResolverRegistryTest extends TestCase
 {
     use ProphecyTrait;

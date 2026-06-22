@@ -13,9 +13,6 @@ use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Product\Model\ProductTranslationInterface;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\ValueResolver\Product\TitleResolver
- */
 final class TitleResolverTest extends TestCase
 {
     use ProphecyTrait;

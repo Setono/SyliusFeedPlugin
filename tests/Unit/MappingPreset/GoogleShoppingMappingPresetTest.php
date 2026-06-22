@@ -8,9 +8,6 @@ use PHPUnit\Framework\TestCase;
 use Setono\SyliusFeedPlugin\Mapping\SourceType;
 use Setono\SyliusFeedPlugin\MappingPreset\GoogleShoppingMappingPreset;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\MappingPreset\GoogleShoppingMappingPreset
- */
 final class GoogleShoppingMappingPresetTest extends TestCase
 {
     private GoogleShoppingMappingPreset $preset;

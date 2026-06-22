@@ -17,9 +17,6 @@ use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Currency\Model\CurrencyInterface;
 use Sylius\Component\Locale\Model\LocaleInterface;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\Context\ContextFactory
- */
 final class ContextFactoryTest extends TestCase
 {
     use ProphecyTrait;

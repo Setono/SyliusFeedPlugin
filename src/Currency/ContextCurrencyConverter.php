@@ -15,7 +15,7 @@ use Sylius\Component\Currency\Converter\CurrencyConverterInterface;
  * has no currency or the channel has no base currency (nothing to convert against); same-currency
  * conversion is an identity in the underlying Sylius converter.
  */
-final class ContextCurrencyConverter
+final class ContextCurrencyConverter implements ContextCurrencyConverterInterface
 {
     public function __construct(private readonly CurrencyConverterInterface $currencyConverter)
     {

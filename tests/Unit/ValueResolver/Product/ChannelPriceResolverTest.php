@@ -16,9 +16,6 @@ use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Currency\Converter\CurrencyConverterInterface;
 use Sylius\Component\Currency\Model\CurrencyInterface;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\ValueResolver\Product\ChannelPriceResolver
- */
 final class ChannelPriceResolverTest extends TestCase
 {
     use ProphecyTrait;

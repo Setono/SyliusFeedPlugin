@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Setono\SyliusFeedPlugin\Tests\Unit\EventListener\Workflow;
+namespace Setono\SyliusFeedPlugin\Tests\Unit\EventSubscriber;
 
 use League\Flysystem\DirectoryAttributes;
 use League\Flysystem\DirectoryListing;
@@ -11,16 +11,13 @@ use League\Flysystem\FilesystemOperator;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
-use Setono\SyliusFeedPlugin\EventListener\Workflow\MoveGeneratedFeedSubscriber;
+use Setono\SyliusFeedPlugin\EventSubscriber\MoveGeneratedFeedSubscriber;
 use Setono\SyliusFeedPlugin\Model\Feed;
 use Symfony\Component\Workflow\Event\CompletedEvent;
 use Symfony\Component\Workflow\Marking;
 use Symfony\Component\Workflow\Transition;
 use Symfony\Component\Workflow\WorkflowInterface;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\EventListener\Workflow\MoveGeneratedFeedSubscriber
- */
 final class MoveGeneratedFeedSubscriberTest extends TestCase
 {
     use ProphecyTrait;

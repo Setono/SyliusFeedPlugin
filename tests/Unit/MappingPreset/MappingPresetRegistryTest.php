@@ -9,9 +9,6 @@ use Prophecy\PhpUnit\ProphecyTrait;
 use Setono\SyliusFeedPlugin\MappingPreset\MappingPresetInterface;
 use Setono\SyliusFeedPlugin\MappingPreset\MappingPresetRegistry;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\MappingPreset\MappingPresetRegistry
- */
 final class MappingPresetRegistryTest extends TestCase
 {
     use ProphecyTrait;

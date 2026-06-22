@@ -7,5 +7,6 @@
         <service id="Setono\SyliusFeedPlugin\Currency\ContextCurrencyConverter">
             <argument type="service" id="sylius.currency_converter"/>
         </service>
+        <service id="Setono\SyliusFeedPlugin\Currency\ContextCurrencyConverterInterface" alias="Setono\SyliusFeedPlugin\Currency\ContextCurrencyConverter"/>
     </services>
 </container>

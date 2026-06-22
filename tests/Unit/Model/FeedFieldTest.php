@@ -10,9 +10,6 @@ use Setono\SyliusFeedPlugin\Mapping\SourceType;
 use Setono\SyliusFeedPlugin\Model\FeedField;
 use Setono\SyliusFeedPlugin\Model\FeedSourceInterface;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\Model\FeedField
- */
 final class FeedFieldTest extends TestCase
 {
     use ProphecyTrait;

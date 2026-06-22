@@ -11,9 +11,6 @@ use Setono\SyliusFeedPlugin\Model\FeedSource;
 use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
 use Sylius\Component\Core\Model\ChannelInterface;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\Model\Feed
- */
 final class FeedTest extends TestCase
 {
     use ProphecyTrait;

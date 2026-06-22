@@ -8,9 +8,6 @@ use PHPUnit\Framework\TestCase;
 use Setono\SyliusFeedPlugin\Format\GoogleRssFormat;
 use Setono\SyliusFeedPlugin\Writer\XmlWriterConfig;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\Format\GoogleRssFormat
- */
 final class GoogleRssFormatTest extends TestCase
 {
     /**

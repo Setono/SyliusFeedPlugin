@@ -11,9 +11,6 @@ use Setono\SyliusFeedPlugin\Tests\Functional\FunctionalTestCase;
 use Sylius\Component\Currency\Model\Currency;
 use Sylius\Component\Currency\Model\CurrencyInterface;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\Doctrine\BatchIterator
- */
 final class BatchIteratorTest extends FunctionalTestCase
 {
     /**

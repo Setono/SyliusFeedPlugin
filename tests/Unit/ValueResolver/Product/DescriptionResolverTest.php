@@ -12,9 +12,6 @@ use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Product\Model\ProductTranslationInterface;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\ValueResolver\Product\DescriptionResolver
- */
 final class DescriptionResolverTest extends TestCase
 {
     use ProphecyTrait;

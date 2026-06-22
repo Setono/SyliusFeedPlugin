@@ -12,9 +12,6 @@ use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Currency\Converter\CurrencyConverterInterface;
 use Sylius\Component\Currency\Model\CurrencyInterface;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\Currency\ContextCurrencyConverter
- */
 final class ContextCurrencyConverterTest extends TestCase
 {
     use ProphecyTrait;

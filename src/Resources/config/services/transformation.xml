@@ -4,17 +4,19 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <!-- Transformations are auto-registered and explicitly tagged (no autowire/autoconfigure);
-             the registry collects them via the setono_sylius_feed.transformation tag. The interfaces,
-             the manually-wired registry and the chain (which has a dependency) are excluded. -->
-        <prototype namespace="Setono\SyliusFeedPlugin\Transformation\"
-                   resource="../../../Transformation/*"
-                   exclude="../../../Transformation/{TransformationInterface.php,TransformationRegistryInterface.php,TransformationRegistry.php,TransformationChain.php}">
+        <service id="Setono\SyliusFeedPlugin\Transformation\Truncate">
             <tag name="setono_sylius_feed.transformation"/>
-        </prototype>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Transformation\StripTags">
+            <tag name="setono_sylius_feed.transformation"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Transformation\MoneyFormat">
+            <tag name="setono_sylius_feed.transformation"/>
+        </service>
 
         <service id="Setono\SyliusFeedPlugin\Transformation\TransformationChain">
             <argument type="service" id="Setono\SyliusFeedPlugin\Transformation\TransformationRegistryInterface"/>
         </service>
+        <service id="Setono\SyliusFeedPlugin\Transformation\TransformationChainInterface" alias="Setono\SyliusFeedPlugin\Transformation\TransformationChain"/>
     </services>
 </container>

@@ -13,9 +13,6 @@ use Setono\SyliusFeedPlugin\Repository\FeedRepositoryInterface;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\Controller\ShowFeedAction
- */
 final class ShowFeedActionTest extends TestCase
 {
     use ProphecyTrait;

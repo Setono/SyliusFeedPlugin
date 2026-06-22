@@ -42,8 +42,6 @@ use Symfony\Component\Routing\RequestContext;
  * valid Google RSS document with the required `g:` fields. Runs the real pipeline (preset, writer,
  * transformations, validation) against a stub data source and an in-memory-style local filesystem,
  * so it needs no database.
- *
- * @covers \Setono\SyliusFeedPlugin\Generator\FeedGenerator
  */
 final class FeedGeneratorTest extends TestCase
 {

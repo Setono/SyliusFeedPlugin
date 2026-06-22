@@ -14,6 +14,7 @@
         <import resource="services/feed_type.xml"/>
         <import resource="services/generator.xml"/>
         <import resource="services/messenger.xml"/>
+        <import resource="services/event_subscriber.xml"/>
         <import resource="services/command.xml"/>
         <import resource="services/controller.xml"/>
     </imports>

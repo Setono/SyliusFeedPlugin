@@ -4,13 +4,8 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <!-- Mapping presets are auto-registered and explicitly tagged (no autowire/autoconfigure);
-             the registry collects them via the setono_sylius_feed.mapping_preset tag. The interface
-             and the manually-wired registry are excluded. -->
-        <prototype namespace="Setono\SyliusFeedPlugin\MappingPreset\"
-                   resource="../../../MappingPreset/"
-                   exclude="../../../MappingPreset/{MappingPresetInterface.php,MappingPresetRegistryInterface.php,MappingPresetRegistry.php}">
+        <service id="Setono\SyliusFeedPlugin\MappingPreset\GoogleShoppingMappingPreset">
             <tag name="setono_sylius_feed.mapping_preset"/>
-        </prototype>
+        </service>
     </services>
 </container>

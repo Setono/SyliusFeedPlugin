@@ -10,9 +10,6 @@ use Setono\SyliusFeedPlugin\Model\FeedField;
 use Setono\SyliusFeedPlugin\Model\FeedFilter;
 use Setono\SyliusFeedPlugin\Model\FeedSource;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\Model\FeedSource
- */
 final class FeedSourceTest extends TestCase
 {
     /**

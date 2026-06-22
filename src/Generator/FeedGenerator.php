@@ -17,8 +17,8 @@ use Setono\SyliusFeedPlugin\Mapping\SourceType;
 use Setono\SyliusFeedPlugin\MappingPreset\MappingPresetRegistryInterface;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Model\FeedSourceInterface;
-use Setono\SyliusFeedPlugin\Transformation\TransformationChain;
-use Setono\SyliusFeedPlugin\Validator\RequiredFieldsValidator;
+use Setono\SyliusFeedPlugin\Transformation\TransformationChainInterface;
+use Setono\SyliusFeedPlugin\Validator\RequiredFieldsValidatorInterface;
 use Setono\SyliusFeedPlugin\Writer\FeedWriterRegistryInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -35,8 +35,8 @@ final class FeedGenerator implements FeedGeneratorInterface
         private readonly MappingPresetRegistryInterface $mappingPresetRegistry,
         private readonly FormatRegistryInterface $formatRegistry,
         private readonly FeedWriterRegistryInterface $writerRegistry,
-        private readonly TransformationChain $transformationChain,
-        private readonly RequiredFieldsValidator $requiredFieldsValidator,
+        private readonly TransformationChainInterface $transformationChain,
+        private readonly RequiredFieldsValidatorInterface $requiredFieldsValidator,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly FilesystemOperator $feedFilesystem,

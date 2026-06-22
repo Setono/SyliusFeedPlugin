@@ -13,9 +13,6 @@ use Setono\SyliusFeedPlugin\Mapping\ScopeDimension;
 use Setono\SyliusFeedPlugin\ValueResolver\ValueResolverInterface;
 use Setono\SyliusFeedPlugin\ValueResolver\ValueResolverRegistryInterface;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\FeedType\ProductVariantFeedType
- */
 final class ProductVariantFeedTypeTest extends TestCase
 {
     use ProphecyTrait;

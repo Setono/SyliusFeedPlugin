@@ -11,9 +11,6 @@ use Setono\SyliusFeedPlugin\Mapping\FieldType;
 use Setono\SyliusFeedPlugin\ValueResolver\Product\IdResolver;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\ValueResolver\Product\IdResolver
- */
 final class IdResolverTest extends TestCase
 {
     use ProphecyTrait;

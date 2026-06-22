@@ -11,9 +11,6 @@ use Setono\SyliusFeedPlugin\Mapping\FieldType;
 use Setono\SyliusFeedPlugin\ValueResolver\Product\AvailabilityResolver;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\ValueResolver\Product\AvailabilityResolver
- */
 final class AvailabilityResolverTest extends TestCase
 {
     use ProphecyTrait;

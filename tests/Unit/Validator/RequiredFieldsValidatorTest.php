@@ -9,9 +9,6 @@ use Setono\SyliusFeedPlugin\Context\FeedContext;
 use Setono\SyliusFeedPlugin\Item\FeedItem;
 use Setono\SyliusFeedPlugin\Validator\RequiredFieldsValidator;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\Validator\RequiredFieldsValidator
- */
 final class RequiredFieldsValidatorTest extends TestCase
 {
     private RequiredFieldsValidator $validator;

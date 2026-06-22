@@ -15,6 +15,7 @@ use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Symfony\Component\Workflow\Registry;
+use Webmozart\Assert\Assert;
 
 /**
  * Generates one context's feed file to temporary storage, then atomically counts it as completed;
@@ -50,14 +51,10 @@ final class GenerateFeedContextHandler
             throw $exception;
         }
 
-        // The generator clears the entity manager while streaming, so re-fetch a managed feed.
+        // The generator clears the entity manager while streaming, so re-fetch a managed feed; it
+        // was loaded moments ago, so it is guaranteed to still exist.
         $feed = $this->feedRepository->find($message->feed);
-
-        // @codeCoverageIgnoreStart
-        if (!$feed instanceof FeedInterface) {
-            return;
-        }
-        // @codeCoverageIgnoreEnd
+        Assert::isInstanceOf($feed, FeedInterface::class);
 
         $completed = $this->feedRepository->incrementCompletedContexts($feed);
         if (null !== $feed->getContextCount() && $completed >= $feed->getContextCount()) {

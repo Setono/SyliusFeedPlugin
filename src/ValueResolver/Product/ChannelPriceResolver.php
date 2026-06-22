@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\ValueResolver\Product;
 
 use Setono\SyliusFeedPlugin\Context\FeedContext;
-use Setono\SyliusFeedPlugin\Currency\ContextCurrencyConverter;
+use Setono\SyliusFeedPlugin\Currency\ContextCurrencyConverterInterface;
 use Setono\SyliusFeedPlugin\Mapping\FieldType;
 use Setono\SyliusFeedPlugin\ValueResolver\ValueResolverInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
@@ -17,7 +17,7 @@ use Sylius\Component\Core\Model\ProductVariantInterface;
  */
 final class ChannelPriceResolver implements ValueResolverInterface
 {
-    public function __construct(private readonly ContextCurrencyConverter $currencyConverter)
+    public function __construct(private readonly ContextCurrencyConverterInterface $currencyConverter)
     {
     }
 

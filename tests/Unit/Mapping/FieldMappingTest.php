@@ -9,9 +9,6 @@ use Setono\SyliusFeedPlugin\Mapping\FieldMapping;
 use Setono\SyliusFeedPlugin\Mapping\SourceType;
 use Setono\SyliusFeedPlugin\Mapping\TransformationConfig;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\Mapping\FieldMapping
- */
 final class FieldMappingTest extends TestCase
 {
     /**

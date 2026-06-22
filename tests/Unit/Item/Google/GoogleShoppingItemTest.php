@@ -10,9 +10,6 @@ use Setono\SyliusFeedPlugin\Item\Google\Availability;
 use Setono\SyliusFeedPlugin\Item\Google\Condition;
 use Setono\SyliusFeedPlugin\Item\Google\GoogleShoppingItem;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\Item\Google\GoogleShoppingItem
- */
 final class GoogleShoppingItemTest extends TestCase
 {
     private function createItem(): GoogleShoppingItem

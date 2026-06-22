@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Setono\SyliusFeedPlugin\EventListener\Workflow;
+namespace Setono\SyliusFeedPlugin\EventSubscriber;
 
 use League\Flysystem\FilesystemOperator;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;

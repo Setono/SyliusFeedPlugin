@@ -16,9 +16,6 @@ use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Currency\Model\Currency;
 use Sylius\Component\Locale\Model\Locale;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\DataSource\ProductVariantDataSource
- */
 final class ProductVariantDataSourceTest extends FunctionalTestCase
 {
     /**

@@ -16,9 +16,6 @@ use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\Command\ProcessFeedCommand
- */
 final class ProcessFeedCommandTest extends TestCase
 {
     use ProphecyTrait;

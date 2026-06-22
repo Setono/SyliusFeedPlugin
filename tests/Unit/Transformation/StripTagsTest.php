@@ -9,9 +9,6 @@ use Setono\SyliusFeedPlugin\Context\FeedContext;
 use Setono\SyliusFeedPlugin\Item\FeedItem;
 use Setono\SyliusFeedPlugin\Transformation\StripTags;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\Transformation\StripTags
- */
 final class StripTagsTest extends TestCase
 {
     private FeedItem $item;

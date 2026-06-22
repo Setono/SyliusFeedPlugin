@@ -12,9 +12,6 @@ use Setono\SyliusFeedPlugin\ValueResolver\Product\ItemGroupIdResolver;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\ValueResolver\Product\ItemGroupIdResolver
- */
 final class ItemGroupIdResolverTest extends TestCase
 {
     use ProphecyTrait;

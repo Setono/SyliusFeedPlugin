@@ -9,9 +9,6 @@ use Setono\SyliusFeedPlugin\Context\FeedContext;
 use Setono\SyliusFeedPlugin\Item\FeedItem;
 use Setono\SyliusFeedPlugin\Transformation\MoneyFormat;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\Transformation\MoneyFormat
- */
 final class MoneyFormatTest extends TestCase
 {
     private MoneyFormat $transformation;

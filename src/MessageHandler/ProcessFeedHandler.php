@@ -65,7 +65,7 @@ final class ProcessFeedHandler
         foreach ($contexts as $context) {
             $this->commandBus->dispatch(new GenerateFeedContext(
                 $feed,
-                $context->getChannel()?->getCode(),
+                $context->getChannel(),
                 $context->getLocale(),
                 $context->getCurrencyCode(),
             ));

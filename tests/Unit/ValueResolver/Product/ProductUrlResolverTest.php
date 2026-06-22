@@ -14,9 +14,6 @@ use Sylius\Component\Core\Model\ProductVariantInterface;
 use Sylius\Component\Product\Model\ProductTranslationInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\ValueResolver\Product\ProductUrlResolver
- */
 final class ProductUrlResolverTest extends TestCase
 {
     use ProphecyTrait;
