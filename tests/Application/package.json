@@ -9,5 +9,8 @@
     },
     "devDependencies": {
         "@sylius-ui/frontend": "^1.0.3"
+    },
+    "resolutions": {
+        "sass": "1.77.8"
     }
 }

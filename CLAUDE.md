@@ -39,10 +39,11 @@ Follow clean code principles and SOLID design patterns when working with this co
     port it reports — it is **not** necessarily `:8000` if another project already holds that port).
     Log in at `/admin/login` with `sylius` / `sylius` (load fixtures first:
     `bin/console sylius:fixtures:load -n --env=dev`). Build assets with `yarn build` — the test app
-    uses **dart-sass** (via `@sylius-ui/frontend`), not the abandoned `node-sass`, so a clean
-    `yarn install && yarn build` works on Apple Silicon. Use **Node ≥20.19** (dart-sass's floor);
-    `tests/Application/.nvmrc` pins Node 22. If you see a `node-sass`/arm64 error, it's a stale
-    `node_modules` — delete it and reinstall.
+    uses **dart-sass** (via `@sylius-ui/frontend`), not the abandoned `node-sass`.
+    `tests/Application/.nvmrc` pins **Node 18**; because the latest dart-sass requires Node ≥20.19,
+    a `resolutions` entry in `package.json` pins `sass` to a Node-18-compatible `1.77.8`. With Node
+    18 active (`nvm use`), a clean `yarn install && yarn build` works on Apple Silicon. If you see a
+    `node-sass`/arm64 error, it's a stale `node_modules` — delete it and reinstall.
   - The plugin's messages must be routed to an async transport in the app (see the test app's
     `config/packages/dev/setono_sylius_feed.yaml`) so "Generate now" queues a run; process it with
     `bin/console messenger:consume main`. (The functional test suite keeps them synchronous.)
