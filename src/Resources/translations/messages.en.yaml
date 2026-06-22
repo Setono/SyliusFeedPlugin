@@ -4,8 +4,25 @@ setono_sylius_feed:
         manage_feeds: Manage feeds
         state: State
         last_generated_at: Last generated at
+        generate: Generate now
+        results: Results
+        download: Download
+        file: File
+        size: Size
+        no_results: This feed has not been generated yet
     form:
         feed:
             name: Name
             slug: Slug
             format: Format
+            sources: Sources
+        feed_source:
+            feed_type: Feed type
+            fields: Field mappings
+        feed_field:
+            output_field: Output field
+            source_type: Source type
+            source_value: Source value
+            source:
+                field: Field
+                literal: Literal

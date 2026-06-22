@@ -51,6 +51,24 @@ sylius_grid:
                     create:
                         type: create
                 item:
+                    generate:
+                        type: link
+                        label: setono_sylius_feed.ui.generate
+                        icon: sync
+                        options:
+                            link:
+                                route: setono_sylius_feed_admin_feed_generate
+                                parameters:
+                                    id: resource.id
+                    results:
+                        type: link
+                        label: setono_sylius_feed.ui.results
+                        icon: list
+                        options:
+                            link:
+                                route: setono_sylius_feed_admin_feed_results
+                                parameters:
+                                    id: resource.id
                     update:
                         type: update
                     delete:

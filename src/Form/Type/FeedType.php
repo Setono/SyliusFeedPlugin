@@ -5,13 +5,18 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\Form\Type;
 
 use Setono\SyliusFeedPlugin\Format\FormatRegistryInterface;
+use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Sylius\Bundle\ChannelBundle\Form\Type\ChannelChoiceType;
 use Sylius\Bundle\ResourceBundle\Form\Type\AbstractResourceType;
 use Sylius\Bundle\ResourceBundle\Form\Type\ResourceTranslationsType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
+use Webmozart\Assert\Assert;
 
 final class FeedType extends AbstractResourceType
 {
@@ -48,7 +53,25 @@ final class FeedType extends AbstractResourceType
                 'required' => false,
                 'label' => 'sylius.ui.enabled',
             ])
+            ->add('sources', CollectionType::class, [
+                'label' => 'setono_sylius_feed.form.feed.sources',
+                'entry_type' => FeedSourceType::class,
+                'allow_add' => true,
+                'allow_delete' => true,
+                'by_reference' => false,
+            ])
         ;
+
+        $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event): void {
+            $feed = $event->getData();
+            Assert::isInstanceOf($feed, FeedInterface::class);
+
+            $position = 0;
+            foreach ($feed->getSources() as $source) {
+                $source->setPosition($position);
+                ++$position;
+            }
+        });
     }
 
     public function getBlockPrefix(): string

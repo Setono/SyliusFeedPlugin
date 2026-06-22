@@ -14,5 +14,14 @@
             <argument>%setono_sylius_feed.model.feed_translation.class%</argument>
             <tag name="form.type"/>
         </service>
+
+        <service id="Setono\SyliusFeedPlugin\Form\Type\FeedSourceType">
+            <argument type="service" id="Setono\SyliusFeedPlugin\FeedType\FeedTypeRegistryInterface"/>
+            <tag name="form.type"/>
+        </service>
+
+        <service id="Setono\SyliusFeedPlugin\Form\Type\FeedFieldType">
+            <tag name="form.type"/>
+        </service>
     </services>
 </container>

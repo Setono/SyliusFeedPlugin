@@ -38,6 +38,53 @@ final class FeedTypeTest extends FunctionalTestCase
     /**
      * @test
      */
+    public function it_maps_sources_and_fields_on_submit(): void
+    {
+        $factory = self::getContainer()->get('form.factory');
+        self::assertInstanceOf(FormFactoryInterface::class, $factory);
+
+        $form = $factory->create(FeedType::class, new Feed(), ['csrf_protection' => false]);
+        $form->submit([
+            'code' => 'google',
+            'format' => 'google_rss',
+            'enabled' => true,
+            'sources' => [
+                [
+                    'feedType' => 'product_variant',
+                    'fields' => [
+                        ['outputField' => 'g:id', 'sourceType' => 'field', 'sourceValue' => 'id'],
+                        ['outputField' => 'g:title', 'sourceType' => 'field', 'sourceValue' => 'title'],
+                    ],
+                ],
+            ],
+        ]);
+
+        self::assertTrue($form->isSynchronized());
+
+        $feed = $form->getData();
+        self::assertInstanceOf(Feed::class, $feed);
+
+        $sources = $feed->getSources()->getValues();
+        self::assertCount(1, $sources);
+        $source = $sources[0];
+        self::assertSame('product_variant', $source->getFeedType());
+        self::assertSame(0, $source->getPosition());
+
+        $fields = $source->getFields()->getValues();
+        self::assertCount(2, $fields);
+        self::assertSame('g:id', $fields[0]->getOutputField());
+        self::assertSame(0, $fields[0]->getPosition());
+        self::assertSame('g:title', $fields[1]->getOutputField());
+        self::assertSame(1, $fields[1]->getPosition());
+
+        // rendering the view walks the submitted source/field entries (covers their block prefixes)
+        $view = $form->createView();
+        self::assertArrayHasKey('sources', $view->children);
+    }
+
+    /**
+     * @test
+     */
     public function it_builds_the_translation_form(): void
     {
         $factory = self::getContainer()->get('form.factory');

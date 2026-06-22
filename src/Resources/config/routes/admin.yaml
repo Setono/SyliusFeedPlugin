@@ -11,3 +11,15 @@ setono_sylius_feed_admin_feed:
             index:
                 icon: rss
     type: sylius.resource
+
+setono_sylius_feed_admin_feed_generate:
+    path: /feeds/{id}/generate
+    methods: [GET]
+    defaults:
+        _controller: 'Setono\SyliusFeedPlugin\Controller\Admin\GenerateFeedAction'
+
+setono_sylius_feed_admin_feed_results:
+    path: /feeds/{id}/results
+    methods: [GET]
+    defaults:
+        _controller: 'Setono\SyliusFeedPlugin\Controller\Admin\FeedResultsAction'
