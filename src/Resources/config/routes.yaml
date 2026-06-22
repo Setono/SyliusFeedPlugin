@@ -1,0 +1,7 @@
+setono_sylius_feed_show:
+    path: /feed/{code}/{filename}
+    methods: [GET]
+    requirements:
+        filename: '[^/]+'
+    defaults:
+        _controller: 'Setono\SyliusFeedPlugin\Controller\ShowFeedAction'

@@ -12,9 +12,6 @@ use Setono\SyliusFeedPlugin\Transformation\TransformationChain;
 use Setono\SyliusFeedPlugin\Transformation\TransformationRegistry;
 use Setono\SyliusFeedPlugin\Transformation\Truncate;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\Transformation\TransformationChain
- */
 final class TransformationChainTest extends TestCase
 {
     private FeedItem $item;

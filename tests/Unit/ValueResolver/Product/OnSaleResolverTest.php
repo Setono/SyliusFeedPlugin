@@ -13,9 +13,6 @@ use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ChannelPricingInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\ValueResolver\Product\OnSaleResolver
- */
 final class OnSaleResolverTest extends TestCase
 {
     use ProphecyTrait;

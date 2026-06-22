@@ -9,9 +9,6 @@ use Prophecy\PhpUnit\ProphecyTrait;
 use Setono\SyliusFeedPlugin\Lookup\LookupSourceInterface;
 use Setono\SyliusFeedPlugin\Lookup\LookupSourceRegistry;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\Lookup\LookupSourceRegistry
- */
 final class LookupSourceRegistryTest extends TestCase
 {
     use ProphecyTrait;

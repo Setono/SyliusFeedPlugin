@@ -40,8 +40,6 @@ use Symfony\Component\Routing\RequestContext;
  * Performance budget (§6.3, M1 acceptance): a 50,000-item feed must stream to storage without
  * accumulating the result set in memory. Asserts that peak memory growth during generation stays
  * far below the 256 MB budget — proving the writer/generator stream rather than buffer.
- *
- * @covers \Setono\SyliusFeedPlugin\Generator\FeedGenerator
  */
 final class FeedGeneratorMemoryTest extends TestCase
 {

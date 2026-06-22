@@ -9,9 +9,6 @@ use Prophecy\PhpUnit\ProphecyTrait;
 use Setono\SyliusFeedPlugin\Context\FeedContext;
 use Sylius\Component\Core\Model\ChannelInterface;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\Context\FeedContext
- */
 final class FeedContextTest extends TestCase
 {
     use ProphecyTrait;

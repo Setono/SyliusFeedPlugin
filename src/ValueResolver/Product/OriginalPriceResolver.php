@@ -5,16 +5,22 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\ValueResolver\Product;
 
 use Setono\SyliusFeedPlugin\Context\FeedContext;
+use Setono\SyliusFeedPlugin\Currency\ContextCurrencyConverterInterface;
 use Setono\SyliusFeedPlugin\Mapping\FieldType;
 use Setono\SyliusFeedPlugin\ValueResolver\ValueResolverInterface;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 
 /**
- * The variant's original (pre-discount) price for the context channel, in minor units (§9.1).
+ * The variant's original (pre-discount) price for the context channel, in minor units, FX-converted
+ * to the context currency (§9.1, §18.6).
  */
 final class OriginalPriceResolver implements ValueResolverInterface
 {
+    public function __construct(private readonly ContextCurrencyConverterInterface $currencyConverter)
+    {
+    }
+
     public function getName(): string
     {
         return 'original_price';
@@ -42,6 +48,8 @@ final class OriginalPriceResolver implements ValueResolverInterface
             return null;
         }
 
-        return $entity->getChannelPricingForChannel($channel)?->getOriginalPrice();
+        $originalPrice = $entity->getChannelPricingForChannel($channel)?->getOriginalPrice();
+
+        return null === $originalPrice ? null : $this->currencyConverter->convert($originalPrice, $channel, $context);
     }
 }

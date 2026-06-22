@@ -33,7 +33,7 @@ final class FeedGenerationTest extends FunctionalTestCase
     protected function tearDown(): void
     {
         if (null !== $this->generatedPath) {
-            $filesystem = self::getContainer()->get('setono_sylius_feed.storage.feed');
+            $filesystem = self::getContainer()->get('setono_sylius_feed.storage.feed_tmp');
             if ($filesystem instanceof FilesystemOperator && $filesystem->fileExists($this->generatedPath)) {
                 $filesystem->delete($this->generatedPath);
             }
@@ -60,7 +60,7 @@ final class FeedGenerationTest extends FunctionalTestCase
         self::assertSame('google/web_en_us_usd.xml', $result->path);
         self::assertSame(1, $result->itemCount);
 
-        $filesystem = self::getContainer()->get('setono_sylius_feed.storage.feed');
+        $filesystem = self::getContainer()->get('setono_sylius_feed.storage.feed_tmp');
         self::assertInstanceOf(FilesystemOperator::class, $filesystem);
         $xml = $filesystem->read($result->path);
 

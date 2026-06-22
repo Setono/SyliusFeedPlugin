@@ -11,7 +11,7 @@ use Setono\SyliusFeedPlugin\Item\FeedItem;
  * an item is invalid if any required output field is absent or empty. Full typed-item Symfony
  * Validator constraints land in M6.
  */
-final class RequiredFieldsValidator
+final class RequiredFieldsValidator implements RequiredFieldsValidatorInterface
 {
     /**
      * @param list<string> $requiredFields

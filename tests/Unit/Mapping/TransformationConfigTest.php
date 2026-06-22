@@ -7,9 +7,6 @@ namespace Setono\SyliusFeedPlugin\Tests\Unit\Mapping;
 use PHPUnit\Framework\TestCase;
 use Setono\SyliusFeedPlugin\Mapping\TransformationConfig;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\Mapping\TransformationConfig
- */
 final class TransformationConfigTest extends TestCase
 {
     /**

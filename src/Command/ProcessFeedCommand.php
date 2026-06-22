@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Command;
 
-use Setono\SyliusFeedPlugin\Context\ContextFactoryInterface;
-use Setono\SyliusFeedPlugin\Generator\FeedGeneratorInterface;
+use Setono\SyliusFeedPlugin\Message\Command\ProcessFeed;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -14,21 +13,21 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Messenger\MessageBusInterface;
 
-#[AsCommand(name: 'setono:feed:process', description: 'Generate the feeds (all enabled feeds, or one with --feed=CODE)')]
+#[AsCommand(name: 'setono:feed:process', description: 'Dispatch feed generation (all enabled feeds, or one with --feed=CODE)')]
 final class ProcessFeedCommand extends Command
 {
     public function __construct(
         private readonly RepositoryInterface $feedRepository,
-        private readonly ContextFactoryInterface $contextFactory,
-        private readonly FeedGeneratorInterface $feedGenerator,
+        private readonly MessageBusInterface $commandBus,
     ) {
         parent::__construct();
     }
 
     protected function configure(): void
     {
-        $this->addOption('feed', null, InputOption::VALUE_REQUIRED, 'Generate only the feed with this code');
+        $this->addOption('feed', null, InputOption::VALUE_REQUIRED, 'Process only the feed with this code');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -53,18 +52,9 @@ final class ProcessFeedCommand extends Command
                 continue;
             }
 
-            foreach ($this->contextFactory->create($feed) as $context) {
-                $result = $this->feedGenerator->generate($feed, $context);
+            $this->commandBus->dispatch(new ProcessFeed($feed));
 
-                $io->writeln(sprintf(
-                    '<info>%s</info> [%s]: %d items (%d excluded) → %s',
-                    (string) $feed->getCode(),
-                    $context->key(),
-                    $result->itemCount,
-                    $result->excludedCount,
-                    $result->path,
-                ));
-            }
+            $io->writeln(sprintf('<info>%s</info>: dispatched for processing', (string) $feed->getCode()));
         }
 
         return Command::SUCCESS;

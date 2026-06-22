@@ -4,14 +4,46 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <defaults autowire="true" autoconfigure="true">
-            <bind key="$cacheManager" type="service" id="liip_imagine.cache.manager"/>
-        </defaults>
-
-        <!-- Value resolvers are auto-tagged (setono_sylius_feed.value_resolver) via _instanceof and
-             collected by the registry. The interface and the manually-wired registry are excluded. -->
-        <prototype namespace="Setono\SyliusFeedPlugin\ValueResolver\"
-                   resource="../../../ValueResolver/"
-                   exclude="../../../ValueResolver/{ValueResolverInterface.php,ValueResolverRegistryInterface.php,ValueResolverRegistry.php}"/>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Product\IdResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Product\ItemGroupIdResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Product\TitleResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Product\DescriptionResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Product\ProductUrlResolver">
+            <argument type="service" id="router"/>
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Product\MainImageResolver">
+            <argument type="service" id="liip_imagine.cache.manager"/>
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Product\AdditionalImagesResolver">
+            <argument type="service" id="liip_imagine.cache.manager"/>
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Product\ChannelPriceResolver">
+            <argument type="service" id="Setono\SyliusFeedPlugin\Currency\ContextCurrencyConverterInterface"/>
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Product\OriginalPriceResolver">
+            <argument type="service" id="Setono\SyliusFeedPlugin\Currency\ContextCurrencyConverterInterface"/>
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Product\AvailabilityResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Product\IsConfigurableResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Product\OnSaleResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
     </services>
 </container>

@@ -35,6 +35,10 @@ class Feed implements FeedInterface
 
     protected ?\DateTimeInterface $lastGeneratedAt = null;
 
+    protected ?int $contextCount = null;
+
+    protected int $completedContextCount = 0;
+
     public function __construct()
     {
         /** @var ArrayCollection<string, FeedTranslationInterface> $translations */
@@ -173,6 +177,26 @@ class Feed implements FeedInterface
     public function setLastGeneratedAt(?\DateTimeInterface $lastGeneratedAt): void
     {
         $this->lastGeneratedAt = $lastGeneratedAt;
+    }
+
+    public function getContextCount(): ?int
+    {
+        return $this->contextCount;
+    }
+
+    public function setContextCount(?int $contextCount): void
+    {
+        $this->contextCount = $contextCount;
+    }
+
+    public function getCompletedContextCount(): int
+    {
+        return $this->completedContextCount;
+    }
+
+    public function setCompletedContextCount(int $completedContextCount): void
+    {
+        $this->completedContextCount = $completedContextCount;
     }
 
     protected function createTranslation(): FeedTranslationInterface

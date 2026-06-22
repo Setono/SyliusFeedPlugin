@@ -9,9 +9,6 @@ use Prophecy\PhpUnit\ProphecyTrait;
 use Setono\SyliusFeedPlugin\Filter\FilterSet;
 use Setono\SyliusFeedPlugin\Model\FeedFilterInterface;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\Filter\FilterSet
- */
 final class FilterSetTest extends TestCase
 {
     use ProphecyTrait;

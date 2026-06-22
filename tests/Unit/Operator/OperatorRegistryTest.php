@@ -9,9 +9,6 @@ use Prophecy\PhpUnit\ProphecyTrait;
 use Setono\SyliusFeedPlugin\Operator\OperatorInterface;
 use Setono\SyliusFeedPlugin\Operator\OperatorRegistry;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\Operator\OperatorRegistry
- */
 final class OperatorRegistryTest extends TestCase
 {
     use ProphecyTrait;

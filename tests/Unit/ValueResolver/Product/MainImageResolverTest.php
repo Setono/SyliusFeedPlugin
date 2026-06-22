@@ -15,9 +15,6 @@ use Sylius\Component\Core\Model\ProductImageInterface;
 use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\ValueResolver\Product\MainImageResolver
- */
 final class MainImageResolverTest extends TestCase
 {
     use ProphecyTrait;

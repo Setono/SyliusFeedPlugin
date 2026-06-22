@@ -11,10 +11,9 @@ use Sylius\Component\Core\Model\ChannelInterface;
 
 /**
  * Expands a feed into contexts as the cartesian product over the union of its sources' scope
- * dimensions (§6.2). Locales and currencies are derived from each channel.
- *
- * M1 cap: the currency dimension yields only the channel's base currency (no FX conversion yet —
- * the framework currency converter lands in M2, §18.6).
+ * dimensions (§6.2). Locales and currencies are derived from each channel: the currency dimension
+ * fans out over every currency enabled on the channel (prices are FX-converted per context by the
+ * value resolvers, §18.6).
  */
 final class ContextFactory implements ContextFactoryInterface
 {
@@ -37,7 +36,7 @@ final class ContextFactory implements ContextFactoryInterface
             $locales = $usesLocale && null !== $channel ? $this->localeCodes($channel) : [null];
 
             foreach ($locales as $locale) {
-                $currencies = $usesCurrency && null !== $channel ? [$this->baseCurrencyCode($channel)] : [null];
+                $currencies = $usesCurrency && null !== $channel ? $this->currencyCodes($channel) : [null];
 
                 foreach ($currencies as $currency) {
                     $contexts[] = new FeedContext($channel, $locale, $currency);
@@ -87,8 +86,22 @@ final class ContextFactory implements ContextFactoryInterface
         return $codes;
     }
 
-    private function baseCurrencyCode(ChannelInterface $channel): ?string
+    /**
+     * @return list<string|null>
+     */
+    private function currencyCodes(ChannelInterface $channel): array
     {
-        return $channel->getBaseCurrency()?->getCode();
+        $codes = [];
+        foreach ($channel->getCurrencies() as $currency) {
+            if (null !== $currency->getCode()) {
+                $codes[] = $currency->getCode();
+            }
+        }
+
+        if ([] === $codes) {
+            return [$channel->getBaseCurrency()?->getCode()];
+        }
+
+        return $codes;
     }
 }

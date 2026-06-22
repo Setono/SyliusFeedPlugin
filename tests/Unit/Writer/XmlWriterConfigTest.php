@@ -7,9 +7,6 @@ namespace Setono\SyliusFeedPlugin\Tests\Unit\Writer;
 use PHPUnit\Framework\TestCase;
 use Setono\SyliusFeedPlugin\Writer\XmlWriterConfig;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\Writer\XmlWriterConfig
- */
 final class XmlWriterConfigTest extends TestCase
 {
     /**

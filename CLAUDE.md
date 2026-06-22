@@ -34,10 +34,25 @@ Follow clean code principles and SOLID design patterns when working with this co
 ### Service Definitions
 - **Use the FQCN as the service id.** Register a service under its fully-qualified class name
   (e.g. `<service id="Setono\SyliusFeedPlugin\FeedType\FeedTypeRegistry">`), not a custom dotted
-  id like `setono_sylius_feed.registry.feed_type`. Point each interface at its implementation with
-  an FQCN alias (`<service id="…\FeedTypeRegistryInterface" alias="…\FeedTypeRegistry"/>`). This is
-  autowiring-native and keeps ids predictable; prefer auto-registration prototypes (which already
-  use FQCN ids) for tagged services.
+  id like `setono_sylius_feed.registry.feed_type`.
+- **Every single-implementation service gets an interface + an FQCN alias.** Define an interface,
+  implement it, and register `<service id="…\FooInterface" alias="…\Foo"/>`; consumers depend on
+  the interface, never the concrete class. The only services without an alias are the tagged
+  extension-point services (collected through a registry) and framework entry points (console
+  commands, message handlers, event subscribers, controllers).
+- **Do NOT use `autowire` or `autoconfigure` on the plugin's own services.** This applies to *all*
+  services in the plugin. Wire every constructor argument explicitly with `<argument>`, define each
+  tagged service explicitly (no `<prototype>`), and apply every tag explicitly with `<tag>` —
+  `messenger.message_handler`, `kernel.event_subscriber`, `console.command`,
+  `controller.service_arguments`, and the `setono_sylius_feed.*` registry tags. Do not rely on
+  attributes for *registration*: message handlers use a `messenger.message_handler` tag (not
+  `#[AsMessageHandler]`), and `#[AsCommand]` may remain only as name/description metadata next to an
+  explicit `console.command` tag.
+- Event subscribers live in `src/EventSubscriber` and are registered in their own
+  `services/event_subscriber.xml`.
+- The extension still calls `registerForAutoconfiguration()` for each extension-point interface —
+  but **only as a developer-experience aid for applications** that add their own implementations.
+  The plugin must never depend on it for its own wiring.
 
 ### Doctrine Access
 - **Never inject `EntityManagerInterface` (or a repository) directly into a service.** Inject

@@ -10,9 +10,6 @@ use Setono\SyliusFeedPlugin\Mapping\FieldDefinition;
 use Setono\SyliusFeedPlugin\Mapping\FieldType;
 use Setono\SyliusFeedPlugin\ValueResolver\ValueResolverInterface;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\Mapping\FieldDefinition
- */
 final class FieldDefinitionTest extends TestCase
 {
     use ProphecyTrait;

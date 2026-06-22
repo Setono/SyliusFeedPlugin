@@ -7,15 +7,15 @@ namespace Setono\SyliusFeedPlugin\Tests\Unit\ValueResolver\Product;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Setono\SyliusFeedPlugin\Context\FeedContext;
+use Setono\SyliusFeedPlugin\Currency\ContextCurrencyConverter;
 use Setono\SyliusFeedPlugin\Mapping\FieldType;
 use Setono\SyliusFeedPlugin\ValueResolver\Product\ChannelPriceResolver;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Core\Model\ChannelPricingInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
+use Sylius\Component\Currency\Converter\CurrencyConverterInterface;
+use Sylius\Component\Currency\Model\CurrencyInterface;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\ValueResolver\Product\ChannelPriceResolver
- */
 final class ChannelPriceResolverTest extends TestCase
 {
     use ProphecyTrait;
@@ -24,7 +24,7 @@ final class ChannelPriceResolverTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->resolver = new ChannelPriceResolver();
+        $this->resolver = new ChannelPriceResolver(new ContextCurrencyConverter($this->prophesize(CurrencyConverterInterface::class)->reveal()));
     }
 
     /**
@@ -63,5 +63,31 @@ final class ChannelPriceResolverTest extends TestCase
         $variant = $this->prophesize(ProductVariantInterface::class);
 
         self::assertNull($this->resolver->resolve($variant->reveal(), new FeedContext()));
+    }
+
+    /**
+     * @test
+     */
+    public function it_converts_the_price_to_the_context_currency(): void
+    {
+        $baseCurrency = $this->prophesize(CurrencyInterface::class);
+        $baseCurrency->getCode()->willReturn('USD');
+
+        $channel = $this->prophesize(ChannelInterface::class);
+        $channel->getBaseCurrency()->willReturn($baseCurrency->reveal());
+        $channel = $channel->reveal();
+
+        $channelPricing = $this->prophesize(ChannelPricingInterface::class);
+        $channelPricing->getPrice()->willReturn(999);
+
+        $variant = $this->prophesize(ProductVariantInterface::class);
+        $variant->getChannelPricingForChannel($channel)->willReturn($channelPricing->reveal());
+
+        $sylius = $this->prophesize(CurrencyConverterInterface::class);
+        $sylius->convert(999, 'USD', 'EUR')->willReturn(850);
+
+        $resolver = new ChannelPriceResolver(new ContextCurrencyConverter($sylius->reveal()));
+
+        self::assertSame(850, $resolver->resolve($variant->reveal(), new FeedContext($channel, null, 'EUR')));
     }
 }

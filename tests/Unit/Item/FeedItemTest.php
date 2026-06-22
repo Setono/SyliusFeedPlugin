@@ -8,9 +8,6 @@ use PHPUnit\Framework\TestCase;
 use Setono\SyliusFeedPlugin\Context\FeedContext;
 use Setono\SyliusFeedPlugin\Item\FeedItem;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\Item\FeedItem
- */
 final class FeedItemTest extends TestCase
 {
     private function createItem(): FeedItem

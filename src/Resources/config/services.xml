@@ -6,12 +6,16 @@
         <import resource="services/registry.xml"/>
         <import resource="services/transformation.xml"/>
         <import resource="services/value_resolver.xml"/>
+        <import resource="services/currency.xml"/>
         <import resource="services/mapping_preset.xml"/>
         <import resource="services/writer.xml"/>
         <import resource="services/format.xml"/>
         <import resource="services/context.xml"/>
         <import resource="services/feed_type.xml"/>
         <import resource="services/generator.xml"/>
+        <import resource="services/messenger.xml"/>
+        <import resource="services/event_subscriber.xml"/>
         <import resource="services/command.xml"/>
+        <import resource="services/controller.xml"/>
     </imports>
 </container>

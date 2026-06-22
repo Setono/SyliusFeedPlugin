@@ -9,9 +9,6 @@ use Setono\SyliusFeedPlugin\Context\FeedContext;
 use Setono\SyliusFeedPlugin\Item\FeedItem;
 use Setono\SyliusFeedPlugin\Transformation\Truncate;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\Transformation\Truncate
- */
 final class TruncateTest extends TestCase
 {
     private FeedItem $item;

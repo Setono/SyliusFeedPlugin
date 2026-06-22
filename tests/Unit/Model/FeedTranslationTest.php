@@ -7,9 +7,6 @@ namespace Setono\SyliusFeedPlugin\Tests\Unit\Model;
 use PHPUnit\Framework\TestCase;
 use Setono\SyliusFeedPlugin\Model\FeedTranslation;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\Model\FeedTranslation
- */
 final class FeedTranslationTest extends TestCase
 {
     /**

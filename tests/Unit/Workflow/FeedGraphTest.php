@@ -7,9 +7,6 @@ namespace Setono\SyliusFeedPlugin\Tests\Unit\Workflow;
 use PHPUnit\Framework\TestCase;
 use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\Workflow\FeedGraph
- */
 final class FeedGraphTest extends TestCase
 {
     /**

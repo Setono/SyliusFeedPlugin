@@ -9,9 +9,6 @@ use Prophecy\PhpUnit\ProphecyTrait;
 use Setono\SyliusFeedPlugin\Transformation\TransformationInterface;
 use Setono\SyliusFeedPlugin\Transformation\TransformationRegistry;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\Transformation\TransformationRegistry
- */
 final class TransformationRegistryTest extends TestCase
 {
     use ProphecyTrait;

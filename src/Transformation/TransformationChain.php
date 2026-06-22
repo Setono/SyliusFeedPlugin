@@ -12,7 +12,7 @@ use Setono\SyliusFeedPlugin\Mapping\TransformationConfig;
  * via the registry and applied in turn (§10). Reference resolution and the full transformation set
  * land in M4; this is the minimal runner used by the generator.
  */
-final class TransformationChain
+final class TransformationChain implements TransformationChainInterface
 {
     public function __construct(private readonly TransformationRegistryInterface $registry)
     {

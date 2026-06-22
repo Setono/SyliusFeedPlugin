@@ -24,7 +24,9 @@ final class SetonoSyliusFeedExtension extends AbstractResourceExtension implemen
 {
     /**
      * Maps each extension-point interface to the tag that collects its implementations into a
-     * registry. All applied automatically via _instanceof autoconfiguration (§5).
+     * registry. This is registered for autoconfiguration purely as a developer-experience aid for
+     * applications that add their own implementations — the plugin's own services do not rely on it
+     * and are tagged explicitly in the service definitions (no autowire/autoconfigure).
      */
     private const AUTOCONFIGURED_TAGS = [
         FeedTypeInterface::class => 'setono_sylius_feed.feed_type',

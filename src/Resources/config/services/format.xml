@@ -4,12 +4,8 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <defaults autowire="true" autoconfigure="true"/>
-
-        <!-- Formats are auto-tagged (setono_sylius_feed.format) via _instanceof and collected by the
-             registry. The interface and the manually-wired registry are excluded. -->
-        <prototype namespace="Setono\SyliusFeedPlugin\Format\"
-                   resource="../../../Format/"
-                   exclude="../../../Format/{FormatInterface.php,FormatRegistryInterface.php,FormatRegistry.php}"/>
+        <service id="Setono\SyliusFeedPlugin\Format\GoogleRssFormat">
+            <tag name="setono_sylius_feed.format"/>
+        </service>
     </services>
 </container>

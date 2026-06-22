@@ -11,9 +11,6 @@ use Setono\SyliusFeedPlugin\Item\FeedItem;
 use Setono\SyliusFeedPlugin\Writer\XmlWriter;
 use Setono\SyliusFeedPlugin\Writer\XmlWriterConfig;
 
-/**
- * @covers \Setono\SyliusFeedPlugin\Writer\XmlWriter
- */
 final class XmlWriterTest extends TestCase
 {
     /**
