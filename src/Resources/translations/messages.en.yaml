@@ -2,6 +2,8 @@ setono_sylius_feed:
     ui:
         feeds: Feeds
         manage_feeds: Manage feeds
+        new_feed: New feed
+        edit_feed: Edit feed
         state: State
         last_generated_at: Last generated at
         generate: Generate now

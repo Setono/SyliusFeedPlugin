@@ -52,7 +52,7 @@ sylius_grid:
                         type: create
                 item:
                     generate:
-                        type: link
+                        type: default
                         label: setono_sylius_feed.ui.generate
                         icon: sync
                         options:
@@ -61,7 +61,7 @@ sylius_grid:
                                 parameters:
                                     id: resource.id
                     results:
-                        type: link
+                        type: default
                         label: setono_sylius_feed.ui.results
                         icon: list
                         options:

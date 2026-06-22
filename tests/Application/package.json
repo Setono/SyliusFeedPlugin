@@ -8,6 +8,7 @@
         "watch": "encore dev --watch"
     },
     "devDependencies": {
-        "@sylius-ui/frontend": "^1.0.3"
+        "@sylius-ui/frontend": "^1.0.3",
+        "sass": "^1.101.0"
     }
 }

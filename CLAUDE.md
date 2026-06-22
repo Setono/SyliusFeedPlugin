@@ -30,6 +30,21 @@ Follow clean code principles and SOLID design patterns when working with this co
   - Test form submission, validation, and data transformation
 - Ensure tests are isolated and don't depend on external state
 - Test both happy path and edge cases
+- **Every UI feature must be verified in a real browser with Playwright (MCP).** Automated
+  PHPUnit tests are not enough for admin/shop UI: after building or changing anything users
+  interact with (grids, forms, menu items, admin actions, public pages), drive it end-to-end with
+  the Playwright MCP tools against the running test app and confirm it actually works — pages load
+  (no 500s), forms submit and persist, grid row actions run, and generated output is reachable.
+  - Run the test app over HTTPS via `symfony server:start -d` in `tests/Application` (note the
+    port it reports — it is **not** necessarily `:8000` if another project already holds that port).
+    Log in at `/admin/login` with `sylius` / `sylius` (load fixtures first:
+    `bin/console sylius:fixtures:load -n --env=dev`). Build assets with `yarn build` (the test app
+    uses **dart-sass**, not the abandoned `node-sass`, so it builds on arm64 / current Node).
+  - The plugin's messages must be routed to an async transport in the app (see the test app's
+    `config/packages/dev/setono_sylius_feed.yaml`) so "Generate now" queues a run; process it with
+    `bin/console messenger:consume main`. (The functional test suite keeps them synchronous.)
+  - Check the browser console for errors as part of every verification, and prefer
+    `browser_snapshot` over screenshots for assertions.
 
 ### Service Definitions
 - **Use the FQCN as the service id.** Register a service under its fully-qualified class name
