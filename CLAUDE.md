@@ -59,6 +59,17 @@ Follow clean code principles and SOLID design patterns when working with this co
     `browser_snapshot` over screenshots for assertions.
 
 ### Service Definitions
+
+**No autoconfiguration, no autowiring — ever. This is a distributable plugin, not an
+application.** A reusable Sylius/Symfony plugin must wire itself **deterministically and
+explicitly** so it behaves identically regardless of how the host application is configured (an
+app may have autowiring/autoconfiguration off, or different conventions, entirely). Therefore the
+plugin's own services rely **exclusively on explicit mechanisms**: service **tags**, hand-written
+**service definitions** (every constructor argument wired with `<argument>`), **compiler passes**,
+and **registries built from `tagged_iterator`**. Never lean on `autowire`, `autoconfigure`,
+attribute-based auto-registration, or convention/directory-based discovery for anything the plugin
+ships. The specific rules below spell out how this applies.
+
 - **Use the FQCN as the service id.** Register a service under its fully-qualified class name
   (e.g. `<service id="Setono\SyliusFeedPlugin\FeedType\FeedTypeRegistry">`), not a custom dotted
   id like `setono_sylius_feed.registry.feed_type`.

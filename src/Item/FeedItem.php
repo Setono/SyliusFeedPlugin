@@ -28,6 +28,16 @@ class FeedItem implements \IteratorAggregate, \ArrayAccess, \Countable
 
     private bool $skipped = false;
 
+    /**
+     * Resolves a named source field / value resolver (incl. `attribute:{code}`, `lookup:{table}:{column}`)
+     * against this item's entity+context, on demand. Set by the generator per source so that
+     * transformations, conditions and expressions can resolve source references regardless of
+     * mapping order (§10 reference-resolution rule). Null until bound → source references resolve to null.
+     *
+     * @var (\Closure(string): mixed)|null
+     */
+    private ?\Closure $sourceResolver = null;
+
     public function __construct(
         private readonly object $entity,
         private readonly FeedContext $context,
@@ -42,6 +52,25 @@ class FeedItem implements \IteratorAggregate, \ArrayAccess, \Countable
     public function getContext(): FeedContext
     {
         return $this->context;
+    }
+
+    /**
+     * Bind the on-demand source resolver (see $sourceResolver).
+     *
+     * @param \Closure(string): mixed $sourceResolver
+     */
+    public function setSourceResolver(\Closure $sourceResolver): void
+    {
+        $this->sourceResolver = $sourceResolver;
+    }
+
+    /**
+     * Resolve a named source field / value resolver against this item on demand. Returns null when
+     * no resolver is bound or the name is unknown — a miss is never an error (§10).
+     */
+    public function resolveSource(string $field): mixed
+    {
+        return null === $this->sourceResolver ? null : ($this->sourceResolver)($field);
     }
 
     public function get(string $field): mixed

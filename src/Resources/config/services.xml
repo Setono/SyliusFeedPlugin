@@ -4,6 +4,8 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <imports>
         <import resource="services/registry.xml"/>
+        <import resource="services/reference.xml"/>
+        <import resource="services/operator.xml"/>
         <import resource="services/transformation.xml"/>
         <import resource="services/value_resolver.xml"/>
         <import resource="services/currency.xml"/>
