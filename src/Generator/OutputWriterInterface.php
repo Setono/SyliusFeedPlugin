@@ -32,4 +32,41 @@ interface OutputWriterInterface
         bool $gzip,
         SplitManifestInterface $manifest,
     ): OutputResult;
+
+    /**
+     * Renders a chunk's items as a body-only partial (§6.3): the item bytes only — no preamble,
+     * no epilogue, no split, no gzip — written to a single file at `{directory}/{basename}.{extension}`.
+     * Reuses the same per-item rendering as {@see write()}, so the ordered concatenation of the
+     * partials (wrapped by {@see finalizeFromPartials()}) is byte-identical to the inline output.
+     *
+     * @param iterable<\Setono\SyliusFeedPlugin\Item\FeedItem> $items
+     */
+    public function writeBody(
+        iterable $items,
+        FeedWriterInterface $writer,
+        WriterConfigInterface $config,
+        FeedContext $context,
+        string $directory,
+        string $basename,
+        string $extension,
+    ): OutputResult;
+
+    /**
+     * Concatenates the ordered body-only partials into the canonical context file (§6.3): the
+     * preamble, then each partial's item bytes copied in order, then the epilogue — reusing the exact
+     * same preamble/epilogue rendering as {@see write()} so the result is byte-identical to the inline
+     * single-file output. The partials are deleted afterwards. This path never splits or gzips (a feed
+     * that would split/gzip stays on the inline path).
+     *
+     * @param list<string> $partialPaths ordered body-only partial paths (chunk 0..N)
+     */
+    public function finalizeFromPartials(
+        array $partialPaths,
+        FeedWriterInterface $writer,
+        WriterConfigInterface $config,
+        FeedContext $context,
+        string $directory,
+        string $basename,
+        string $extension,
+    ): OutputResult;
 }

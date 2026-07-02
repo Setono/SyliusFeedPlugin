@@ -10,6 +10,7 @@ use Setono\Doctrine\ORMTrait;
 use Setono\SyliusFeedPlugin\Context\FeedContext;
 use Setono\SyliusFeedPlugin\Doctrine\BatchIterator;
 use Setono\SyliusFeedPlugin\Filter\FilterSet;
+use Setono\SyliusFeedPlugin\Generator\ChunkRange;
 
 /**
  * Streams enabled taxons — one row per taxon (§8.4), scoped over locale only: a taxon is not
@@ -21,6 +22,7 @@ use Setono\SyliusFeedPlugin\Filter\FilterSet;
 final class TaxonDataSource implements DataSourceInterface
 {
     use ORMTrait;
+    use IdRangePartitionTrait;
 
     private const BATCH_SIZE = 1000;
 
@@ -54,6 +56,20 @@ final class TaxonDataSource implements DataSourceInterface
             ->select('COUNT(t.id)')
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    public function getIdRange(FeedContext $context, FilterSet $filters): ?ChunkRange
+    {
+        return $this->resolveIdRange($this->createQueryBuilder(), 't');
+    }
+
+    public function getItemsInRange(FeedContext $context, FilterSet $filters, ChunkRange $range): iterable
+    {
+        return BatchIterator::iterate(
+            $this->constrainToRange($this->createQueryBuilder(), 't', $range)->getQuery(),
+            $this->getManager($this->resourceClass),
+            self::BATCH_SIZE,
+        );
     }
 
     private function createQueryBuilder(): QueryBuilder

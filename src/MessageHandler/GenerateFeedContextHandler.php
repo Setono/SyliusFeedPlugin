@@ -7,42 +7,52 @@ namespace Setono\SyliusFeedPlugin\MessageHandler;
 use Doctrine\Persistence\ManagerRegistry;
 use Setono\Doctrine\ORMTrait;
 use Setono\SyliusFeedPlugin\Context\FeedContext;
-use Setono\SyliusFeedPlugin\Event\FeedPublishBlockedEvent;
-use Setono\SyliusFeedPlugin\Generator\FeedContextResultRecorderInterface;
+use Setono\SyliusFeedPlugin\Context\MessageContextFactoryInterface;
+use Setono\SyliusFeedPlugin\Format\FormatRegistryInterface;
+use Setono\SyliusFeedPlugin\Generator\ChunkPartitionerInterface;
+use Setono\SyliusFeedPlugin\Generator\ChunkRange;
+use Setono\SyliusFeedPlugin\Generator\FeedContextFinalizerInterface;
 use Setono\SyliusFeedPlugin\Generator\FeedGeneratorInterface;
+use Setono\SyliusFeedPlugin\Message\Command\GenerateFeedChunk;
 use Setono\SyliusFeedPlugin\Message\Command\GenerateFeedContext;
-use Setono\SyliusFeedPlugin\Model\FeedContextResultInterface;
+use Setono\SyliusFeedPlugin\Model\FeedChunkInterface;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
-use Setono\SyliusFeedPlugin\Publish\PublishGateInterface;
-use Setono\SyliusFeedPlugin\Repository\FeedContextResultRepositoryInterface;
 use Setono\SyliusFeedPlugin\Repository\FeedRepositoryInterface;
 use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
-use Sylius\Component\Core\Model\ChannelInterface;
-use Sylius\Component\Resource\Repository\RepositoryInterface;
+use Sylius\Component\Resource\Factory\FactoryInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Registry;
-use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Webmozart\Assert\Assert;
 
 /**
- * Generates one context's feed file to temporary (staging) storage, records the candidate result,
- * then runs it through the publish gate (§6.6) to decide whether it may be promoted to the live feed
- * (the promotion itself happens per-context on `complete`). Finally it counts the context as
- * completed; the handler that finishes the last context completes the feed (§6.3). Because the
- * generator clears the entity manager while streaming, the bookkeeping re-fetches the feed.
+ * Generates one context's feed file (§6.3). Small contexts take the inline fast path: generate to
+ * staging, then finalize (record → publish gate → count → complete the feed on the last context).
+ * A context whose single source exceeds the chunk threshold — and whose output is a single, plain
+ * file (no split, no gzip) — is instead fanned out into {@see GenerateFeedChunk} messages that render
+ * body-only partials in parallel; the barrier then concatenates them (see
+ * {@see \Setono\SyliusFeedPlugin\MessageHandler\FinalizeFeedContextHandler}) into a file that is
+ * byte-identical to the inline output. Split/gzip feeds and multi-source feeds always stay inline.
  */
 final class GenerateFeedContextHandler
 {
     use ORMTrait;
 
+    /**
+     * The default source-item count above which a context is fanned out into chunks; overridable per
+     * feed via `formatConfig['chunk']['size']`.
+     */
+    private const DEFAULT_CHUNK_SIZE = 10000;
+
     public function __construct(
         ManagerRegistry $managerRegistry,
         private readonly FeedRepositoryInterface $feedRepository,
-        private readonly RepositoryInterface $channelRepository,
+        private readonly MessageContextFactoryInterface $contextFactory,
         private readonly FeedGeneratorInterface $feedGenerator,
-        private readonly FeedContextResultRecorderInterface $feedContextResultRecorder,
-        private readonly FeedContextResultRepositoryInterface $feedContextResultRepository,
-        private readonly PublishGateInterface $publishGate,
-        private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly FeedContextFinalizerInterface $feedContextFinalizer,
+        private readonly ChunkPartitionerInterface $chunkPartitioner,
+        private readonly FormatRegistryInterface $formatRegistry,
+        private readonly FactoryInterface $feedChunkFactory,
+        private readonly MessageBusInterface $commandBus,
         private readonly Registry $workflowRegistry,
     ) {
         $this->managerRegistry = $managerRegistry;
@@ -55,9 +65,18 @@ final class GenerateFeedContextHandler
             return;
         }
 
-        $context = $this->buildContext($message);
+        $context = $this->contextFactory->create($message->channel, $message->locale, $message->currency);
 
         try {
+            if ($this->producesSingleFile($feed)) {
+                $ranges = $this->chunkPartitioner->partition($feed, $context, $this->resolveChunkSize($feed));
+                if (count($ranges) >= 2) {
+                    $this->fanOut($feed, $context, $ranges);
+
+                    return;
+                }
+            }
+
             $result = $this->feedGenerator->generate($feed, $context);
         } catch (\Throwable $exception) {
             $this->fail($message->feed);
@@ -65,81 +84,100 @@ final class GenerateFeedContextHandler
             throw $exception;
         }
 
-        // The generator clears the entity manager while streaming, so re-fetch a managed feed; it
-        // was loaded moments ago, so it is guaranteed to still exist.
+        // The generator clears the entity manager while streaming, so re-fetch a managed feed; it was
+        // loaded moments ago, so it is guaranteed to still exist.
         $feed = $this->feedRepository->find($message->feed);
         Assert::isInstanceOf($feed, FeedInterface::class);
 
-        // Record the excluded-item report + size/count for this context now that generation
-        // finished, against the managed feed (§11). The candidate starts out `pending`.
+        $this->feedContextFinalizer->finalize($feed, $context, $result);
+    }
+
+    /**
+     * Records one chunk row per range (the barrier's expected set) and dispatches a
+     * {@see GenerateFeedChunk} per range. Rows are persisted before any message is dispatched so a
+     * synchronously handled chunk always finds its row.
+     *
+     * @param list<ChunkRange> $ranges
+     */
+    private function fanOut(FeedInterface $feed, FeedContext $context, array $ranges): void
+    {
         $contextKey = $context->key();
-        $candidate = $this->feedContextResultRecorder->record($feed, $contextKey, $result);
 
-        // Stamp the context's dimension codes so delivery targets can be matched during finalize (§12)
-        // without needing to reconstruct the channel entity.
-        $candidate->setChannelCode($context->getChannel()?->getCode());
-        $candidate->setLocaleCode($context->getLocale());
-        $candidate->setCurrencyCode($context->getCurrencyCode());
+        foreach ($ranges as $index => $range) {
+            $chunk = $this->feedChunkFactory->createNew();
+            Assert::isInstanceOf($chunk, FeedChunkInterface::class);
 
-        $this->gate($feed, $contextKey, $candidate);
+            $chunk->setFeed($feed);
+            $chunk->setContextKey($contextKey);
+            $chunk->setChunkIndex($index);
+            $chunk->setCompleted(false);
 
-        $completed = $this->feedRepository->incrementCompletedContexts($feed);
-        if (null !== $feed->getContextCount() && $completed >= $feed->getContextCount()) {
-            $this->transition($feed, FeedGraph::TRANSITION_COMPLETE);
+            $this->getManager($chunk)->persist($chunk);
+        }
+
+        $this->getManager($feed)->flush();
+
+        foreach ($ranges as $index => $range) {
+            $this->commandBus->dispatch(new GenerateFeedChunk(
+                $feed,
+                $context->getChannel(),
+                $context->getLocale(),
+                $context->getCurrencyCode(),
+                $index,
+                $range->start,
+                $range->end,
+            ));
         }
     }
 
     /**
-     * Runs the freshly recorded candidate through the publish gate against the last published
-     * baseline (§6.6), stamps the outcome onto the candidate, and notifies listeners when the gate
-     * blocked promotion or a `warn` guardrail flagged a concern.
+     * Fan-out is byte-identical only for a single, un-split, un-gzipped file. A feed that gzips or has
+     * any effective split limit stays inline (§6.3, §12) — documented fallback.
      */
-    private function gate(FeedInterface $feed, string $contextKey, FeedContextResultInterface $candidate): void
+    private function producesSingleFile(FeedInterface $feed): bool
     {
-        $baseline = $this->feedContextResultRepository->findLatestPublished($feed, $contextKey);
-
-        $guardrails = $feed->getPublishConfig()['guardrails'] ?? [];
-        $decision = $this->publishGate->evaluate($candidate, $baseline, is_array($guardrails) ? $guardrails : []);
-
-        $candidate->setPublishState(
-            $decision->blocked
-                ? FeedContextResultInterface::PUBLISH_STATE_BLOCKED
-                : FeedContextResultInterface::PUBLISH_STATE_PUBLISHED,
-        );
-        $candidate->setPublishCheck([] === $decision->reasons ? null : $decision->reasons);
-        $this->getManager($candidate)->flush();
-
-        if ($decision->blocked || [] !== $decision->reasons) {
-            $this->eventDispatcher->dispatch(
-                new FeedPublishBlockedEvent($feed, $contextKey, $decision->reasons, $decision->blocked),
-            );
+        if ((bool) ($feed->getFormatConfig()['gzip'] ?? false)) {
+            return false;
         }
+
+        $format = $this->formatRegistry->get((string) $feed->getFormat());
+        $limit = $format->getSplitLimit();
+
+        $override = $feed->getFormatConfig()['split'] ?? [];
+        if (is_array($override)) {
+            foreach (['maxItems', 'maxBytes'] as $key) {
+                $value = $override[$key] ?? null;
+                if (is_numeric($value)) {
+                    $limit[$key] = (int) $value;
+                }
+            }
+        }
+
+        return [] === $limit;
     }
 
-    private function buildContext(GenerateFeedContext $message): FeedContext
+    private function resolveChunkSize(FeedInterface $feed): int
     {
-        $channel = null;
-        if (null !== $message->channel) {
-            $candidate = $this->channelRepository->findOneBy(['code' => $message->channel]);
-            $channel = $candidate instanceof ChannelInterface ? $candidate : null;
+        $chunk = $feed->getFormatConfig()['chunk'] ?? [];
+        $size = is_array($chunk) ? ($chunk['size'] ?? null) : null;
+
+        if (is_numeric($size) && (int) $size > 0) {
+            return (int) $size;
         }
 
-        return new FeedContext($channel, $message->locale, $message->currency);
+        return self::DEFAULT_CHUNK_SIZE;
     }
 
     private function fail(int $feedId): void
     {
         $feed = $this->feedRepository->find($feedId);
-        if ($feed instanceof FeedInterface) {
-            $this->transition($feed, FeedGraph::TRANSITION_FAIL);
+        if (!$feed instanceof FeedInterface) {
+            return;
         }
-    }
 
-    private function transition(FeedInterface $feed, string $transition): void
-    {
         $workflow = $this->workflowRegistry->get($feed, FeedGraph::GRAPH);
-        if ($workflow->can($feed, $transition)) {
-            $workflow->apply($feed, $transition);
+        if ($workflow->can($feed, FeedGraph::TRANSITION_FAIL)) {
+            $workflow->apply($feed, FeedGraph::TRANSITION_FAIL);
             $this->getManager($feed)->flush();
         }
     }

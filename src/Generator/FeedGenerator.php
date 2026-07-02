@@ -20,6 +20,7 @@ use Setono\SyliusFeedPlugin\Validator\FeedItemValidatorInterface;
 use Setono\SyliusFeedPlugin\Writer\CsvWriterConfig;
 use Setono\SyliusFeedPlugin\Writer\FeedWriterRegistryInterface;
 use Setono\SyliusFeedPlugin\Writer\SplitManifestRegistryInterface;
+use Setono\SyliusFeedPlugin\Writer\WriterConfigInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
@@ -50,20 +51,14 @@ final class FeedGenerator implements FeedGeneratorInterface
     {
         $format = $this->formatRegistry->get((string) $feed->getFormat());
         $writer = $this->writerRegistry->get($format->getWriter());
-
-        $config = $format->getConfig()->withFeedMetadata($this->buildFeedMetadata($feed, $context));
-        if ($config instanceof CsvWriterConfig) {
-            // CSV needs a single header up front — the union of every source's output fields, so
-            // heterogeneous multi-source rows line up under one header.
-            $config = $config->withHeader($this->unionHeader($feed));
-        }
+        $config = $this->buildConfig($feed, $context, $format);
 
         $this->applyRequestContext($context);
 
         $exclusions = new ExclusionCollector();
 
         $output = $this->outputWriter->write(
-            $this->items($feed, $context, $format, $exclusions),
+            $this->buildItems($feed, $context, $format, $exclusions, null),
             $writer,
             $config,
             $context,
@@ -85,14 +80,100 @@ final class FeedGenerator implements FeedGeneratorInterface
         );
     }
 
+    public function items(FeedInterface $feed, FeedContext $context, ?ChunkRange $range = null): iterable
+    {
+        $format = $this->formatRegistry->get((string) $feed->getFormat());
+
+        $this->applyRequestContext($context);
+
+        return $this->buildItems($feed, $context, $format, new ExclusionCollector(), $range);
+    }
+
+    public function generateChunk(FeedInterface $feed, FeedContext $context, ChunkRange $range, int $chunkIndex): ChunkRenderResult
+    {
+        $format = $this->formatRegistry->get((string) $feed->getFormat());
+        $writer = $this->writerRegistry->get($format->getWriter());
+        $config = $this->buildConfig($feed, $context, $format);
+
+        $this->applyRequestContext($context);
+
+        $exclusions = new ExclusionCollector();
+
+        $output = $this->outputWriter->writeBody(
+            $this->buildItems($feed, $context, $format, $exclusions, $range),
+            $writer,
+            $config,
+            $context,
+            (string) $feed->getCode(),
+            $this->chunkBasename($context, $chunkIndex),
+            $format->getWriter(),
+        );
+
+        return new ChunkRenderResult($output->itemCount, $exclusions->count(), $exclusions->errors());
+    }
+
+    public function finalizeChunks(FeedInterface $feed, FeedContext $context, int $chunkCount): OutputResult
+    {
+        $format = $this->formatRegistry->get((string) $feed->getFormat());
+        $writer = $this->writerRegistry->get($format->getWriter());
+        $config = $this->buildConfig($feed, $context, $format);
+
+        $this->applyRequestContext($context);
+
+        $directory = (string) $feed->getCode();
+        $extension = $format->getWriter();
+
+        $partialPaths = [];
+        for ($index = 0; $index < $chunkCount; ++$index) {
+            $partialPaths[] = sprintf('%s/%s.%s', $directory, $this->chunkBasename($context, $index), $extension);
+        }
+
+        return $this->outputWriter->finalizeFromPartials(
+            $partialPaths,
+            $writer,
+            $config,
+            $context,
+            $directory,
+            $context->key(),
+            $extension,
+        );
+    }
+
     /**
-     * The pipeline for one context: resolve each source's items, run them through binding, filters,
-     * the build event, skip and validation, recording every exclusion and yielding the items that
-     * survive to the writer.
+     * The resolved writer configuration for a context (§7): the format's structural config with the
+     * feed's document metadata applied and, for CSV, the single union header up front — so both the
+     * inline path and the fan-out chunk/finalize paths render preamble/item/epilogue identically.
+     */
+    private function buildConfig(FeedInterface $feed, FeedContext $context, FormatInterface $format): WriterConfigInterface
+    {
+        $config = $format->getConfig()->withFeedMetadata($this->buildFeedMetadata($feed, $context));
+        if ($config instanceof CsvWriterConfig) {
+            // CSV needs a single header up front — the union of every source's output fields, so
+            // heterogeneous multi-source rows line up under one header.
+            $config = $config->withHeader($this->unionHeader($feed));
+        }
+
+        return $config;
+    }
+
+    /**
+     * The body-only partial basename for a chunk, e.g. `web_en_us_usd.chunk-0`.
+     */
+    private function chunkBasename(FeedContext $context, int $chunkIndex): string
+    {
+        return sprintf('%s.chunk-%d', $context->key(), $chunkIndex);
+    }
+
+    /**
+     * The pipeline for one context (optionally constrained to a chunk's id range): resolve each
+     * source's items, run them through binding, filters, the build event, skip and validation,
+     * recording every exclusion and yielding the items that survive to the writer. When a range is
+     * given the (single) source is constrained to that id range, in ascending id order, so the
+     * ordered concatenation of the chunks reproduces the un-ranged stream exactly.
      *
      * @return iterable<FeedItem>
      */
-    private function items(FeedInterface $feed, FeedContext $context, FormatInterface $format, ExclusionCollector $exclusions): iterable
+    private function buildItems(FeedInterface $feed, FeedContext $context, FormatInterface $format, ExclusionCollector $exclusions, ?ChunkRange $range): iterable
     {
         $requiredFields = $format->getRequiredFields();
         $itemValidationGroups = $format->getItemValidationGroups();
@@ -103,7 +184,12 @@ final class FeedGenerator implements FeedGeneratorInterface
             $mappings = $this->mappingResolver->resolve($feed, $source);
             $filterSet = new FilterSet($source->getFilters());
 
-            foreach ($feedType->getDataSource()->getItems($context, $filterSet) as $entity) {
+            $dataSource = $feedType->getDataSource();
+            $entities = null === $range
+                ? $dataSource->getItems($context, $filterSet)
+                : $dataSource->getItemsInRange($context, $filterSet, $range);
+
+            foreach ($entities as $entity) {
                 $item = $feedType->createItem($entity, $context);
 
                 // Bind the source resolver up front so pre-filters can resolve raw source fields;

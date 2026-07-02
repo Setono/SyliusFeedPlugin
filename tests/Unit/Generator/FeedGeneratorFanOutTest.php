@@ -31,8 +31,6 @@ use Setono\SyliusFeedPlugin\Mapping\ScopeDimension;
 use Setono\SyliusFeedPlugin\MappingPreset\MappingPresetRegistryInterface;
 use Setono\SyliusFeedPlugin\Model\FeedField;
 use Setono\SyliusFeedPlugin\Model\FeedFieldInterface;
-use Setono\SyliusFeedPlugin\Model\FeedFilter;
-use Setono\SyliusFeedPlugin\Model\FeedFilterInterface;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Model\FeedSourceInterface;
 use Setono\SyliusFeedPlugin\Operator\Equals;
@@ -42,8 +40,12 @@ use Setono\SyliusFeedPlugin\Reference\ReferenceResolver;
 use Setono\SyliusFeedPlugin\Scripting\ExpressionEvaluator;
 use Setono\SyliusFeedPlugin\Scripting\FeedTemplateSecurityPolicy;
 use Setono\SyliusFeedPlugin\Scripting\SandboxedTwigRenderer;
+use Setono\SyliusFeedPlugin\Transformation\MoneyFormat;
+use Setono\SyliusFeedPlugin\Transformation\StripTags;
 use Setono\SyliusFeedPlugin\Transformation\TransformationChain;
 use Setono\SyliusFeedPlugin\Transformation\TransformationRegistry;
+use Setono\SyliusFeedPlugin\Transformation\Truncate;
+use Setono\SyliusFeedPlugin\Transformation\ValueMap;
 use Setono\SyliusFeedPlugin\Validator\FeedItemValidator;
 use Setono\SyliusFeedPlugin\Validator\RequiredFieldsValidator;
 use Setono\SyliusFeedPlugin\ValueResolver\ValueResolverInterface;
@@ -52,65 +54,95 @@ use Setono\SyliusFeedPlugin\Writer\FeedWriterRegistryInterface;
 use Setono\SyliusFeedPlugin\Writer\NoneSplitManifest;
 use Setono\SyliusFeedPlugin\Writer\SplitManifestRegistry;
 use Setono\SyliusFeedPlugin\Writer\SupplementalSplitManifest;
+use Setono\SyliusFeedPlugin\Writer\XmlWriter;
+use Sylius\Component\Core\Model\ChannelInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Validator\Validation;
 
 /**
- * The §11 acceptance for the FilterEvaluator wired into the generator: a source with an
- * exclude-out-of-stock filter drops the out-of-stock item from the output while keeping the
- * in-stock one — proving the filter is selective (not just "drops everything"). The same filter is
- * exercised at both the `pre` and `post` stage.
+ * The M7 fan-out acceptance (§6.3): rendering a catalog inline (single chunk) and via fan-out (the
+ * body-only chunks concatenated by the finalize step) produces a canonical file that is
+ * byte-for-byte identical. Runs the real generator/writer against a range-aware stub data source, so
+ * it needs no database, and each source entity carries a distinct id so the test also proves the
+ * ordered concatenation keeps every item exactly once, in order.
  */
-final class FeedGeneratorFilterTest extends TestCase
+final class FeedGeneratorFanOutTest extends TestCase
 {
     use ProphecyTrait;
+
+    public const ITEMS = 5;
+
+    private string $storageDir;
 
     private Filesystem $filesystem;
 
     protected function setUp(): void
     {
-        $this->filesystem = new Filesystem(new LocalFilesystemAdapter(sys_get_temp_dir() . '/setono-feed-' . bin2hex(random_bytes(6))));
+        $this->storageDir = sys_get_temp_dir() . '/setono-feed-fanout-' . bin2hex(random_bytes(6));
+        $this->filesystem = new Filesystem(new LocalFilesystemAdapter($this->storageDir));
     }
 
     protected function tearDown(): void
     {
-        $this->filesystem->deleteDirectory('shop');
+        $this->filesystem->deleteDirectory('catalog');
     }
 
     /**
-     * @dataProvider stages
+     * @test
+     */
+    public function it_produces_a_byte_identical_file_via_fan_out(): void
+    {
+        $generator = $this->createGenerator();
+        $feed = $this->feed();
+        $context = new FeedContext($this->channel(), 'en_US', 'USD');
+
+        // 1. inline (single-chunk) output — capture its bytes before fan-out overwrites the file.
+        $inline = $generator->generate($feed, $context);
+        $inlineBytes = $this->filesystem->read($inline->path);
+
+        // 2. fan-out over the same catalog: two chunks forced by splitting the id range [1..5].
+        $ranges = [new ChunkRange(1, 2), new ChunkRange(3, 5)];
+        foreach ($ranges as $index => $range) {
+            $generator->generateChunk($feed, $context, $range, $index);
+        }
+        $output = $generator->finalizeChunks($feed, $context, count($ranges));
+
+        $fanOutBytes = $this->filesystem->read($output->primaryPath);
+
+        self::assertSame($inline->path, $output->primaryPath, 'fan-out writes the same canonical path');
+        self::assertSame($inlineBytes, $fanOutBytes, 'the fan-out output must be byte-identical to the inline output');
+
+        // Sanity: the concatenated file carries the header + every distinct item exactly once, in order.
+        $rows = [...Reader::createFromString($fanOutBytes)->getRecords()];
+        self::assertCount(self::ITEMS + 1, $rows, 'header + one row per item');
+        self::assertSame(['id', 'title', 'availability'], $rows[0]);
+        self::assertSame(['SKU-1', 'Item 1', 'in_stock'], $rows[1]);
+        self::assertSame(['SKU-5', 'Item 5', 'in_stock'], $rows[5]);
+    }
+
+    /**
+     * The chunk partials are body-only: no header row, just the item rows for the chunk's id range.
      *
      * @test
      */
-    public function it_excludes_the_out_of_stock_item(string $stage): void
+    public function it_writes_body_only_partials(): void
     {
-        $result = $this->createGenerator()->generate($this->feed($stage), new FeedContext(null, 'en_US', 'USD'));
+        $generator = $this->createGenerator();
+        $feed = $this->feed();
+        $context = new FeedContext($this->channel(), 'en_US', 'USD');
 
-        self::assertSame(1, $result->itemCount);
-        self::assertSame(1, $result->excludedCount);
+        $render = $generator->generateChunk($feed, $context, new ChunkRange(1, 2), 0);
 
-        // the exclusion is recorded with the stage-qualified filter reason (§11); the item id is
-        // only resolvable once mapping has run, so it is present for a `post` filter but null for `pre`
-        self::assertCount(1, $result->errors);
-        self::assertSame(sprintf('filter:%s:availability', $stage), $result->errors[0]['reason']);
-        self::assertSame(FeedFilterInterface::STAGE_POST === $stage ? 'SKU-2' : null, $result->errors[0]['item']);
-        self::assertGreaterThan(0, $result->bytes, 'the produced file has a non-zero byte size');
+        self::assertSame(2, $render->itemCount);
+        self::assertTrue($this->filesystem->fileExists('catalog/web_en_us_usd.chunk-0.csv'));
 
-        $rows = [...Reader::createFromString($this->filesystem->read($result->path))->getRecords()];
-        self::assertCount(2, $rows, 'header + the single kept row');
-        self::assertSame(['id', 'availability'], $rows[0]);
-        self::assertSame(['SKU-1', 'in_stock'], $rows[1]);
-    }
-
-    /**
-     * @return iterable<string, array{string}>
-     */
-    public function stages(): iterable
-    {
-        yield 'pre' => [FeedFilterInterface::STAGE_PRE];
-        yield 'post' => [FeedFilterInterface::STAGE_POST];
+        $partial = $this->filesystem->read('catalog/web_en_us_usd.chunk-0.csv');
+        $rows = [...Reader::createFromString($partial)->getRecords()];
+        self::assertCount(2, $rows, 'body-only: two item rows, no header');
+        self::assertSame(['SKU-1', 'Item 1', 'in_stock'], $rows[0]);
+        self::assertSame(['SKU-2', 'Item 2', 'in_stock'], $rows[1]);
     }
 
     private function createGenerator(): FeedGenerator
@@ -119,11 +151,13 @@ final class FeedGeneratorFilterTest extends TestCase
         $feedTypeRegistry->get('product_variant')->willReturn($this->feedType());
 
         $presetRegistry = $this->prophesize(MappingPresetRegistryInterface::class);
+        $presetRegistry->forFeedType('product_variant')->willReturn([]);
 
         $formatRegistry = $this->prophesize(FormatRegistryInterface::class);
         $formatRegistry->get('csv')->willReturn(new CsvFormat());
 
         $writerRegistry = $this->prophesize(FeedWriterRegistryInterface::class);
+        $writerRegistry->get('xml')->willReturn(new XmlWriter());
         $writerRegistry->get('csv')->willReturn(new CsvWriter());
 
         $urlGenerator = $this->prophesize(UrlGeneratorInterface::class);
@@ -135,7 +169,7 @@ final class FeedGeneratorFilterTest extends TestCase
             $formatRegistry->reveal(),
             $writerRegistry->reveal(),
             new FieldMappingEvaluator(
-                new TransformationChain(new TransformationRegistry([])),
+                new TransformationChain(new TransformationRegistry([new Truncate(), new StripTags(), new MoneyFormat(), new ValueMap()])),
                 new ReferenceResolver(),
                 new OperatorRegistry([new IsTrue()]),
                 new ExpressionEvaluator(new InMemoryLookup()),
@@ -155,8 +189,9 @@ final class FeedGeneratorFilterTest extends TestCase
     private function feedType(): FeedTypeInterface
     {
         $fields = [
-            'id' => $this->field('id'),
-            'availability' => $this->field('availability'),
+            'id' => $this->entityField('id', 'sku'),
+            'title' => $this->entityField('title', 'title'),
+            'availability' => $this->field('availability', 'in_stock'),
         ];
 
         $dataSource = new class() implements DataSourceInterface {
@@ -167,23 +202,35 @@ final class FeedGeneratorFilterTest extends TestCase
 
             public function getItems(FeedContext $context, FilterSet $filters): iterable
             {
-                yield (object) ['id' => 'SKU-1', 'availability' => 'in_stock'];
-                yield (object) ['id' => 'SKU-2', 'availability' => 'out_of_stock'];
+                for ($id = 1; $id <= FeedGeneratorFanOutTest::ITEMS; ++$id) {
+                    yield self::entity($id);
+                }
             }
 
             public function count(FeedContext $context, FilterSet $filters): int
             {
-                return 2;
+                return FeedGeneratorFanOutTest::ITEMS;
             }
 
-            public function getIdRange(FeedContext $context, FilterSet $filters): ?ChunkRange
+            public function getIdRange(FeedContext $context, FilterSet $filters): ChunkRange
             {
-                return null;
+                return new ChunkRange(1, FeedGeneratorFanOutTest::ITEMS);
             }
 
             public function getItemsInRange(FeedContext $context, FilterSet $filters, ChunkRange $range): iterable
             {
-                return $this->getItems($context, $filters);
+                for ($id = $range->start; $id <= min($range->end, FeedGeneratorFanOutTest::ITEMS); ++$id) {
+                    if ($id < 1) {
+                        continue;
+                    }
+
+                    yield self::entity($id);
+                }
+            }
+
+            private static function entity(int $id): object
+            {
+                return (object) ['id' => $id, 'sku' => 'SKU-' . $id, 'title' => 'Item ' . $id];
             }
         };
 
@@ -229,15 +276,23 @@ final class FeedGeneratorFilterTest extends TestCase
         };
     }
 
-    /**
-     * A field whose resolver reads the same-named property off the entity, so the two stub entities
-     * resolve to different availability values.
-     */
-    private function field(string $name): FieldDefinition
+    private function field(string $name, string $value): FieldDefinition
     {
-        $resolver = new class($name) implements ValueResolverInterface {
-            public function __construct(private readonly string $name)
-            {
+        $resolver = new FixedValueResolver($name, FieldType::STRING, $value);
+
+        return new FieldDefinition($name, $resolver->getLabel(), FieldType::STRING, $resolver);
+    }
+
+    /**
+     * A resolver that reads a per-entity property, so each item renders a distinct row.
+     */
+    private function entityField(string $name, string $property): FieldDefinition
+    {
+        $resolver = new class($name, $property) implements ValueResolverInterface {
+            public function __construct(
+                private readonly string $name,
+                private readonly string $property,
+            ) {
             }
 
             public function getName(): string
@@ -262,33 +317,36 @@ final class FeedGeneratorFilterTest extends TestCase
 
             public function resolve(object $entity, FeedContext $context): mixed
             {
-                return ((array) $entity)[$this->name] ?? null;
+                return ((array) $entity)[$this->property] ?? null;
             }
         };
 
         return new FieldDefinition($name, $resolver->getLabel(), FieldType::STRING, $resolver);
     }
 
-    private function feed(string $stage): FeedInterface
+    private function channel(): ChannelInterface
     {
-        $filter = new FeedFilter();
-        $filter->setField('availability');
-        $filter->setOperator('equals');
-        $filter->setValue("'out_of_stock'");
-        $filter->setAction(FeedFilterInterface::ACTION_EXCLUDE);
-        $filter->setStage($stage);
+        $channel = $this->prophesize(ChannelInterface::class);
+        $channel->getCode()->willReturn('web');
+        $channel->getHostname()->willReturn('example.com');
 
+        return $channel->reveal();
+    }
+
+    private function feed(): FeedInterface
+    {
         $source = $this->prophesize(FeedSourceInterface::class);
         $source->getFeedType()->willReturn('product_variant');
         $source->getPosition()->willReturn(0);
-        $source->getFilters()->willReturn(new ArrayCollection([$filter]));
+        $source->getFilters()->willReturn(new ArrayCollection());
         $source->getFields()->willReturn(new ArrayCollection([
             $this->feedField('id', 'id', 0),
-            $this->feedField('availability', 'availability', 1),
+            $this->feedField('title', 'title', 1),
+            $this->feedField('availability', 'availability', 2),
         ]));
 
         $feed = $this->prophesize(FeedInterface::class);
-        $feed->getCode()->willReturn('shop');
+        $feed->getCode()->willReturn('catalog');
         $feed->getFormat()->willReturn('csv');
         $feed->getFormatConfig()->willReturn([]);
         $feed->getSources()->willReturn(new ArrayCollection([$source->reveal()]));

@@ -10,6 +10,7 @@ use Setono\Doctrine\ORMTrait;
 use Setono\SyliusFeedPlugin\Context\FeedContext;
 use Setono\SyliusFeedPlugin\Doctrine\BatchIterator;
 use Setono\SyliusFeedPlugin\Filter\FilterSet;
+use Setono\SyliusFeedPlugin\Generator\ChunkRange;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Order\Model\OrderInterface;
 
@@ -23,6 +24,7 @@ use Sylius\Component\Order\Model\OrderInterface;
 final class OrderDataSource implements DataSourceInterface
 {
     use ORMTrait;
+    use IdRangePartitionTrait;
 
     private const BATCH_SIZE = 1000;
 
@@ -56,6 +58,20 @@ final class OrderDataSource implements DataSourceInterface
             ->select('COUNT(o.id)')
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    public function getIdRange(FeedContext $context, FilterSet $filters): ?ChunkRange
+    {
+        return $this->resolveIdRange($this->createQueryBuilder($context), 'o');
+    }
+
+    public function getItemsInRange(FeedContext $context, FilterSet $filters, ChunkRange $range): iterable
+    {
+        return BatchIterator::iterate(
+            $this->constrainToRange($this->createQueryBuilder($context), 'o', $range)->getQuery(),
+            $this->getManager($this->resourceClass),
+            self::BATCH_SIZE,
+        );
     }
 
     private function createQueryBuilder(FeedContext $context): QueryBuilder

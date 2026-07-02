@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Setono\SyliusFeedPlugin\Model\DeliveryTarget;
 use Setono\SyliusFeedPlugin\Model\Feed;
+use Setono\SyliusFeedPlugin\Model\FeedChunk;
 use Setono\SyliusFeedPlugin\Model\FeedField;
 use Setono\SyliusFeedPlugin\Model\FeedFilter;
 use Setono\SyliusFeedPlugin\Model\FeedSource;
@@ -41,6 +42,7 @@ final class DoctrineMappingTest extends FunctionalTestCase
         yield 'feed filter' => [FeedFilter::class, 'setono_sylius_feed__feed_filter'];
         yield 'feed translation' => [FeedTranslation::class, 'setono_sylius_feed__feed_translation'];
         yield 'delivery target' => [DeliveryTarget::class, 'setono_sylius_feed__delivery_target'];
+        yield 'feed chunk' => [FeedChunk::class, 'setono_sylius_feed__feed_chunk'];
     }
 
     /**

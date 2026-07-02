@@ -102,6 +102,81 @@ final class OutputWriter implements OutputWriterInterface
         return new OutputResult($primaryPath, $paths, $itemCount, $bytes);
     }
 
+    public function writeBody(
+        iterable $items,
+        FeedWriterInterface $writer,
+        WriterConfigInterface $config,
+        FeedContext $context,
+        string $directory,
+        string $basename,
+        string $extension,
+    ): OutputResult {
+        $stream = $this->openStream();
+        $writer->open($stream, $context, $config);
+        // Body only: no preamble/epilogue — the raw item bytes are the partial's content.
+
+        $itemCount = 0;
+        foreach ($items as $item) {
+            $writer->writeItem($item);
+            ++$itemCount;
+        }
+
+        $writer->close();
+
+        [$path, $size] = $this->persist($stream, $this->canonicalPath($directory, $basename, $extension), false);
+        fclose($stream);
+
+        return new OutputResult($path, [$path], $itemCount, $size);
+    }
+
+    public function finalizeFromPartials(
+        array $partialPaths,
+        FeedWriterInterface $writer,
+        WriterConfigInterface $config,
+        FeedContext $context,
+        string $directory,
+        string $basename,
+        string $extension,
+    ): OutputResult {
+        $stream = $this->openPart($writer, $context, $config);
+
+        foreach ($partialPaths as $partialPath) {
+            $this->copyPartial($stream, $partialPath);
+        }
+
+        $writer->writeEpilogue();
+        $writer->close();
+
+        [$path, $size] = $this->persist($stream, $this->canonicalPath($directory, $basename, $extension), false);
+        fclose($stream);
+
+        foreach ($partialPaths as $partialPath) {
+            if ($this->feedFilesystem->fileExists($partialPath)) {
+                $this->feedFilesystem->delete($partialPath);
+            }
+        }
+
+        return new OutputResult($path, [$path], 0, $size);
+    }
+
+    /**
+     * Streams a body-only partial's bytes into the open canonical stream, between the preamble and
+     * the epilogue, without buffering the whole partial in memory. A missing partial contributes
+     * nothing (a chunk that yielded no items writes an empty file, which may not exist).
+     *
+     * @param resource $stream
+     */
+    private function copyPartial($stream, string $partialPath): void
+    {
+        if (!$this->feedFilesystem->fileExists($partialPath)) {
+            return;
+        }
+
+        $source = $this->feedFilesystem->readStream($partialPath);
+        stream_copy_to_stream($source, $stream);
+        fclose($source);
+    }
+
     /**
      * @param list<string> $partPaths
      *

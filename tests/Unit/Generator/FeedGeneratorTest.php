@@ -20,6 +20,7 @@ use Setono\SyliusFeedPlugin\Format\CsvFormat;
 use Setono\SyliusFeedPlugin\Format\FormatRegistryInterface;
 use Setono\SyliusFeedPlugin\Format\GoogleRssFormat;
 use Setono\SyliusFeedPlugin\Format\PartnerAdsFormat;
+use Setono\SyliusFeedPlugin\Generator\ChunkRange;
 use Setono\SyliusFeedPlugin\Generator\FeedGenerator;
 use Setono\SyliusFeedPlugin\Generator\FieldMappingEvaluator;
 use Setono\SyliusFeedPlugin\Generator\OutputWriter;
@@ -445,6 +446,16 @@ final class FeedGeneratorTest extends TestCase
             public function count(FeedContext $context, FilterSet $filters): int
             {
                 return $this->items;
+            }
+
+            public function getIdRange(FeedContext $context, FilterSet $filters): ?ChunkRange
+            {
+                return null;
+            }
+
+            public function getItemsInRange(FeedContext $context, FilterSet $filters, ChunkRange $range): iterable
+            {
+                return $this->getItems($context, $filters);
             }
         };
 

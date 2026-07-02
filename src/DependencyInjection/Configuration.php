@@ -9,12 +9,15 @@ use Setono\SyliusFeedPlugin\Form\Type\LookupTableType;
 use Setono\SyliusFeedPlugin\Model\DeliveryTarget;
 use Setono\SyliusFeedPlugin\Model\DeliveryTargetInterface;
 use Setono\SyliusFeedPlugin\Model\Feed;
+use Setono\SyliusFeedPlugin\Model\FeedChunk;
+use Setono\SyliusFeedPlugin\Model\FeedChunkInterface;
 use Setono\SyliusFeedPlugin\Model\FeedContextResult;
 use Setono\SyliusFeedPlugin\Model\FeedContextResultInterface;
 use Setono\SyliusFeedPlugin\Model\FeedSource;
 use Setono\SyliusFeedPlugin\Model\FeedTranslation;
 use Setono\SyliusFeedPlugin\Model\LookupTable;
 use Setono\SyliusFeedPlugin\Model\LookupTableInterface;
+use Setono\SyliusFeedPlugin\Repository\FeedChunkRepository;
 use Setono\SyliusFeedPlugin\Repository\FeedContextResultRepository;
 use Setono\SyliusFeedPlugin\Repository\FeedRepository;
 use Setono\SyliusFeedPlugin\Repository\LookupTableRepository;
@@ -164,6 +167,23 @@ final class Configuration implements ConfigurationInterface
                                         ->scalarNode('interface')->defaultValue(FeedContextResultInterface::class)->cannotBeEmpty()->end()
                                         ->scalarNode('controller')->defaultValue(ResourceController::class)->cannotBeEmpty()->end()
                                         ->scalarNode('repository')->defaultValue(FeedContextResultRepository::class)->cannotBeEmpty()->end()
+                                        ->scalarNode('factory')->defaultValue(Factory::class)->end()
+                                        ->scalarNode('form')->defaultValue(DefaultResourceType::class)->cannotBeEmpty()->end()
+                                    ->end()
+                                ->end()
+                            ->end()
+                        ->end()
+                        ->arrayNode('feed_chunk')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->variableNode('options')->end()
+                                ->arrayNode('classes')
+                                    ->addDefaultsIfNotSet()
+                                    ->children()
+                                        ->scalarNode('model')->defaultValue(FeedChunk::class)->cannotBeEmpty()->end()
+                                        ->scalarNode('interface')->defaultValue(FeedChunkInterface::class)->cannotBeEmpty()->end()
+                                        ->scalarNode('controller')->defaultValue(ResourceController::class)->cannotBeEmpty()->end()
+                                        ->scalarNode('repository')->defaultValue(FeedChunkRepository::class)->cannotBeEmpty()->end()
                                         ->scalarNode('factory')->defaultValue(Factory::class)->end()
                                         ->scalarNode('form')->defaultValue(DefaultResourceType::class)->cannotBeEmpty()->end()
                                     ->end()

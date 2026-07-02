@@ -15,6 +15,7 @@ use Setono\SyliusFeedPlugin\Filter\FilterEvaluator;
 use Setono\SyliusFeedPlugin\Filter\FilterSet;
 use Setono\SyliusFeedPlugin\Format\FormatInterface;
 use Setono\SyliusFeedPlugin\Format\FormatRegistryInterface;
+use Setono\SyliusFeedPlugin\Generator\ChunkRange;
 use Setono\SyliusFeedPlugin\Generator\FieldMappingEvaluator;
 use Setono\SyliusFeedPlugin\Item\FeedItem;
 use Setono\SyliusFeedPlugin\Lookup\InMemoryLookup;
@@ -217,6 +218,16 @@ final class PreviewServiceTest extends TestCase
             public function count(FeedContext $context, FilterSet $filters): int
             {
                 return count($this->entities);
+            }
+
+            public function getIdRange(FeedContext $context, FilterSet $filters): ?ChunkRange
+            {
+                return null;
+            }
+
+            public function getItemsInRange(FeedContext $context, FilterSet $filters, ChunkRange $range): iterable
+            {
+                return $this->getItems($context, $filters);
             }
         };
 

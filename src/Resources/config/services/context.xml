@@ -8,5 +8,10 @@
             <argument type="service" id="Setono\SyliusFeedPlugin\FeedType\FeedTypeRegistryInterface"/>
         </service>
         <service id="Setono\SyliusFeedPlugin\Context\ContextFactoryInterface" alias="Setono\SyliusFeedPlugin\Context\ContextFactory"/>
+
+        <service id="Setono\SyliusFeedPlugin\Context\MessageContextFactory">
+            <argument type="service" id="sylius.repository.channel"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Context\MessageContextFactoryInterface" alias="Setono\SyliusFeedPlugin\Context\MessageContextFactory"/>
     </services>
 </container>

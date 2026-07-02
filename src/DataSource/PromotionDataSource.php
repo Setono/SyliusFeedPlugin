@@ -10,6 +10,7 @@ use Setono\Doctrine\ORMTrait;
 use Setono\SyliusFeedPlugin\Context\FeedContext;
 use Setono\SyliusFeedPlugin\Doctrine\BatchIterator;
 use Setono\SyliusFeedPlugin\Filter\FilterSet;
+use Setono\SyliusFeedPlugin\Generator\ChunkRange;
 
 /**
  * Streams non-archived promotions — one row per promotion (§8.6). A promotion has no
@@ -20,6 +21,7 @@ use Setono\SyliusFeedPlugin\Filter\FilterSet;
 final class PromotionDataSource implements DataSourceInterface
 {
     use ORMTrait;
+    use IdRangePartitionTrait;
 
     private const BATCH_SIZE = 1000;
 
@@ -53,6 +55,20 @@ final class PromotionDataSource implements DataSourceInterface
             ->select('COUNT(p.id)')
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    public function getIdRange(FeedContext $context, FilterSet $filters): ?ChunkRange
+    {
+        return $this->resolveIdRange($this->createQueryBuilder(), 'p');
+    }
+
+    public function getItemsInRange(FeedContext $context, FilterSet $filters, ChunkRange $range): iterable
+    {
+        return BatchIterator::iterate(
+            $this->constrainToRange($this->createQueryBuilder(), 'p', $range)->getQuery(),
+            $this->getManager($this->resourceClass),
+            self::BATCH_SIZE,
+        );
     }
 
     private function createQueryBuilder(): QueryBuilder

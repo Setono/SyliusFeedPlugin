@@ -60,6 +60,14 @@ final class MoveGeneratedFeedSubscriber implements EventSubscriberInterface
 
             $path = $item->path();
             $contextKey = pathinfo($path, \PATHINFO_FILENAME);
+
+            // Defensive: a fan-out run's body-only partials ({contextKey}.chunk-{index}) are deleted at
+            // finalize, but a mid-finalize crash could leak one — never promote it as if it were a
+            // context file (§6.3).
+            if (str_contains($contextKey, '.chunk-')) {
+                continue;
+            }
+
             $result = $this->feedContextResultRepository->findLatestForContext($feed, $contextKey);
 
             if (null !== $result && $result->isBlocked()) {
