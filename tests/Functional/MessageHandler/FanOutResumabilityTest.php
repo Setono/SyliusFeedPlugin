@@ -118,7 +118,7 @@ final class FanOutResumabilityTest extends FunctionalTestCase
         // Every variant row is present exactly once, in order — no duplicated or missing items.
         $reader = Reader::createFromString($fanOutBytes);
         $reader->setHeaderOffset(0);
-        $ids = array_map(static fn (array $row): mixed => $row['id'] ?? null, array_values([...$reader->getRecords()]));
+        $ids = array_map(self::rowId(...), array_values([...$reader->getRecords()]));
         self::assertSame(['VARIANT-1', 'VARIANT-2', 'VARIANT-3'], $ids, 'each variant appears exactly once, in id order');
 
         // Byte-identical: an inline generation of the same feed produces the same bytes.
@@ -386,5 +386,14 @@ final class FanOutResumabilityTest extends FunctionalTestCase
         $manager->flush();
 
         return $channel;
+    }
+
+    /**
+     * A `mixed` parameter is a hard type boundary: league/csv types getRecords() records loosely on
+     * lower versions and precisely on newer ones, so the guard is neither too narrow nor redundant.
+     */
+    private static function rowId(mixed $row): mixed
+    {
+        return is_array($row) ? ($row['id'] ?? null) : null;
     }
 }
