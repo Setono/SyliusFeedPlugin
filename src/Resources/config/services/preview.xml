@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<container xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://symfony.com/schema/dic/services"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Setono\SyliusFeedPlugin\Preview\PreviewService">
+            <argument type="service" id="Setono\SyliusFeedPlugin\FeedType\FeedTypeRegistryInterface"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Mapping\MappingResolverInterface"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Format\FormatRegistryInterface"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Generator\FieldMappingEvaluatorInterface"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Filter\FilterEvaluatorInterface"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Lookup\LookupReferenceResolverInterface"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Validator\FeedItemValidatorInterface"/>
+            <argument type="service" id="event_dispatcher"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Preview\PreviewServiceInterface" alias="Setono\SyliusFeedPlugin\Preview\PreviewService"/>
+
+        <service id="Setono\SyliusFeedPlugin\Audit\FeedAuditService"/>
+        <service id="Setono\SyliusFeedPlugin\Audit\FeedAuditServiceInterface" alias="Setono\SyliusFeedPlugin\Audit\FeedAuditService"/>
+    </services>
+</container>

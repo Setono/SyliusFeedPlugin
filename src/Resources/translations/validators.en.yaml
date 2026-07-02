@@ -1,3 +1,21 @@
 setono_sylius_feed:
     feed:
         resolve_required_fields_before_enabling: 'Resolve every field that requires input (set its source and clear the "requires input" flag) before enabling this feed.'
+    validation:
+        missing_field: 'The required field is missing or empty.'
+    google_shopping_item:
+        id:
+            not_blank: 'The item id (g:id) must not be blank.'
+        title:
+            not_blank: 'The item title (g:title) must not be blank.'
+            max_length: 'The item title (g:title) must not be longer than {{ limit }} characters.'
+        description:
+            not_blank: 'The item description (g:description) must not be blank.'
+        link:
+            not_blank: 'The item link (g:link) must not be blank.'
+        image_link:
+            not_blank: 'The item image link (g:image_link) must not be blank.'
+        availability:
+            not_blank: 'The item availability (g:availability) must not be blank.'
+        price:
+            not_blank: 'The item price (g:price) must not be blank.'

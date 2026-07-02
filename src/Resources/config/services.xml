@@ -6,6 +6,7 @@
         <import resource="services/registry.xml"/>
         <import resource="services/reference.xml"/>
         <import resource="services/operator.xml"/>
+        <import resource="services/filter.xml"/>
         <import resource="services/lookup.xml"/>
         <import resource="services/scripting.xml"/>
         <import resource="services/transformation.xml"/>
@@ -17,7 +18,9 @@
         <import resource="services/context.xml"/>
         <import resource="services/feed_type.xml"/>
         <import resource="services/validator.xml"/>
+        <import resource="services/publish.xml"/>
         <import resource="services/generator.xml"/>
+        <import resource="services/preview.xml"/>
         <import resource="services/messenger.xml"/>
         <import resource="services/event_subscriber.xml"/>
         <import resource="services/command.xml"/>

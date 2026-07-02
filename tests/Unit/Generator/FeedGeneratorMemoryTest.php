@@ -13,14 +13,17 @@ use Setono\SyliusFeedPlugin\Context\FeedContext;
 use Setono\SyliusFeedPlugin\DataSource\DataSourceInterface;
 use Setono\SyliusFeedPlugin\FeedType\FeedTypeInterface;
 use Setono\SyliusFeedPlugin\FeedType\FeedTypeRegistryInterface;
+use Setono\SyliusFeedPlugin\Filter\FilterEvaluator;
 use Setono\SyliusFeedPlugin\Filter\FilterSet;
 use Setono\SyliusFeedPlugin\Format\FormatRegistryInterface;
 use Setono\SyliusFeedPlugin\Format\GoogleRssFormat;
 use Setono\SyliusFeedPlugin\Generator\FeedGenerator;
 use Setono\SyliusFeedPlugin\Generator\FieldMappingEvaluator;
+use Setono\SyliusFeedPlugin\Item\FeedItem;
 use Setono\SyliusFeedPlugin\Lookup\InMemoryLookup;
 use Setono\SyliusFeedPlugin\Mapping\FieldDefinition;
 use Setono\SyliusFeedPlugin\Mapping\FieldType;
+use Setono\SyliusFeedPlugin\Mapping\MappingResolver;
 use Setono\SyliusFeedPlugin\Mapping\ScopeDimension;
 use Setono\SyliusFeedPlugin\MappingPreset\GoogleShoppingMappingPreset;
 use Setono\SyliusFeedPlugin\MappingPreset\MappingPresetRegistryInterface;
@@ -37,12 +40,14 @@ use Setono\SyliusFeedPlugin\Transformation\StripTags;
 use Setono\SyliusFeedPlugin\Transformation\TransformationChain;
 use Setono\SyliusFeedPlugin\Transformation\TransformationRegistry;
 use Setono\SyliusFeedPlugin\Transformation\Truncate;
+use Setono\SyliusFeedPlugin\Validator\FeedItemValidator;
 use Setono\SyliusFeedPlugin\Validator\RequiredFieldsValidator;
 use Setono\SyliusFeedPlugin\Writer\FeedWriterRegistryInterface;
 use Setono\SyliusFeedPlugin\Writer\XmlWriter;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RequestContext;
+use Symfony\Component\Validator\Validation;
 
 /**
  * Performance budget (§6.3, M1 acceptance): a 50,000-item feed must stream to storage without
@@ -95,7 +100,7 @@ final class FeedGeneratorMemoryTest extends TestCase
 
         return new FeedGenerator(
             $feedTypeRegistry->reveal(),
-            $presetRegistry->reveal(),
+            new MappingResolver($presetRegistry->reveal()),
             $formatRegistry->reveal(),
             $writerRegistry->reveal(),
             new FieldMappingEvaluator(
@@ -106,7 +111,9 @@ final class FeedGeneratorMemoryTest extends TestCase
                 new SandboxedTwigRenderer(new FeedTemplateSecurityPolicy(), new InMemoryLookup()),
                 new NullLookupReferenceResolver(),
             ),
-            new RequiredFieldsValidator(),
+            new FilterEvaluator(new ReferenceResolver(), new OperatorRegistry([])),
+            new NullLookupReferenceResolver(),
+            new FeedItemValidator(Validation::createValidator(), new RequiredFieldsValidator()),
             new EventDispatcher(),
             $urlGenerator->reveal(),
             $filesystem,
@@ -167,6 +174,11 @@ final class FeedGeneratorMemoryTest extends TestCase
             public function getDataSource(): DataSourceInterface
             {
                 return $this->dataSource;
+            }
+
+            public function createItem(object $entity, FeedContext $context): FeedItem
+            {
+                return new FeedItem($entity, $context);
             }
 
             public function getScopeDimensions(): array

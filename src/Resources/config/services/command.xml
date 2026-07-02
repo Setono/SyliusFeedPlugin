@@ -7,6 +7,9 @@
         <service id="Setono\SyliusFeedPlugin\Command\ProcessFeedCommand">
             <argument type="service" id="setono_sylius_feed.repository.feed"/>
             <argument type="service" id="setono_sylius_feed.command_bus"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Context\ContextFactoryInterface"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Preview\PreviewServiceInterface"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Audit\FeedAuditServiceInterface"/>
             <tag name="console.command"/>
         </service>
     </services>

@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\FeedType;
 
+use Setono\SyliusFeedPlugin\Context\FeedContext;
 use Setono\SyliusFeedPlugin\DataSource\DataSourceInterface;
+use Setono\SyliusFeedPlugin\Item\FeedItem;
 use Setono\SyliusFeedPlugin\Mapping\FieldDefinition;
 use Setono\SyliusFeedPlugin\Mapping\ScopeDimension;
 
@@ -28,6 +30,13 @@ interface FeedTypeInterface
     public function getLabel(): string;
 
     public function getDataSource(): DataSourceInterface;
+
+    /**
+     * Create the per-item object for one entity of this feed type. A feed type MAY return a typed
+     * subclass of {@see FeedItem} (e.g. GoogleShoppingItem) so that named accessors and typed-item
+     * validation constraints apply; the default is a plain {@see FeedItem} over the generic bag (§4.2, §11).
+     */
+    public function createItem(object $entity, FeedContext $context): FeedItem;
 
     /**
      * @return list<ScopeDimension>

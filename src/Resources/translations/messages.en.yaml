@@ -18,6 +18,32 @@ setono_sylius_feed:
         file: File
         size: Size
         no_results: This feed has not been generated yet
+        preview: Preview
+        preview_context: Previewing context
+        funnel: Include funnel
+        funnel_source: Sampled
+        funnel_after_pre_filters: After pre-filters
+        funnel_after_mapping_validation: After mapping & validation
+        funnel_after_post_filters: After post-filters
+        funnel_included: Included
+        audit: Audit
+        fill_rates: Fill rate
+        soft_warnings: Soft warnings
+        distributions: Distributions
+        included_sample: Included sample
+        excluded_sample: Excluded sample
+        no_included_items: No items would be included in this preview
+        no_excluded_items: No items were excluded in this preview
+        item: Item
+        field: Field
+        value: Value
+        count: Count
+        type: Type
+        reason: Reason
+        warning:
+            title_too_long: Title longer than 150 characters
+            description_contains_html: Description still contains HTML tags
+            price_empty: Price is zero or empty
     form:
         feed:
             name: Name
@@ -31,6 +57,20 @@ setono_sylius_feed:
         feed_source:
             feed_type: Feed type
             fields: Field mappings
+            filters: Filters
+        feed_filter:
+            field: Field
+            operator: Operator
+            value: Value
+            value_help: 'The value to compare against — a field name, an earlier output field, or a quoted literal (e.g. ''out_of_stock''). Leave empty for operators that take no value (e.g. empty / not_empty).'
+            action: Action
+            stage: Stage
+            action_choices:
+                include: Include matching
+                exclude: Exclude matching
+            stage_choices:
+                pre: Before mapping
+                post: After mapping
         feed_field:
             output_field: Output field
             source_type: Source type

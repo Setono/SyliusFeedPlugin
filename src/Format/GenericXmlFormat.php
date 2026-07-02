@@ -33,4 +33,9 @@ final class GenericXmlFormat implements FormatInterface
     {
         return [];
     }
+
+    public function getItemValidationGroups(): array
+    {
+        return [];
+    }
 }

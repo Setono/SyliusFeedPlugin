@@ -32,17 +32,9 @@ final class FieldMappingEvaluator implements FieldMappingEvaluatorInterface
 
     public function apply(FeedItem $item, iterable $mappings, array $availableFields): void
     {
-        $entity = $item->getEntity();
-        $context = $item->getContext();
-        $item->setSourceResolver(function (string $field) use ($entity, $context, $availableFields): mixed {
-            if ($this->lookupReferenceResolver->supports($field)) {
-                return $this->lookupReferenceResolver->resolve($field, $entity, $context, $availableFields);
-            }
-
-            return isset($availableFields[$field])
-                ? $availableFields[$field]->getResolver()->resolve($entity, $context)
-                : null;
-        });
+        // Idempotent: the generator binds this up front (so pre-filters can resolve source fields);
+        // this call is the safety net when apply() runs standalone, e.g. in unit tests.
+        SourceResolverBinder::bind($item, $availableFields, $this->lookupReferenceResolver);
 
         foreach ($mappings as $mapping) {
             if (!$this->conditionSatisfied($mapping, $item)) {

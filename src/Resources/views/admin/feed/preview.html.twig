@@ -1,0 +1,154 @@
+{% extends '@SyliusAdmin/layout.html.twig' %}
+
+{% block content %}
+    <div class="ui segment">
+        <h1 class="ui header">{{ 'setono_sylius_feed.ui.preview'|trans }} — {{ feed.code }}</h1>
+
+        <div class="ui small basic label">{{ 'setono_sylius_feed.ui.preview_context'|trans }}: {{ context.key }}</div>
+
+        <h2 class="ui header">{{ 'setono_sylius_feed.ui.funnel'|trans }}</h2>
+        <table class="ui very basic collapsing table">
+            <tbody>
+                <tr>
+                    <td>{{ 'setono_sylius_feed.ui.funnel_source'|trans }}</td>
+                    <td>{{ preview.funnel.source }}</td>
+                </tr>
+                <tr>
+                    <td>{{ 'setono_sylius_feed.ui.funnel_after_pre_filters'|trans }}</td>
+                    <td>{{ preview.funnel.afterPreFilters }}</td>
+                </tr>
+                <tr>
+                    <td>{{ 'setono_sylius_feed.ui.funnel_after_mapping_validation'|trans }}</td>
+                    <td>{{ preview.funnel.afterMappingValidation }}</td>
+                </tr>
+                <tr>
+                    <td>{{ 'setono_sylius_feed.ui.funnel_after_post_filters'|trans }}</td>
+                    <td>{{ preview.funnel.afterPostFilters }}</td>
+                </tr>
+                <tr>
+                    <td><strong>{{ 'setono_sylius_feed.ui.funnel_included'|trans }}</strong></td>
+                    <td><strong>{{ preview.funnel.included }}</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2 class="ui header">{{ 'setono_sylius_feed.ui.audit'|trans }}</h2>
+
+        <h3 class="ui header">{{ 'setono_sylius_feed.ui.fill_rates'|trans }}</h3>
+        <table class="ui very basic table">
+            <thead>
+                <tr>
+                    <th>{{ 'setono_sylius_feed.ui.field'|trans }}</th>
+                    <th>{{ 'setono_sylius_feed.ui.fill_rates'|trans }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for field, rate in audit.fillRates %}
+                    <tr>
+                        <td>{{ field }}</td>
+                        <td>{{ (rate * 100)|round(1) }}%</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="2">{{ 'setono_sylius_feed.ui.no_included_items'|trans }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if audit.warnings is not empty %}
+            <h3 class="ui header">{{ 'setono_sylius_feed.ui.soft_warnings'|trans }}</h3>
+            <table class="ui very basic table">
+                <thead>
+                    <tr>
+                        <th>{{ 'setono_sylius_feed.ui.type'|trans }}</th>
+                        <th>{{ 'setono_sylius_feed.ui.field'|trans }}</th>
+                        <th>{{ 'setono_sylius_feed.ui.count'|trans }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for warning in audit.warnings %}
+                        <tr>
+                            <td>{{ ('setono_sylius_feed.ui.warning.' ~ warning.type)|trans }}</td>
+                            <td>{{ warning.field }}</td>
+                            <td>{{ warning.count }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+
+        {% if audit.distributions is not empty %}
+            <h3 class="ui header">{{ 'setono_sylius_feed.ui.distributions'|trans }}</h3>
+            {% for field, values in audit.distributions %}
+                <h4 class="ui header">{{ field }}</h4>
+                <table class="ui very basic collapsing table">
+                    <thead>
+                        <tr>
+                            <th>{{ 'setono_sylius_feed.ui.value'|trans }}</th>
+                            <th>{{ 'setono_sylius_feed.ui.count'|trans }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for value, count in values %}
+                            <tr>
+                                <td>{{ value }}</td>
+                                <td>{{ count }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endfor %}
+        {% endif %}
+
+        <h2 class="ui header">{{ 'setono_sylius_feed.ui.included_sample'|trans }}</h2>
+        <div style="overflow-x: auto;">
+            <table class="ui very basic table">
+                <thead>
+                    <tr>
+                        {% for column in columns %}
+                            <th>{{ column }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bag in preview.included %}
+                        <tr>
+                            {% for column in columns %}
+                                <td>{{ bag[column] is iterable ? bag[column]|join(', ') : bag[column] }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="{{ columns|length ?: 1 }}">{{ 'setono_sylius_feed.ui.no_included_items'|trans }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <h2 class="ui header">{{ 'setono_sylius_feed.ui.excluded_sample'|trans }}</h2>
+        <table class="ui very basic table">
+            <thead>
+                <tr>
+                    <th>{{ 'setono_sylius_feed.ui.item'|trans }}</th>
+                    <th>{{ 'setono_sylius_feed.ui.reason'|trans }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in preview.excluded %}
+                    <tr>
+                        <td>{{ row.item ?? '—' }}</td>
+                        <td>{{ row.reason }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="2">{{ 'setono_sylius_feed.ui.no_excluded_items'|trans }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <a class="ui button" href="{{ path('setono_sylius_feed_admin_feed_index') }}">{{ 'sylius.ui.back'|trans }}</a>
+    </div>
+{% endblock %}

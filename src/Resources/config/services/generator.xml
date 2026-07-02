@@ -4,8 +4,19 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <service id="Setono\SyliusFeedPlugin\Mapping\MappingResolver">
+            <argument type="service" id="Setono\SyliusFeedPlugin\MappingPreset\MappingPresetRegistryInterface"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Mapping\MappingResolverInterface" alias="Setono\SyliusFeedPlugin\Mapping\MappingResolver"/>
+
         <service id="Setono\SyliusFeedPlugin\Validator\RequiredFieldsValidator"/>
         <service id="Setono\SyliusFeedPlugin\Validator\RequiredFieldsValidatorInterface" alias="Setono\SyliusFeedPlugin\Validator\RequiredFieldsValidator"/>
+
+        <service id="Setono\SyliusFeedPlugin\Validator\FeedItemValidator">
+            <argument type="service" id="validator"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Validator\RequiredFieldsValidatorInterface"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Validator\FeedItemValidatorInterface" alias="Setono\SyliusFeedPlugin\Validator\FeedItemValidator"/>
 
         <service id="Setono\SyliusFeedPlugin\Generator\FieldMappingEvaluator">
             <argument type="service" id="Setono\SyliusFeedPlugin\Transformation\TransformationChainInterface"/>
@@ -19,15 +30,23 @@
 
         <service id="Setono\SyliusFeedPlugin\Generator\FeedGenerator">
             <argument type="service" id="Setono\SyliusFeedPlugin\FeedType\FeedTypeRegistryInterface"/>
-            <argument type="service" id="Setono\SyliusFeedPlugin\MappingPreset\MappingPresetRegistryInterface"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Mapping\MappingResolverInterface"/>
             <argument type="service" id="Setono\SyliusFeedPlugin\Format\FormatRegistryInterface"/>
             <argument type="service" id="Setono\SyliusFeedPlugin\Writer\FeedWriterRegistryInterface"/>
             <argument type="service" id="Setono\SyliusFeedPlugin\Generator\FieldMappingEvaluatorInterface"/>
-            <argument type="service" id="Setono\SyliusFeedPlugin\Validator\RequiredFieldsValidatorInterface"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Filter\FilterEvaluatorInterface"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Lookup\LookupReferenceResolverInterface"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Validator\FeedItemValidatorInterface"/>
             <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="router"/>
             <argument type="service" id="setono_sylius_feed.storage.feed_tmp"/>
         </service>
         <service id="Setono\SyliusFeedPlugin\Generator\FeedGeneratorInterface" alias="Setono\SyliusFeedPlugin\Generator\FeedGenerator"/>
+
+        <service id="Setono\SyliusFeedPlugin\Generator\FeedContextResultRecorder">
+            <argument type="service" id="doctrine"/>
+            <argument type="service" id="setono_sylius_feed.factory.feed_context_result"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Generator\FeedContextResultRecorderInterface" alias="Setono\SyliusFeedPlugin\Generator\FeedContextResultRecorder"/>
     </services>
 </container>

@@ -30,6 +30,9 @@ class Feed implements FeedInterface
     /** @var array<string, mixed> */
     protected array $formatConfig = [];
 
+    /** @var array<string, mixed> */
+    protected array $publishConfig = [];
+
     /** @var Collection<int, FeedSourceInterface> */
     protected Collection $sources;
 
@@ -141,6 +144,16 @@ class Feed implements FeedInterface
     public function setFormatConfig(array $formatConfig): void
     {
         $this->formatConfig = $formatConfig;
+    }
+
+    public function getPublishConfig(): array
+    {
+        return $this->publishConfig;
+    }
+
+    public function setPublishConfig(array $publishConfig): void
+    {
+        $this->publishConfig = $publishConfig;
     }
 
     public function getSources(): Collection

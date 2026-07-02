@@ -43,5 +43,10 @@
             <argument type="tagged_iterator" tag="setono_sylius_feed.format"/>
         </service>
         <service id="Setono\SyliusFeedPlugin\Format\FormatRegistryInterface" alias="Setono\SyliusFeedPlugin\Format\FormatRegistry"/>
+
+        <service id="Setono\SyliusFeedPlugin\Publish\GuardrailRegistry" public="true">
+            <argument type="tagged_iterator" tag="setono_sylius_feed.guardrail"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Publish\GuardrailRegistryInterface" alias="Setono\SyliusFeedPlugin\Publish\GuardrailRegistry"/>
     </services>
 </container>

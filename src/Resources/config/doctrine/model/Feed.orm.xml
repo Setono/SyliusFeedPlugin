@@ -15,6 +15,7 @@
         <field name="format" type="string" nullable="true"/>
         <field name="state" type="string"/>
         <field name="formatConfig" column="format_config" type="json"/>
+        <field name="publishConfig" column="publish_config" type="json"/>
         <field name="lastGeneratedAt" column="last_generated_at" type="datetime_immutable" nullable="true"/>
         <field name="contextCount" column="context_count" type="integer" nullable="true"/>
         <field name="completedContextCount" column="completed_context_count" type="integer"/>

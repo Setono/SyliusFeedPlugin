@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<constraint-mapping xmlns="http://symfony.com/schema/dic/constraint-mapping"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping http://symfony.com/schema/dic/constraint-mapping/constraint-mapping-1.0.xsd">
+
+    <class name="Setono\SyliusFeedPlugin\Item\Google\GoogleShoppingItem">
+        <getter property="id">
+            <constraint name="NotBlank">
+                <option name="message">setono_sylius_feed.google_shopping_item.id.not_blank</option>
+                <option name="groups">
+                    <value>Default</value>
+                    <value>sylius</value>
+                </option>
+            </constraint>
+        </getter>
+
+        <getter property="title">
+            <constraint name="NotBlank">
+                <option name="message">setono_sylius_feed.google_shopping_item.title.not_blank</option>
+                <option name="groups">
+                    <value>Default</value>
+                    <value>sylius</value>
+                </option>
+            </constraint>
+            <constraint name="Length">
+                <option name="max">150</option>
+                <option name="maxMessage">setono_sylius_feed.google_shopping_item.title.max_length</option>
+                <option name="groups">
+                    <value>Default</value>
+                    <value>sylius</value>
+                </option>
+            </constraint>
+        </getter>
+
+        <getter property="description">
+            <constraint name="NotBlank">
+                <option name="message">setono_sylius_feed.google_shopping_item.description.not_blank</option>
+                <option name="groups">
+                    <value>Default</value>
+                    <value>sylius</value>
+                </option>
+            </constraint>
+        </getter>
+
+        <getter property="link">
+            <constraint name="NotBlank">
+                <option name="message">setono_sylius_feed.google_shopping_item.link.not_blank</option>
+                <option name="groups">
+                    <value>Default</value>
+                    <value>sylius</value>
+                </option>
+            </constraint>
+        </getter>
+
+        <getter property="imageLink">
+            <constraint name="NotBlank">
+                <option name="message">setono_sylius_feed.google_shopping_item.image_link.not_blank</option>
+                <option name="groups">
+                    <value>Default</value>
+                    <value>sylius</value>
+                </option>
+            </constraint>
+        </getter>
+
+        <getter property="availability">
+            <constraint name="NotBlank">
+                <option name="message">setono_sylius_feed.google_shopping_item.availability.not_blank</option>
+                <option name="groups">
+                    <value>Default</value>
+                    <value>sylius</value>
+                </option>
+            </constraint>
+        </getter>
+
+        <getter property="price">
+            <constraint name="NotBlank">
+                <option name="message">setono_sylius_feed.google_shopping_item.price.not_blank</option>
+                <option name="groups">
+                    <value>Default</value>
+                    <value>sylius</value>
+                </option>
+            </constraint>
+        </getter>
+    </class>
+</constraint-mapping>

@@ -29,6 +29,11 @@
             <tag name="form.type"/>
         </service>
 
+        <service id="Setono\SyliusFeedPlugin\Form\Type\FeedFilterType">
+            <argument type="service" id="Setono\SyliusFeedPlugin\Operator\OperatorRegistryInterface"/>
+            <tag name="form.type"/>
+        </service>
+
         <service id="Setono\SyliusFeedPlugin\Form\Type\LookupTableType">
             <argument>%setono_sylius_feed.model.lookup_table.class%</argument>
             <tag name="form.type"/>

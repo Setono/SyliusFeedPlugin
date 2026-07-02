@@ -18,6 +18,10 @@
             <argument type="service" id="setono_sylius_feed.repository.feed"/>
             <argument type="service" id="sylius.repository.channel"/>
             <argument type="service" id="Setono\SyliusFeedPlugin\Generator\FeedGeneratorInterface"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Generator\FeedContextResultRecorderInterface"/>
+            <argument type="service" id="setono_sylius_feed.repository.feed_context_result"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Publish\PublishGateInterface"/>
+            <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="workflow.registry"/>
             <tag name="messenger.message_handler"/>
         </service>

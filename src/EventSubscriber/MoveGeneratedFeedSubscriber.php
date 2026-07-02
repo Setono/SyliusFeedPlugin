@@ -6,20 +6,25 @@ namespace Setono\SyliusFeedPlugin\EventSubscriber;
 
 use League\Flysystem\FilesystemOperator;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
+use Setono\SyliusFeedPlugin\Repository\FeedContextResultRepositoryInterface;
 use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Workflow\Event\CompletedEvent;
 
 /**
- * On `complete`, swaps the feed's freshly generated files from temporary to canonical storage so
- * the public feed is never served half-written (§6.3): the canonical directory is replaced with the
- * temporary one, then the temporary copy is removed and the feed is stamped as generated.
+ * On `complete`, promotes each freshly generated context file from staging to canonical storage —
+ * but only per-context and only when the publish gate let it through (§6.6). A context whose latest
+ * result is `blocked` keeps its previously published canonical file live and its candidate is
+ * retained in staging for inspection (and a possible "publish anyway"); every other context is
+ * copied across (overwriting) and its staging copy removed. The canonical directory is never wiped
+ * wholesale, so a blocked context never loses its live file.
  */
 final class MoveGeneratedFeedSubscriber implements EventSubscriberInterface
 {
     public function __construct(
         private readonly FilesystemOperator $feedTmpFilesystem,
         private readonly FilesystemOperator $feedFilesystem,
+        private readonly FeedContextResultRepositoryInterface $feedContextResultRepository,
     ) {
     }
 
@@ -39,17 +44,24 @@ final class MoveGeneratedFeedSubscriber implements EventSubscriberInterface
 
         $directory = (string) $feed->getCode();
 
-        $this->feedFilesystem->deleteDirectory($directory);
-
         foreach ($this->feedTmpFilesystem->listContents($directory, true) as $item) {
             if (!$item->isFile()) {
                 continue;
             }
 
-            $this->feedFilesystem->writeStream($item->path(), $this->feedTmpFilesystem->readStream($item->path()));
-        }
+            $path = $item->path();
+            $contextKey = pathinfo($path, \PATHINFO_FILENAME);
+            $result = $this->feedContextResultRepository->findLatestForContext($feed, $contextKey);
 
-        $this->feedTmpFilesystem->deleteDirectory($directory);
+            if (null !== $result && $result->isBlocked()) {
+                // Keep the live canonical file; retain the blocked candidate in staging for inspection.
+                continue;
+            }
+
+            // Published (or no result / no gate): swap the candidate in and drop the staging copy.
+            $this->feedFilesystem->writeStream($path, $this->feedTmpFilesystem->readStream($path));
+            $this->feedTmpFilesystem->delete($path);
+        }
 
         $feed->setLastGeneratedAt(new \DateTimeImmutable());
     }

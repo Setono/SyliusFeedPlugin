@@ -7,20 +7,28 @@ namespace Setono\SyliusFeedPlugin\MessageHandler;
 use Doctrine\Persistence\ManagerRegistry;
 use Setono\Doctrine\ORMTrait;
 use Setono\SyliusFeedPlugin\Context\FeedContext;
+use Setono\SyliusFeedPlugin\Event\FeedPublishBlockedEvent;
+use Setono\SyliusFeedPlugin\Generator\FeedContextResultRecorderInterface;
 use Setono\SyliusFeedPlugin\Generator\FeedGeneratorInterface;
 use Setono\SyliusFeedPlugin\Message\Command\GenerateFeedContext;
+use Setono\SyliusFeedPlugin\Model\FeedContextResultInterface;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
+use Setono\SyliusFeedPlugin\Publish\PublishGateInterface;
+use Setono\SyliusFeedPlugin\Repository\FeedContextResultRepositoryInterface;
 use Setono\SyliusFeedPlugin\Repository\FeedRepositoryInterface;
 use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Sylius\Component\Resource\Repository\RepositoryInterface;
 use Symfony\Component\Workflow\Registry;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Webmozart\Assert\Assert;
 
 /**
- * Generates one context's feed file to temporary storage, then atomically counts it as completed;
- * the handler that finishes the last context completes the feed (§6.3). Because the generator
- * clears the entity manager while streaming, the completion bookkeeping re-fetches the feed.
+ * Generates one context's feed file to temporary (staging) storage, records the candidate result,
+ * then runs it through the publish gate (§6.6) to decide whether it may be promoted to the live feed
+ * (the promotion itself happens per-context on `complete`). Finally it counts the context as
+ * completed; the handler that finishes the last context completes the feed (§6.3). Because the
+ * generator clears the entity manager while streaming, the bookkeeping re-fetches the feed.
  */
 final class GenerateFeedContextHandler
 {
@@ -31,6 +39,10 @@ final class GenerateFeedContextHandler
         private readonly FeedRepositoryInterface $feedRepository,
         private readonly RepositoryInterface $channelRepository,
         private readonly FeedGeneratorInterface $feedGenerator,
+        private readonly FeedContextResultRecorderInterface $feedContextResultRecorder,
+        private readonly FeedContextResultRepositoryInterface $feedContextResultRepository,
+        private readonly PublishGateInterface $publishGate,
+        private readonly EventDispatcherInterface $eventDispatcher,
         private readonly Registry $workflowRegistry,
     ) {
         $this->managerRegistry = $managerRegistry;
@@ -43,8 +55,10 @@ final class GenerateFeedContextHandler
             return;
         }
 
+        $context = $this->buildContext($message);
+
         try {
-            $this->feedGenerator->generate($feed, $this->buildContext($message));
+            $result = $this->feedGenerator->generate($feed, $context);
         } catch (\Throwable $exception) {
             $this->fail($message->feed);
 
@@ -56,9 +70,43 @@ final class GenerateFeedContextHandler
         $feed = $this->feedRepository->find($message->feed);
         Assert::isInstanceOf($feed, FeedInterface::class);
 
+        // Record the excluded-item report + size/count for this context now that generation
+        // finished, against the managed feed (§11). The candidate starts out `pending`.
+        $contextKey = $context->key();
+        $candidate = $this->feedContextResultRecorder->record($feed, $contextKey, $result);
+
+        $this->gate($feed, $contextKey, $candidate);
+
         $completed = $this->feedRepository->incrementCompletedContexts($feed);
         if (null !== $feed->getContextCount() && $completed >= $feed->getContextCount()) {
             $this->transition($feed, FeedGraph::TRANSITION_COMPLETE);
+        }
+    }
+
+    /**
+     * Runs the freshly recorded candidate through the publish gate against the last published
+     * baseline (§6.6), stamps the outcome onto the candidate, and notifies listeners when the gate
+     * blocked promotion or a `warn` guardrail flagged a concern.
+     */
+    private function gate(FeedInterface $feed, string $contextKey, FeedContextResultInterface $candidate): void
+    {
+        $baseline = $this->feedContextResultRepository->findLatestPublished($feed, $contextKey);
+
+        $guardrails = $feed->getPublishConfig()['guardrails'] ?? [];
+        $decision = $this->publishGate->evaluate($candidate, $baseline, is_array($guardrails) ? $guardrails : []);
+
+        $candidate->setPublishState(
+            $decision->blocked
+                ? FeedContextResultInterface::PUBLISH_STATE_BLOCKED
+                : FeedContextResultInterface::PUBLISH_STATE_PUBLISHED,
+        );
+        $candidate->setPublishCheck([] === $decision->reasons ? null : $decision->reasons);
+        $this->getManager($candidate)->flush();
+
+        if ($decision->blocked || [] !== $decision->reasons) {
+            $this->eventDispatcher->dispatch(
+                new FeedPublishBlockedEvent($feed, $contextKey, $decision->reasons, $decision->blocked),
+            );
         }
     }
 

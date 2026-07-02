@@ -1,5 +1,6 @@
 setono_sylius_feed:
     feed:
         generation_dispatched: Feed generation has been dispatched
+        context_published: The blocked context has been published
     lookup_table:
         refreshed: Lookup table has been refreshed
