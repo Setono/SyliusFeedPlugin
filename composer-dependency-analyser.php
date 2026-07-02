@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use ShipMonk\ComposerDependencyAnalyser\Config\Configuration;
 use ShipMonk\ComposerDependencyAnalyser\Config\ErrorType;
 
@@ -12,4 +14,4 @@ return (new Configuration())
     // ignore is a no-op there, which is why unmatched-ignore reporting is disabled).
     ->ignoreUnknownClasses(['XmlWriter', 'LOCALE'])
     ->disableReportingUnmatchedIgnores()
-    ;
+;
