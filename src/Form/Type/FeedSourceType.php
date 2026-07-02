@@ -40,6 +40,13 @@ final class FeedSourceType extends AbstractType
                 'allow_delete' => true,
                 'by_reference' => false,
             ])
+            ->add('filters', CollectionType::class, [
+                'label' => 'setono_sylius_feed.form.feed_source.filters',
+                'entry_type' => FeedFilterType::class,
+                'allow_add' => true,
+                'allow_delete' => true,
+                'by_reference' => false,
+            ])
         ;
 
         $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event): void {

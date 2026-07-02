@@ -31,6 +31,20 @@ setono_sylius_feed:
         feed_source:
             feed_type: Feed type
             fields: Field mappings
+            filters: Filters
+        feed_filter:
+            field: Field
+            operator: Operator
+            value: Value
+            value_help: 'The value to compare against — a field name, an earlier output field, or a quoted literal (e.g. ''out_of_stock''). Leave empty for operators that take no value (e.g. empty / not_empty).'
+            action: Action
+            stage: Stage
+            action_choices:
+                include: Include matching
+                exclude: Exclude matching
+            stage_choices:
+                pre: Before mapping
+                post: After mapping
         feed_field:
             output_field: Output field
             source_type: Source type

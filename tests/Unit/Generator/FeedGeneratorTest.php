@@ -14,6 +14,7 @@ use Setono\SyliusFeedPlugin\Context\FeedContext;
 use Setono\SyliusFeedPlugin\DataSource\DataSourceInterface;
 use Setono\SyliusFeedPlugin\FeedType\FeedTypeInterface;
 use Setono\SyliusFeedPlugin\FeedType\FeedTypeRegistryInterface;
+use Setono\SyliusFeedPlugin\Filter\FilterEvaluator;
 use Setono\SyliusFeedPlugin\Filter\FilterSet;
 use Setono\SyliusFeedPlugin\Format\CsvFormat;
 use Setono\SyliusFeedPlugin\Format\FormatRegistryInterface;
@@ -33,6 +34,7 @@ use Setono\SyliusFeedPlugin\Model\FeedField;
 use Setono\SyliusFeedPlugin\Model\FeedFieldInterface;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Model\FeedSourceInterface;
+use Setono\SyliusFeedPlugin\Operator\Equals;
 use Setono\SyliusFeedPlugin\Operator\IsTrue;
 use Setono\SyliusFeedPlugin\Operator\OperatorRegistry;
 use Setono\SyliusFeedPlugin\Reference\ReferenceResolver;
@@ -265,6 +267,8 @@ final class FeedGeneratorTest extends TestCase
                 new SandboxedTwigRenderer(new FeedTemplateSecurityPolicy(), new InMemoryLookup()),
                 new NullLookupReferenceResolver(),
             ),
+            new FilterEvaluator(new ReferenceResolver(), new OperatorRegistry([new Equals()])),
+            new NullLookupReferenceResolver(),
             new RequiredFieldsValidator(),
             new EventDispatcher(),
             $urlGenerator->reveal(),

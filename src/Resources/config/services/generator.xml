@@ -23,6 +23,8 @@
             <argument type="service" id="Setono\SyliusFeedPlugin\Format\FormatRegistryInterface"/>
             <argument type="service" id="Setono\SyliusFeedPlugin\Writer\FeedWriterRegistryInterface"/>
             <argument type="service" id="Setono\SyliusFeedPlugin\Generator\FieldMappingEvaluatorInterface"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Filter\FilterEvaluatorInterface"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Lookup\LookupReferenceResolverInterface"/>
             <argument type="service" id="Setono\SyliusFeedPlugin\Validator\RequiredFieldsValidatorInterface"/>
             <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="router"/>

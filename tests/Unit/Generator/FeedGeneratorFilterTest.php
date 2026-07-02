@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\Tests\Unit\Generator;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use League\Csv\Reader;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 use PHPUnit\Framework\TestCase;
@@ -15,81 +16,99 @@ use Setono\SyliusFeedPlugin\FeedType\FeedTypeInterface;
 use Setono\SyliusFeedPlugin\FeedType\FeedTypeRegistryInterface;
 use Setono\SyliusFeedPlugin\Filter\FilterEvaluator;
 use Setono\SyliusFeedPlugin\Filter\FilterSet;
+use Setono\SyliusFeedPlugin\Format\CsvFormat;
 use Setono\SyliusFeedPlugin\Format\FormatRegistryInterface;
-use Setono\SyliusFeedPlugin\Format\GoogleRssFormat;
 use Setono\SyliusFeedPlugin\Generator\FeedGenerator;
 use Setono\SyliusFeedPlugin\Generator\FieldMappingEvaluator;
 use Setono\SyliusFeedPlugin\Lookup\InMemoryLookup;
 use Setono\SyliusFeedPlugin\Mapping\FieldDefinition;
 use Setono\SyliusFeedPlugin\Mapping\FieldType;
 use Setono\SyliusFeedPlugin\Mapping\ScopeDimension;
-use Setono\SyliusFeedPlugin\MappingPreset\GoogleShoppingMappingPreset;
 use Setono\SyliusFeedPlugin\MappingPreset\MappingPresetRegistryInterface;
+use Setono\SyliusFeedPlugin\Model\FeedField;
+use Setono\SyliusFeedPlugin\Model\FeedFieldInterface;
+use Setono\SyliusFeedPlugin\Model\FeedFilter;
+use Setono\SyliusFeedPlugin\Model\FeedFilterInterface;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Model\FeedSourceInterface;
+use Setono\SyliusFeedPlugin\Operator\Equals;
 use Setono\SyliusFeedPlugin\Operator\IsTrue;
 use Setono\SyliusFeedPlugin\Operator\OperatorRegistry;
 use Setono\SyliusFeedPlugin\Reference\ReferenceResolver;
 use Setono\SyliusFeedPlugin\Scripting\ExpressionEvaluator;
 use Setono\SyliusFeedPlugin\Scripting\FeedTemplateSecurityPolicy;
 use Setono\SyliusFeedPlugin\Scripting\SandboxedTwigRenderer;
-use Setono\SyliusFeedPlugin\Transformation\MoneyFormat;
-use Setono\SyliusFeedPlugin\Transformation\StripTags;
 use Setono\SyliusFeedPlugin\Transformation\TransformationChain;
 use Setono\SyliusFeedPlugin\Transformation\TransformationRegistry;
-use Setono\SyliusFeedPlugin\Transformation\Truncate;
 use Setono\SyliusFeedPlugin\Validator\RequiredFieldsValidator;
+use Setono\SyliusFeedPlugin\ValueResolver\ValueResolverInterface;
+use Setono\SyliusFeedPlugin\Writer\CsvWriter;
 use Setono\SyliusFeedPlugin\Writer\FeedWriterRegistryInterface;
-use Setono\SyliusFeedPlugin\Writer\XmlWriter;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RequestContext;
 
 /**
- * Performance budget (§6.3, M1 acceptance): a 50,000-item feed must stream to storage without
- * accumulating the result set in memory. Asserts that peak memory growth during generation stays
- * far below the 256 MB budget — proving the writer/generator stream rather than buffer.
+ * The §11 acceptance for the FilterEvaluator wired into the generator: a source with an
+ * exclude-out-of-stock filter drops the out-of-stock item from the output while keeping the
+ * in-stock one — proving the filter is selective (not just "drops everything"). The same filter is
+ * exercised at both the `pre` and `post` stage.
  */
-final class FeedGeneratorMemoryTest extends TestCase
+final class FeedGeneratorFilterTest extends TestCase
 {
     use ProphecyTrait;
 
-    public const ITEMS = 50000;
+    private Filesystem $filesystem;
 
-    /**
-     * @test
-     */
-    public function it_generates_a_large_feed_within_the_memory_budget(): void
+    protected function setUp(): void
     {
-        $filesystem = new Filesystem(new LocalFilesystemAdapter(sys_get_temp_dir() . '/setono-feed-' . bin2hex(random_bytes(6))));
-
-        $generator = $this->createGenerator($filesystem);
-
-        $before = memory_get_peak_usage(true);
-        $result = $generator->generate($this->feed(), new FeedContext(null, 'en_US', 'USD'));
-        $growth = memory_get_peak_usage(true) - $before;
-
-        self::assertSame(self::ITEMS, $result->itemCount);
-        // Streaming means peak memory does not scale with item count; allow generous headroom but
-        // far under the 256 MB budget.
-        self::assertLessThan(64 * 1024 * 1024, $growth);
-
-        $filesystem->deleteDirectory('google');
+        $this->filesystem = new Filesystem(new LocalFilesystemAdapter(sys_get_temp_dir() . '/setono-feed-' . bin2hex(random_bytes(6))));
     }
 
-    private function createGenerator(Filesystem $filesystem): FeedGenerator
+    protected function tearDown(): void
+    {
+        $this->filesystem->deleteDirectory('shop');
+    }
+
+    /**
+     * @dataProvider stages
+     *
+     * @test
+     */
+    public function it_excludes_the_out_of_stock_item(string $stage): void
+    {
+        $result = $this->createGenerator()->generate($this->feed($stage), new FeedContext(null, 'en_US', 'USD'));
+
+        self::assertSame(1, $result->itemCount);
+        self::assertSame(1, $result->excludedCount);
+
+        $rows = [...Reader::createFromString($this->filesystem->read($result->path))->getRecords()];
+        self::assertCount(2, $rows, 'header + the single kept row');
+        self::assertSame(['id', 'availability'], $rows[0]);
+        self::assertSame(['SKU-1', 'in_stock'], $rows[1]);
+    }
+
+    /**
+     * @return iterable<string, array{string}>
+     */
+    public function stages(): iterable
+    {
+        yield 'pre' => [FeedFilterInterface::STAGE_PRE];
+        yield 'post' => [FeedFilterInterface::STAGE_POST];
+    }
+
+    private function createGenerator(): FeedGenerator
     {
         $feedTypeRegistry = $this->prophesize(FeedTypeRegistryInterface::class);
         $feedTypeRegistry->get('product_variant')->willReturn($this->feedType());
 
         $presetRegistry = $this->prophesize(MappingPresetRegistryInterface::class);
-        $presetRegistry->forFeedType('product_variant')->willReturn([new GoogleShoppingMappingPreset()]);
 
         $formatRegistry = $this->prophesize(FormatRegistryInterface::class);
-        $formatRegistry->get('google_rss')->willReturn(new GoogleRssFormat());
+        $formatRegistry->get('csv')->willReturn(new CsvFormat());
 
         $writerRegistry = $this->prophesize(FeedWriterRegistryInterface::class);
-        $writerRegistry->get('xml')->willReturn(new XmlWriter());
+        $writerRegistry->get('csv')->willReturn(new CsvWriter());
 
         $urlGenerator = $this->prophesize(UrlGeneratorInterface::class);
         $urlGenerator->getContext()->willReturn(new RequestContext());
@@ -100,32 +119,27 @@ final class FeedGeneratorMemoryTest extends TestCase
             $formatRegistry->reveal(),
             $writerRegistry->reveal(),
             new FieldMappingEvaluator(
-                new TransformationChain(new TransformationRegistry([new Truncate(), new StripTags(), new MoneyFormat()])),
+                new TransformationChain(new TransformationRegistry([])),
                 new ReferenceResolver(),
                 new OperatorRegistry([new IsTrue()]),
                 new ExpressionEvaluator(new InMemoryLookup()),
                 new SandboxedTwigRenderer(new FeedTemplateSecurityPolicy(), new InMemoryLookup()),
                 new NullLookupReferenceResolver(),
             ),
-            new FilterEvaluator(new ReferenceResolver(), new OperatorRegistry([])),
+            new FilterEvaluator(new ReferenceResolver(), new OperatorRegistry([new Equals()])),
             new NullLookupReferenceResolver(),
             new RequiredFieldsValidator(),
             new EventDispatcher(),
             $urlGenerator->reveal(),
-            $filesystem,
+            $this->filesystem,
         );
     }
 
     private function feedType(): FeedTypeInterface
     {
         $fields = [
-            'id' => $this->field('id', FieldType::STRING, 'SKU-1'),
-            'title' => $this->field('title', FieldType::STRING, 'Acme Shoe'),
-            'description' => $this->field('description', FieldType::STRING, 'A nice shoe'),
-            'link' => $this->field('link', FieldType::URL, 'https://example.com/p/1'),
-            'main_image' => $this->field('main_image', FieldType::IMAGE, 'https://example.com/i/1.jpg'),
-            'availability' => $this->field('availability', FieldType::STRING, 'in_stock'),
-            'channel_price' => $this->field('channel_price', FieldType::MONEY, 999),
+            'id' => $this->field('id'),
+            'availability' => $this->field('availability'),
         ];
 
         $dataSource = new class() implements DataSourceInterface {
@@ -136,14 +150,13 @@ final class FeedGeneratorMemoryTest extends TestCase
 
             public function getItems(FeedContext $context, FilterSet $filters): iterable
             {
-                for ($i = 0; $i < FeedGeneratorMemoryTest::ITEMS; ++$i) {
-                    yield new \stdClass();
-                }
+                yield (object) ['id' => 'SKU-1', 'availability' => 'in_stock'];
+                yield (object) ['id' => 'SKU-2', 'availability' => 'out_of_stock'];
             }
 
             public function count(FeedContext $context, FilterSet $filters): int
             {
-                return FeedGeneratorMemoryTest::ITEMS;
+                return 2;
             }
         };
 
@@ -184,24 +197,80 @@ final class FeedGeneratorMemoryTest extends TestCase
         };
     }
 
-    private function field(string $name, FieldType $type, mixed $value): FieldDefinition
+    /**
+     * A field whose resolver reads the same-named property off the entity, so the two stub entities
+     * resolve to different availability values.
+     */
+    private function field(string $name): FieldDefinition
     {
-        return new FieldDefinition($name, 'test.' . $name, $type, new FixedValueResolver($name, $type, $value));
+        $resolver = new class($name) implements ValueResolverInterface {
+            public function __construct(private readonly string $name)
+            {
+            }
+
+            public function getName(): string
+            {
+                return $this->name;
+            }
+
+            public function getLabel(): string
+            {
+                return 'test.' . $this->name;
+            }
+
+            public function getType(): FieldType
+            {
+                return FieldType::STRING;
+            }
+
+            public function supports(string $resourceClass): bool
+            {
+                return true;
+            }
+
+            public function resolve(object $entity, FeedContext $context): mixed
+            {
+                return ((array) $entity)[$this->name] ?? null;
+            }
+        };
+
+        return new FieldDefinition($name, $resolver->getLabel(), FieldType::STRING, $resolver);
     }
 
-    private function feed(): FeedInterface
+    private function feed(string $stage): FeedInterface
     {
+        $filter = new FeedFilter();
+        $filter->setField('availability');
+        $filter->setOperator('equals');
+        $filter->setValue("'out_of_stock'");
+        $filter->setAction(FeedFilterInterface::ACTION_EXCLUDE);
+        $filter->setStage($stage);
+
         $source = $this->prophesize(FeedSourceInterface::class);
         $source->getFeedType()->willReturn('product_variant');
         $source->getPosition()->willReturn(0);
-        $source->getFilters()->willReturn(new ArrayCollection());
-        $source->getFields()->willReturn(new ArrayCollection());
+        $source->getFilters()->willReturn(new ArrayCollection([$filter]));
+        $source->getFields()->willReturn(new ArrayCollection([
+            $this->feedField('id', 'id', 0),
+            $this->feedField('availability', 'availability', 1),
+        ]));
 
         $feed = $this->prophesize(FeedInterface::class);
-        $feed->getCode()->willReturn('google');
-        $feed->getFormat()->willReturn('google_rss');
+        $feed->getCode()->willReturn('shop');
+        $feed->getFormat()->willReturn('csv');
         $feed->getSources()->willReturn(new ArrayCollection([$source->reveal()]));
 
         return $feed->reveal();
+    }
+
+    private function feedField(string $outputField, string $sourceField, int $position): FeedFieldInterface
+    {
+        $field = new FeedField();
+        $field->setOutputField($outputField);
+        $field->setSourceType('field');
+        $field->setSourceValue($sourceField);
+        $field->setPosition($position);
+
+        return $field;
     }
 }

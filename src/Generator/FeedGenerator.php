@@ -8,9 +8,11 @@ use League\Flysystem\FilesystemOperator;
 use Setono\SyliusFeedPlugin\Context\FeedContext;
 use Setono\SyliusFeedPlugin\Event\FeedItemBuiltEvent;
 use Setono\SyliusFeedPlugin\FeedType\FeedTypeRegistryInterface;
+use Setono\SyliusFeedPlugin\Filter\FilterEvaluatorInterface;
 use Setono\SyliusFeedPlugin\Filter\FilterSet;
 use Setono\SyliusFeedPlugin\Format\FormatRegistryInterface;
 use Setono\SyliusFeedPlugin\Item\FeedItem;
+use Setono\SyliusFeedPlugin\Lookup\LookupReferenceResolverInterface;
 use Setono\SyliusFeedPlugin\Mapping\FieldMapping;
 use Setono\SyliusFeedPlugin\MappingPreset\MappingPresetRegistryInterface;
 use Setono\SyliusFeedPlugin\Model\FeedFieldInterface;
@@ -35,6 +37,8 @@ final class FeedGenerator implements FeedGeneratorInterface
         private readonly FormatRegistryInterface $formatRegistry,
         private readonly FeedWriterRegistryInterface $writerRegistry,
         private readonly FieldMappingEvaluatorInterface $fieldMappingEvaluator,
+        private readonly FilterEvaluatorInterface $filterEvaluator,
+        private readonly LookupReferenceResolverInterface $lookupReferenceResolver,
         private readonly RequiredFieldsValidatorInterface $requiredFieldsValidator,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly UrlGeneratorInterface $urlGenerator,
@@ -68,11 +72,29 @@ final class FeedGenerator implements FeedGeneratorInterface
             $feedType = $this->feedTypeRegistry->get((string) $source->getFeedType());
             $availableFields = $feedType->getAvailableFields();
             $mappings = $this->resolveMappings($feed, $source);
+            $filterSet = new FilterSet($source->getFilters());
 
-            foreach ($feedType->getDataSource()->getItems($context, new FilterSet($source->getFilters())) as $entity) {
+            foreach ($feedType->getDataSource()->getItems($context, $filterSet) as $entity) {
                 $item = new FeedItem($entity, $context);
 
+                // Bind the source resolver up front so pre-filters can resolve raw source fields;
+                // mapping reuses the same (idempotent) binding. NOTE: all filters are evaluated per
+                // item — pushing `pre` filters into the data source query is a future optimization.
+                SourceResolverBinder::bind($item, $availableFields, $this->lookupReferenceResolver);
+
+                if (null !== $this->filterEvaluator->excludedBy($item, $filterSet->getPreFilters())) {
+                    ++$excludedCount;
+
+                    continue;
+                }
+
                 $this->fieldMappingEvaluator->apply($item, $mappings, $availableFields);
+
+                if (null !== $this->filterEvaluator->excludedBy($item, $filterSet->getPostFilters())) {
+                    ++$excludedCount;
+
+                    continue;
+                }
 
                 $this->eventDispatcher->dispatch(new FeedItemBuiltEvent($item));
 

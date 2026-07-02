@@ -65,6 +65,16 @@ class FeedItem implements \IteratorAggregate, \ArrayAccess, \Countable
     }
 
     /**
+     * Whether an on-demand source resolver has already been bound (see $sourceResolver). Lets the
+     * binding be established once per item — up front by the generator (so pre-filters can resolve
+     * raw source fields) and re-requested by the mapping evaluator without rebinding.
+     */
+    public function hasSourceResolver(): bool
+    {
+        return null !== $this->sourceResolver;
+    }
+
+    /**
      * Resolve a named source field / value resolver against this item on demand. Returns null when
      * no resolver is bound or the name is unknown — a miss is never an error (§10).
      */
