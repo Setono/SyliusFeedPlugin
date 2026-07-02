@@ -163,11 +163,22 @@ final class FeedGeneratorTest extends TestCase
         self::assertContains('availability', $reader->getHeader());
         self::assertContains('price', $reader->getHeader());
 
-        $records = array_values(iterator_to_array($reader->getRecords()));
+        $records = $this->csvRecords($reader);
         $row = $records[0];
         self::assertSame('SKU-1', $row['id']);
         self::assertSame('in stock', $row['availability']);
         self::assertSame('9.99 USD', $row['price']);
+    }
+
+    /**
+     * Normalises league/csv records to arrays through a mixed boundary — older league/csv versions
+     * type `getRecords()` loosely (mixed), newer ones precisely, so this stays valid on both.
+     *
+     * @return list<array<int|string, mixed>>
+     */
+    private function csvRecords(Reader $reader): array
+    {
+        return array_values(array_filter(iterator_to_array($reader->getRecords()), is_array(...)));
     }
 
     /**

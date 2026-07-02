@@ -78,11 +78,12 @@ final class ProductFeedGenerationTest extends FunctionalTestCase
 
         self::assertSame(['id', 'title', 'from_price'], $reader->getHeader());
 
-        $records = array_values(iterator_to_array($reader->getRecords()));
+        $records = $this->csvRecords($reader);
         self::assertCount(1, $records);
-        self::assertSame('PROD-1', $records[0]['id']);
-        self::assertSame('Acme Shoe', $records[0]['title']);
-        self::assertSame('999', $records[0]['from_price']);
+        $row = $records[0];
+        self::assertSame('PROD-1', $row['id']);
+        self::assertSame('Acme Shoe', $row['title']);
+        self::assertSame('999', $row['from_price']);
     }
 
     /**
@@ -116,7 +117,7 @@ final class ProductFeedGenerationTest extends FunctionalTestCase
         self::assertSame(['id', 'title', 'from_price', 'channel_price'], $header);
 
         $byId = [];
-        foreach ($reader->getRecords() as $record) {
+        foreach ($this->csvRecords($reader) as $record) {
             $id = $record['id'];
             self::assertIsString($id);
             $byId[$id] = $record;
@@ -182,6 +183,17 @@ final class ProductFeedGenerationTest extends FunctionalTestCase
         $reader->setHeaderOffset(0);
 
         return $reader;
+    }
+
+    /**
+     * Normalises league/csv records to arrays through a mixed boundary — older league/csv versions
+     * type `getRecords()` loosely (mixed), newer ones precisely, so this stays valid on both.
+     *
+     * @return list<array<int|string, mixed>>
+     */
+    private function csvRecords(Reader $reader): array
+    {
+        return array_values(array_filter(iterator_to_array($reader->getRecords()), is_array(...)));
     }
 
     private function entityManager(): EntityManagerInterface

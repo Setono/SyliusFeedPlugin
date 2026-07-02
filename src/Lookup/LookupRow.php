@@ -11,14 +11,20 @@ namespace Setono\SyliusFeedPlugin\Lookup;
 final class LookupRow
 {
     /**
-     * @param iterable<int|string, mixed> $record
-     *
      * @return array<string, scalar|null>
      */
-    public static function normalize(iterable $record): array
+    public static function normalize(mixed $record): array
     {
+        if (!is_iterable($record)) {
+            return [];
+        }
+
         $row = [];
         foreach ($record as $column => $value) {
+            if (!is_scalar($column)) {
+                continue;
+            }
+
             $row[(string) $column] = is_scalar($value) ? $value : null;
         }
 
