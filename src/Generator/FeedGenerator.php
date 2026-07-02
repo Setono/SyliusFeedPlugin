@@ -11,13 +11,10 @@ use Setono\SyliusFeedPlugin\FeedType\FeedTypeRegistryInterface;
 use Setono\SyliusFeedPlugin\Filter\FilterSet;
 use Setono\SyliusFeedPlugin\Format\FormatRegistryInterface;
 use Setono\SyliusFeedPlugin\Item\FeedItem;
-use Setono\SyliusFeedPlugin\Mapping\FieldDefinition;
 use Setono\SyliusFeedPlugin\Mapping\FieldMapping;
-use Setono\SyliusFeedPlugin\Mapping\SourceType;
 use Setono\SyliusFeedPlugin\MappingPreset\MappingPresetRegistryInterface;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Model\FeedSourceInterface;
-use Setono\SyliusFeedPlugin\Transformation\TransformationChainInterface;
 use Setono\SyliusFeedPlugin\Validator\RequiredFieldsValidatorInterface;
 use Setono\SyliusFeedPlugin\Writer\FeedWriterRegistryInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -35,7 +32,7 @@ final class FeedGenerator implements FeedGeneratorInterface
         private readonly MappingPresetRegistryInterface $mappingPresetRegistry,
         private readonly FormatRegistryInterface $formatRegistry,
         private readonly FeedWriterRegistryInterface $writerRegistry,
-        private readonly TransformationChainInterface $transformationChain,
+        private readonly FieldMappingEvaluatorInterface $fieldMappingEvaluator,
         private readonly RequiredFieldsValidatorInterface $requiredFieldsValidator,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly UrlGeneratorInterface $urlGenerator,
@@ -68,21 +65,7 @@ final class FeedGenerator implements FeedGeneratorInterface
             foreach ($feedType->getDataSource()->getItems($context, new FilterSet($source->getFilters())) as $entity) {
                 $item = new FeedItem($entity, $context);
 
-                foreach ($mappings as $mapping) {
-                    if (!$this->conditionSatisfied($mapping, $entity, $context, $availableFields)) {
-                        continue;
-                    }
-
-                    $value = $this->transformationChain->apply(
-                        $this->resolveValue($mapping, $entity, $context, $availableFields),
-                        $mapping->getTransformations(),
-                        $item,
-                    );
-
-                    if (null !== $value) {
-                        $item->set($mapping->getOutputField(), $value);
-                    }
-                }
+                $this->fieldMappingEvaluator->apply($item, $mappings, $availableFields);
 
                 $this->eventDispatcher->dispatch(new FeedItemBuiltEvent($item));
 
@@ -107,39 +90,6 @@ final class FeedGenerator implements FeedGeneratorInterface
         fclose($stream);
 
         return new GenerationResult($path, $itemCount, $excludedCount);
-    }
-
-    /**
-     * @param array<string, FieldDefinition> $availableFields
-     */
-    private function resolveValue(FieldMapping $mapping, object $entity, FeedContext $context, array $availableFields): mixed
-    {
-        return match ($mapping->getSourceType()) {
-            SourceType::LITERAL => $mapping->getSourceValue(),
-            SourceType::FIELD => isset($availableFields[$mapping->getSourceValue()])
-                ? $availableFields[$mapping->getSourceValue()]->getResolver()->resolve($entity, $context)
-                : null,
-            // expression/twig source resolution lands in M4
-            default => null,
-        };
-    }
-
-    /**
-     * @param array<string, FieldDefinition> $availableFields
-     */
-    private function conditionSatisfied(FieldMapping $mapping, object $entity, FeedContext $context, array $availableFields): bool
-    {
-        $condition = $mapping->getCondition();
-        if (null === $condition) {
-            return true;
-        }
-
-        // M1 conditions are the FieldMapping::onlyIf shorthand (operator "true"): emit the field
-        // only when the referenced field resolves truthy. The full operator vocabulary lands in M6.
-        $field = $condition['field'];
-        $value = isset($availableFields[$field]) ? $availableFields[$field]->getResolver()->resolve($entity, $context) : null;
-
-        return (bool) $value;
     }
 
     /**

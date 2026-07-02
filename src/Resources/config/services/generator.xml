@@ -7,12 +7,21 @@
         <service id="Setono\SyliusFeedPlugin\Validator\RequiredFieldsValidator"/>
         <service id="Setono\SyliusFeedPlugin\Validator\RequiredFieldsValidatorInterface" alias="Setono\SyliusFeedPlugin\Validator\RequiredFieldsValidator"/>
 
+        <service id="Setono\SyliusFeedPlugin\Generator\FieldMappingEvaluator">
+            <argument type="service" id="Setono\SyliusFeedPlugin\Transformation\TransformationChainInterface"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Reference\ReferenceResolverInterface"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Operator\OperatorRegistryInterface"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Scripting\ExpressionEvaluatorInterface"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Scripting\TwigTemplateRendererInterface"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Generator\FieldMappingEvaluatorInterface" alias="Setono\SyliusFeedPlugin\Generator\FieldMappingEvaluator"/>
+
         <service id="Setono\SyliusFeedPlugin\Generator\FeedGenerator">
             <argument type="service" id="Setono\SyliusFeedPlugin\FeedType\FeedTypeRegistryInterface"/>
             <argument type="service" id="Setono\SyliusFeedPlugin\MappingPreset\MappingPresetRegistryInterface"/>
             <argument type="service" id="Setono\SyliusFeedPlugin\Format\FormatRegistryInterface"/>
             <argument type="service" id="Setono\SyliusFeedPlugin\Writer\FeedWriterRegistryInterface"/>
-            <argument type="service" id="Setono\SyliusFeedPlugin\Transformation\TransformationChainInterface"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Generator\FieldMappingEvaluatorInterface"/>
             <argument type="service" id="Setono\SyliusFeedPlugin\Validator\RequiredFieldsValidatorInterface"/>
             <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="router"/>

@@ -62,14 +62,27 @@ final class FieldMapping
     }
 
     /**
-     * Emit this field only when the named boolean source field is truthy. Shorthand for a
-     * trailing condition (§7, §10).
+     * Emit this field only when the condition holds, using the shared operator vocabulary (§10):
+     * the `field` and `value` are references (resolved by the reference-resolution rule) and
+     * `operator` is any registered operator. Omit `$value` for operators that take no operand
+     * (`empty`, `not_empty`, `true`, `false`).
+     */
+    public function when(string $field, string $operator, mixed $value = null): self
+    {
+        $this->condition = null === $value
+            ? ['field' => $field, 'operator' => $operator]
+            : ['field' => $field, 'operator' => $operator, 'value' => $value];
+
+        return $this;
+    }
+
+    /**
+     * Emit this field only when the named boolean source field is truthy. Shorthand for
+     * {@see when()} with the `true` operator (§7, §10).
      */
     public function onlyIf(string $field): self
     {
-        $this->condition = ['field' => $field, 'operator' => 'true'];
-
-        return $this;
+        return $this->when($field, 'true');
     }
 
     public function requiresInput(bool $requiresInput = true): self

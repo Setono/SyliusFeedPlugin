@@ -17,6 +17,8 @@ use Setono\SyliusFeedPlugin\Filter\FilterSet;
 use Setono\SyliusFeedPlugin\Format\FormatRegistryInterface;
 use Setono\SyliusFeedPlugin\Format\GoogleRssFormat;
 use Setono\SyliusFeedPlugin\Generator\FeedGenerator;
+use Setono\SyliusFeedPlugin\Generator\FieldMappingEvaluator;
+use Setono\SyliusFeedPlugin\Lookup\InMemoryLookup;
 use Setono\SyliusFeedPlugin\Mapping\FieldDefinition;
 use Setono\SyliusFeedPlugin\Mapping\FieldType;
 use Setono\SyliusFeedPlugin\Mapping\ScopeDimension;
@@ -24,6 +26,12 @@ use Setono\SyliusFeedPlugin\MappingPreset\GoogleShoppingMappingPreset;
 use Setono\SyliusFeedPlugin\MappingPreset\MappingPresetRegistryInterface;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Model\FeedSourceInterface;
+use Setono\SyliusFeedPlugin\Operator\IsTrue;
+use Setono\SyliusFeedPlugin\Operator\OperatorRegistry;
+use Setono\SyliusFeedPlugin\Reference\ReferenceResolver;
+use Setono\SyliusFeedPlugin\Scripting\ExpressionEvaluator;
+use Setono\SyliusFeedPlugin\Scripting\FeedTemplateSecurityPolicy;
+use Setono\SyliusFeedPlugin\Scripting\SandboxedTwigRenderer;
 use Setono\SyliusFeedPlugin\Transformation\MoneyFormat;
 use Setono\SyliusFeedPlugin\Transformation\StripTags;
 use Setono\SyliusFeedPlugin\Transformation\TransformationChain;
@@ -90,7 +98,13 @@ final class FeedGeneratorMemoryTest extends TestCase
             $presetRegistry->reveal(),
             $formatRegistry->reveal(),
             $writerRegistry->reveal(),
-            new TransformationChain(new TransformationRegistry([new Truncate(), new StripTags(), new MoneyFormat()])),
+            new FieldMappingEvaluator(
+                new TransformationChain(new TransformationRegistry([new Truncate(), new StripTags(), new MoneyFormat()])),
+                new ReferenceResolver(),
+                new OperatorRegistry([new IsTrue()]),
+                new ExpressionEvaluator(new InMemoryLookup()),
+                new SandboxedTwigRenderer(new FeedTemplateSecurityPolicy(), new InMemoryLookup()),
+            ),
             new RequiredFieldsValidator(),
             new EventDispatcher(),
             $urlGenerator->reveal(),
