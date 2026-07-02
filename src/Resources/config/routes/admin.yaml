@@ -24,6 +24,14 @@ setono_sylius_feed_admin_feed_results:
     defaults:
         _controller: 'Setono\SyliusFeedPlugin\Controller\Admin\FeedResultsAction'
 
+setono_sylius_feed_admin_feed_publish_context:
+    path: /feeds/{id}/publish/{contextKey}
+    methods: [GET]
+    defaults:
+        _controller: 'Setono\SyliusFeedPlugin\Controller\Admin\PublishContextAnywayAction'
+    requirements:
+        contextKey: '[^/]+'
+
 setono_sylius_feed_admin_lookup_table:
     resource: |
         alias: setono_sylius_feed.lookup_table

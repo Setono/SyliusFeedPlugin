@@ -53,6 +53,20 @@ interface FeedInterface extends ResourceInterface, CodeAwareInterface, Toggleabl
     public function setFormatConfig(array $formatConfig): void;
 
     /**
+     * The publish-gate configuration (§6.6): the guardrails evaluated before a freshly generated
+     * context is promoted from staging to canonical storage. Shape:
+     * {guardrails: list<{type: string, params: array<string, mixed>, severity: 'block'|'warn'}>}.
+     *
+     * @return array<string, mixed>
+     */
+    public function getPublishConfig(): array;
+
+    /**
+     * @param array<string, mixed> $publishConfig
+     */
+    public function setPublishConfig(array $publishConfig): void;
+
+    /**
      * @return Collection<int, FeedSourceInterface>
      */
     public function getSources(): Collection;

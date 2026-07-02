@@ -13,49 +13,67 @@ use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Repository\FeedContextResultRepositoryInterface;
 
 /**
- * Proves the FeedContextResult resource is mapped and persistable end to end (§11): the recorder
- * writes a result against a real feed and the repository reads back the most recent one per
- * (feed, contextKey) via findLatestPublished. Uses the database (rolled back by dama).
+ * Proves the FeedContextResult resource is mapped and persistable end to end (§11) and that the
+ * publish-gate lookups behave (§6.6): findLatestPublished only sees `published` rows (so a pending
+ * candidate is never its own baseline), while findLatestForContext returns the most recent row
+ * regardless of state. Uses the database (rolled back by dama).
  */
 final class FeedContextResultTest extends FunctionalTestCase
 {
     /**
      * @test
      */
-    public function it_records_a_result_and_reads_back_the_latest_per_context(): void
+    public function it_does_not_treat_a_pending_candidate_as_its_own_baseline(): void
+    {
+        $feed = $this->persistFeed();
+        $repository = $this->repository();
+
+        // A freshly recorded candidate is `pending`...
+        $candidate = $this->recorder()->record($feed, 'web_en_US_USD', new GenerationResult('google/web_en_US_USD.xml', 5, 2, 512, []));
+
+        // ...so it is not yet a published baseline, but it is the latest result for the context.
+        self::assertNull($repository->findLatestPublished($feed, 'web_en_US_USD'));
+        self::assertSame($candidate->getId(), $repository->findLatestForContext($feed, 'web_en_US_USD')?->getId());
+        self::assertNull($repository->findLatestForContext($feed, 'does_not_exist'));
+    }
+
+    /**
+     * @test
+     */
+    public function it_returns_the_latest_published_row_as_the_baseline(): void
     {
         $feed = $this->persistFeed();
         $recorder = $this->recorder();
-
-        $recorder->record($feed, 'web_en_US_USD', new GenerationResult(
-            'google/web_en_US_USD.xml',
-            5,
-            2,
-            512,
-            [['item' => 'SKU-9', 'reason' => 'validation:setono_sylius_feed.google_shopping_item.title.not_blank']],
-        ));
-
-        // a later run for the same context supersedes the first
-        $recorder->record($feed, 'web_en_US_USD', new GenerationResult('google/web_en_US_USD.xml', 7, 0, 700, []));
-
-        // a different context is stored independently
-        $recorder->record($feed, 'web_da_DK_DKK', new GenerationResult('google/web_da_DK_DKK.xml', 1, 0, 64, []));
-
         $repository = $this->repository();
+        $manager = $this->entityManager();
 
-        $latest = $repository->findLatestPublished($feed, 'web_en_US_USD');
-        self::assertInstanceOf(FeedContextResultInterface::class, $latest);
-        self::assertSame(7, $latest->getItemCount());
-        self::assertSame(0, $latest->getExcludedCount());
-        self::assertSame(700, $latest->getBytes());
-        self::assertSame([], $latest->getErrors());
-        self::assertSame($feed->getId(), $latest->getFeed()?->getId());
+        // Publish a first run for the context.
+        $first = $recorder->record($feed, 'web_en_US_USD', new GenerationResult('google/web_en_US_USD.xml', 5, 2, 512, []));
+        $first->setPublishState(FeedContextResultInterface::PUBLISH_STATE_PUBLISHED);
+        $manager->flush();
 
-        $otherContext = $repository->findLatestPublished($feed, 'web_da_DK_DKK');
-        self::assertInstanceOf(FeedContextResultInterface::class, $otherContext);
-        self::assertSame(1, $otherContext->getItemCount());
+        $baseline = $repository->findLatestPublished($feed, 'web_en_US_USD');
+        self::assertInstanceOf(FeedContextResultInterface::class, $baseline);
+        self::assertSame($first->getId(), $baseline->getId());
 
-        self::assertNull($repository->findLatestPublished($feed, 'does_not_exist'));
+        // A later run supersedes the first as the latest candidate, but while it is still pending the
+        // baseline remains the previously published row.
+        $second = $recorder->record($feed, 'web_en_US_USD', new GenerationResult('google/web_en_US_USD.xml', 7, 0, 700, []));
+        self::assertSame($second->getId(), $repository->findLatestForContext($feed, 'web_en_US_USD')?->getId());
+        self::assertSame($first->getId(), $repository->findLatestPublished($feed, 'web_en_US_USD')?->getId());
+
+        // Publishing the second run makes it the new baseline.
+        $second->setPublishState(FeedContextResultInterface::PUBLISH_STATE_PUBLISHED);
+        $manager->flush();
+        $newBaseline = $repository->findLatestPublished($feed, 'web_en_US_USD');
+        self::assertInstanceOf(FeedContextResultInterface::class, $newBaseline);
+        self::assertSame(7, $newBaseline->getItemCount());
+        self::assertSame(700, $newBaseline->getBytes());
+        self::assertSame($feed->getId(), $newBaseline->getFeed()?->getId());
+
+        // A different context is stored independently.
+        $recorder->record($feed, 'web_da_DK_DKK', new GenerationResult('google/web_da_DK_DKK.xml', 1, 0, 64, []));
+        self::assertSame(1, $repository->findLatestForContext($feed, 'web_da_DK_DKK')?->getItemCount());
     }
 
     private function persistFeed(): FeedInterface

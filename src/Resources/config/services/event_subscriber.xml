@@ -7,6 +7,7 @@
         <service id="Setono\SyliusFeedPlugin\EventSubscriber\MoveGeneratedFeedSubscriber">
             <argument type="service" id="setono_sylius_feed.storage.feed_tmp"/>
             <argument type="service" id="setono_sylius_feed.storage.feed"/>
+            <argument type="service" id="setono_sylius_feed.repository.feed_context_result"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 

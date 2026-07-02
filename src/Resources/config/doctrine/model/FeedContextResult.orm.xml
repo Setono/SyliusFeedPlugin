@@ -19,6 +19,8 @@
         <field name="excludedCount" column="excluded_count" type="integer"/>
         <field name="bytes" column="bytes" type="integer"/>
         <field name="errors" column="errors" type="json"/>
+        <field name="publishState" column="publish_state" type="string"/>
+        <field name="publishCheck" column="publish_check" type="json" nullable="true"/>
         <field name="createdAt" column="created_at" type="datetime_immutable"/>
 
         <many-to-one field="feed" target-entity="Setono\SyliusFeedPlugin\Model\FeedInterface">

@@ -21,6 +21,11 @@ class FeedContextResult implements FeedContextResultInterface
     /** @var list<array{item: ?string, reason: string}> */
     protected array $errors = [];
 
+    protected string $publishState = FeedContextResultInterface::PUBLISH_STATE_PENDING;
+
+    /** @var list<string>|null */
+    protected ?array $publishCheck = null;
+
     protected \DateTimeInterface $createdAt;
 
     public function __construct()
@@ -96,6 +101,36 @@ class FeedContextResult implements FeedContextResultInterface
     public function addError(?string $item, string $reason): void
     {
         $this->errors[] = ['item' => $item, 'reason' => $reason];
+    }
+
+    public function getPublishState(): string
+    {
+        return $this->publishState;
+    }
+
+    public function setPublishState(string $publishState): void
+    {
+        $this->publishState = $publishState;
+    }
+
+    public function getPublishCheck(): ?array
+    {
+        return $this->publishCheck;
+    }
+
+    public function setPublishCheck(?array $publishCheck): void
+    {
+        $this->publishCheck = $publishCheck;
+    }
+
+    public function isPublished(): bool
+    {
+        return FeedContextResultInterface::PUBLISH_STATE_PUBLISHED === $this->publishState;
+    }
+
+    public function isBlocked(): bool
+    {
+        return FeedContextResultInterface::PUBLISH_STATE_BLOCKED === $this->publishState;
     }
 
     public function getCreatedAt(): \DateTimeInterface

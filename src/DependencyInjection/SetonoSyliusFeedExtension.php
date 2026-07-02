@@ -10,6 +10,7 @@ use Setono\SyliusFeedPlugin\Lookup\LookupSourceInterface;
 use Setono\SyliusFeedPlugin\MappingPreset\MappingPresetInterface;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Operator\OperatorInterface;
+use Setono\SyliusFeedPlugin\Publish\GuardrailInterface;
 use Setono\SyliusFeedPlugin\Transformation\TransformationInterface;
 use Setono\SyliusFeedPlugin\ValueResolver\ValueResolverInterface;
 use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
@@ -37,6 +38,7 @@ final class SetonoSyliusFeedExtension extends AbstractResourceExtension implemen
         OperatorInterface::class => 'setono_sylius_feed.operator',
         FeedWriterInterface::class => 'setono_sylius_feed.writer',
         FormatInterface::class => 'setono_sylius_feed.format',
+        GuardrailInterface::class => 'setono_sylius_feed.guardrail',
     ];
 
     public function load(array $configs, ContainerBuilder $container): void

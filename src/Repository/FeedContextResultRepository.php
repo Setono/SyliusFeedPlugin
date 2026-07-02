@@ -15,6 +15,24 @@ class FeedContextResultRepository extends EntityRepository implements FeedContex
         $result = $this->createQueryBuilder('o')
             ->andWhere('o.feed = :feed')
             ->andWhere('o.contextKey = :contextKey')
+            ->andWhere('o.publishState = :publishState')
+            ->setParameter('feed', $feed)
+            ->setParameter('contextKey', $contextKey)
+            ->setParameter('publishState', FeedContextResultInterface::PUBLISH_STATE_PUBLISHED)
+            ->orderBy('o.createdAt', 'DESC')
+            ->addOrderBy('o.id', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        return $result instanceof FeedContextResultInterface ? $result : null;
+    }
+
+    public function findLatestForContext(FeedInterface $feed, string $contextKey): ?FeedContextResultInterface
+    {
+        $result = $this->createQueryBuilder('o')
+            ->andWhere('o.feed = :feed')
+            ->andWhere('o.contextKey = :contextKey')
             ->setParameter('feed', $feed)
             ->setParameter('contextKey', $contextKey)
             ->orderBy('o.createdAt', 'DESC')

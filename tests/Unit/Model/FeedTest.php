@@ -26,6 +26,7 @@ final class FeedTest extends TestCase
         self::assertTrue($feed->isEnabled());
         self::assertSame(FeedGraph::STATE_READY, $feed->getState());
         self::assertSame([], $feed->getFormatConfig());
+        self::assertSame([], $feed->getPublishConfig());
         self::assertNull($feed->getLastGeneratedAt());
         self::assertCount(0, $feed->getChannels());
         self::assertCount(0, $feed->getSources());
@@ -44,6 +45,7 @@ final class FeedTest extends TestCase
         $feed->setFormat('google_rss');
         $feed->setState(FeedGraph::STATE_PROCESSING);
         $feed->setFormatConfig(['gzip' => true]);
+        $feed->setPublishConfig(['guardrails' => [['type' => 'non_empty', 'severity' => 'block']]]);
         $feed->setLastGeneratedAt($generatedAt);
 
         self::assertSame('google', $feed->getCode());
@@ -51,6 +53,7 @@ final class FeedTest extends TestCase
         self::assertSame('google_rss', $feed->getFormat());
         self::assertSame(FeedGraph::STATE_PROCESSING, $feed->getState());
         self::assertSame(['gzip' => true], $feed->getFormatConfig());
+        self::assertSame(['guardrails' => [['type' => 'non_empty', 'severity' => 'block']]], $feed->getPublishConfig());
         self::assertSame($generatedAt, $feed->getLastGeneratedAt());
     }
 

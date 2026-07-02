@@ -13,6 +13,22 @@ use Sylius\Component\Resource\Model\ResourceInterface;
  */
 interface FeedContextResultInterface extends ResourceInterface
 {
+    /**
+     * The candidate has been recorded but not yet evaluated by the publish gate (§6.6).
+     */
+    public const PUBLISH_STATE_PENDING = 'pending';
+
+    /**
+     * The candidate passed the publish gate and its file was promoted to canonical storage.
+     */
+    public const PUBLISH_STATE_PUBLISHED = 'published';
+
+    /**
+     * The candidate tripped a `block`-severity guardrail; its file is retained in staging and the
+     * previously published canonical file is kept live.
+     */
+    public const PUBLISH_STATE_BLOCKED = 'blocked';
+
     public function getId(): ?int;
 
     public function getFeed(): ?FeedInterface;
@@ -54,6 +70,29 @@ interface FeedContextResultInterface extends ResourceInterface
     public function setErrors(array $errors): void;
 
     public function addError(?string $item, string $reason): void;
+
+    /**
+     * The publish-gate outcome for this candidate (§6.6): one of the PUBLISH_STATE_* constants.
+     */
+    public function getPublishState(): string;
+
+    public function setPublishState(string $publishState): void;
+
+    /**
+     * The reasons recorded by the publish gate when guardrails tripped, or null when none did.
+     *
+     * @return list<string>|null
+     */
+    public function getPublishCheck(): ?array;
+
+    /**
+     * @param list<string>|null $publishCheck
+     */
+    public function setPublishCheck(?array $publishCheck): void;
+
+    public function isPublished(): bool;
+
+    public function isBlocked(): bool;
 
     public function getCreatedAt(): \DateTimeInterface;
 

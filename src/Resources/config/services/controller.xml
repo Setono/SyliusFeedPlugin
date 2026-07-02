@@ -30,5 +30,15 @@
             <argument type="service" id="twig"/>
             <tag name="controller.service_arguments"/>
         </service>
+
+        <service id="Setono\SyliusFeedPlugin\Controller\Admin\PublishContextAnywayAction">
+            <argument type="service" id="doctrine"/>
+            <argument type="service" id="setono_sylius_feed.repository.feed"/>
+            <argument type="service" id="setono_sylius_feed.repository.feed_context_result"/>
+            <argument type="service" id="setono_sylius_feed.storage.feed_tmp"/>
+            <argument type="service" id="setono_sylius_feed.storage.feed"/>
+            <argument type="service" id="router"/>
+            <tag name="controller.service_arguments"/>
+        </service>
     </services>
 </container>

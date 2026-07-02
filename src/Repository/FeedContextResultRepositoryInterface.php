@@ -14,8 +14,17 @@ use Sylius\Component\Resource\Repository\RepositoryInterface;
 interface FeedContextResultRepositoryInterface extends RepositoryInterface
 {
     /**
-     * The most recent result recorded for the given feed and context key (§11) — the row the
-     * publish gate consults for the previously served output. Ordered by creation time, newest first.
+     * The most recent *published* result for the given feed and context key (§6.6) — the baseline
+     * the publish gate compares a new candidate against. Filters on
+     * {@see FeedContextResultInterface::PUBLISH_STATE_PUBLISHED} so a just-recorded pending candidate
+     * is never its own baseline. Ordered by creation time, newest first.
      */
     public function findLatestPublished(FeedInterface $feed, string $contextKey): ?FeedContextResultInterface;
+
+    /**
+     * The most recent result for the given feed and context key regardless of publish state (§6.6) —
+     * used by the promotion step to decide whether a staged file was published or blocked. Ordered
+     * by creation time, newest first.
+     */
+    public function findLatestForContext(FeedInterface $feed, string $contextKey): ?FeedContextResultInterface;
 }
