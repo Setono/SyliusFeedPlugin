@@ -43,3 +43,10 @@ setono_sylius_feed:
         pinterest: Pinterest
         tiktok: TikTok
         partner_ads: Partner-ads
+    feed_type:
+        product_variant: Product variant
+        product: Product
+    value_resolver:
+        variant_count: Number of variants
+        from_price: From price
+        product_availability: Availability

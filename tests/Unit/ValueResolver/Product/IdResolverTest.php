@@ -9,6 +9,7 @@ use Prophecy\PhpUnit\ProphecyTrait;
 use Setono\SyliusFeedPlugin\Context\FeedContext;
 use Setono\SyliusFeedPlugin\Mapping\FieldType;
 use Setono\SyliusFeedPlugin\ValueResolver\Product\IdResolver;
+use Sylius\Component\Core\Model\ProductInterface;
 use Sylius\Component\Core\Model\ProductVariantInterface;
 
 final class IdResolverTest extends TestCase
@@ -31,6 +32,7 @@ final class IdResolverTest extends TestCase
         self::assertSame('setono_sylius_feed.value_resolver.id', $this->resolver->getLabel());
         self::assertSame(FieldType::STRING, $this->resolver->getType());
         self::assertTrue($this->resolver->supports(ProductVariantInterface::class));
+        self::assertTrue($this->resolver->supports(ProductInterface::class));
         self::assertFalse($this->resolver->supports(\stdClass::class));
     }
 
@@ -43,6 +45,17 @@ final class IdResolverTest extends TestCase
         $variant->getCode()->willReturn('VARIANT-1');
 
         self::assertSame('VARIANT-1', $this->resolver->resolve($variant->reveal(), new FeedContext()));
+    }
+
+    /**
+     * @test
+     */
+    public function it_resolves_the_product_code(): void
+    {
+        $product = $this->prophesize(ProductInterface::class);
+        $product->getCode()->willReturn('PROD-1');
+
+        self::assertSame('PROD-1', $this->resolver->resolve($product->reveal(), new FeedContext()));
     }
 
     /**

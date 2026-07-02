@@ -45,5 +45,15 @@
         <service id="Setono\SyliusFeedPlugin\ValueResolver\Product\OnSaleResolver">
             <tag name="setono_sylius_feed.value_resolver"/>
         </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Product\VariantCountResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Product\FromPriceResolver">
+            <argument type="service" id="Setono\SyliusFeedPlugin\Currency\ContextCurrencyConverterInterface"/>
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Product\ProductAvailabilityResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
     </services>
 </container>

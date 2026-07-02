@@ -33,13 +33,14 @@ final class TitleResolverTest extends TestCase
         self::assertSame('setono_sylius_feed.value_resolver.title', $this->resolver->getLabel());
         self::assertSame(FieldType::STRING, $this->resolver->getType());
         self::assertTrue($this->resolver->supports(ProductVariantInterface::class));
+        self::assertTrue($this->resolver->supports(ProductInterface::class));
         self::assertFalse($this->resolver->supports(\stdClass::class));
     }
 
     /**
      * @test
      */
-    public function it_resolves_the_translated_product_name(): void
+    public function it_resolves_the_translated_product_name_from_a_variant(): void
     {
         $translation = $this->prophesize(ProductTranslationInterface::class);
         $translation->getName()->willReturn('Acme Shoe');
@@ -51,6 +52,20 @@ final class TitleResolverTest extends TestCase
         $variant->getProduct()->willReturn($product->reveal());
 
         self::assertSame('Acme Shoe', $this->resolver->resolve($variant->reveal(), new FeedContext(null, 'en_US')));
+    }
+
+    /**
+     * @test
+     */
+    public function it_resolves_the_translated_product_name_from_a_product(): void
+    {
+        $translation = $this->prophesize(ProductTranslationInterface::class);
+        $translation->getName()->willReturn('Acme Shoe');
+
+        $product = $this->prophesize(ProductInterface::class);
+        $product->getTranslation('en_US')->willReturn($translation->reveal());
+
+        self::assertSame('Acme Shoe', $this->resolver->resolve($product->reveal(), new FeedContext(null, 'en_US')));
     }
 
     /**
