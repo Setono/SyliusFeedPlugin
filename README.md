@@ -192,7 +192,7 @@ bin/console doctrine:migrations:migrate
 
 ### Step 6: Route messages to an async transport (recommended)
 
-Every message implements `Setono\SyliusFeedPlugin\Message\Command\CommandInterface`, so you can route
+Every message implements `Setono\SyliusFeedPlugin\Message\CommandInterface`, so you can route
 the whole family in one line:
 
 ```yaml
@@ -200,7 +200,7 @@ the whole family in one line:
 framework:
     messenger:
         routing:
-            'Setono\SyliusFeedPlugin\Message\Command\CommandInterface': async
+            'Setono\SyliusFeedPlugin\Message\CommandInterface': async
 ```
 
 Run a worker to consume it: `bin/console messenger:consume async`. Without an async transport the
