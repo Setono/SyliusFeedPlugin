@@ -18,6 +18,7 @@ use Setono\SyliusFeedPlugin\Filter\FilterSet;
 use Setono\SyliusFeedPlugin\Format\CsvFormat;
 use Setono\SyliusFeedPlugin\Format\FormatRegistryInterface;
 use Setono\SyliusFeedPlugin\Format\GoogleRssFormat;
+use Setono\SyliusFeedPlugin\Format\PartnerAdsFormat;
 use Setono\SyliusFeedPlugin\Generator\FeedGenerator;
 use Setono\SyliusFeedPlugin\Generator\FieldMappingEvaluator;
 use Setono\SyliusFeedPlugin\Lookup\InMemoryLookup;
@@ -26,6 +27,8 @@ use Setono\SyliusFeedPlugin\Mapping\FieldType;
 use Setono\SyliusFeedPlugin\Mapping\ScopeDimension;
 use Setono\SyliusFeedPlugin\MappingPreset\GoogleShoppingMappingPreset;
 use Setono\SyliusFeedPlugin\MappingPreset\MappingPresetRegistryInterface;
+use Setono\SyliusFeedPlugin\MappingPreset\MetaMappingPreset;
+use Setono\SyliusFeedPlugin\MappingPreset\PartnerAdsMappingPreset;
 use Setono\SyliusFeedPlugin\Model\FeedField;
 use Setono\SyliusFeedPlugin\Model\FeedFieldInterface;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
@@ -41,6 +44,7 @@ use Setono\SyliusFeedPlugin\Transformation\StripTags;
 use Setono\SyliusFeedPlugin\Transformation\TransformationChain;
 use Setono\SyliusFeedPlugin\Transformation\TransformationRegistry;
 use Setono\SyliusFeedPlugin\Transformation\Truncate;
+use Setono\SyliusFeedPlugin\Transformation\ValueMap;
 use Setono\SyliusFeedPlugin\Validator\RequiredFieldsValidator;
 use Setono\SyliusFeedPlugin\Writer\CsvWriter;
 use Setono\SyliusFeedPlugin\Writer\FeedWriterRegistryInterface;
@@ -144,6 +148,48 @@ final class FeedGeneratorTest extends TestCase
         self::assertSame(['SKU-1', 'Acme Shoe', 'in_stock'], $rows[1]);
     }
 
+    /**
+     * Acceptance: the same catalog renders as a valid Meta CSV (with Meta's space-separated
+     * availability) purely by choosing the Meta preset — no code changes.
+     *
+     * @test
+     */
+    public function it_generates_a_valid_meta_csv_from_the_catalog(): void
+    {
+        $result = $this->createGenerator([new MetaMappingPreset()])->generate($this->feed('csv'), new FeedContext($this->channel(), 'en_US', 'USD'));
+
+        $reader = Reader::createFromString($this->filesystem->read($result->path));
+        $reader->setHeaderOffset(0);
+        self::assertContains('availability', $reader->getHeader());
+        self::assertContains('price', $reader->getHeader());
+
+        $records = array_values(iterator_to_array($reader->getRecords()));
+        $row = $records[0];
+        self::assertSame('SKU-1', $row['id']);
+        self::assertSame('in stock', $row['availability']);
+        self::assertSame('9.99 USD', $row['price']);
+    }
+
+    /**
+     * Acceptance: the same catalog renders as a valid Partner-ads XML (Danish element names, its
+     * own root/item) purely by choosing the Partner-ads preset — no code changes.
+     *
+     * @test
+     */
+    public function it_generates_a_valid_partner_ads_xml_from_the_catalog(): void
+    {
+        $result = $this->createGenerator([new PartnerAdsMappingPreset()])->generate($this->feed('partner_ads'), new FeedContext($this->channel(), 'en_US', 'USD'));
+
+        $xml = $this->filesystem->read($result->path);
+        self::assertTrue((new \DOMDocument())->loadXML($xml), 'The Partner-ads feed must be well-formed XML');
+        self::assertStringContainsString('<produkter>', $xml);
+        self::assertSame(2, substr_count($xml, '<produkt>'));
+        self::assertStringContainsString('<produktid>SKU-1</produktid>', $xml);
+        self::assertStringContainsString('<produktnavn>Acme Shoe</produktnavn>', $xml);
+        self::assertStringContainsString('<nypris>9.99 USD</nypris>', $xml);
+        self::assertStringContainsString('<VareURL>https://example.com/products/acme-shoe</VareURL>', $xml);
+    }
+
     private function feedField(string $outputField, string $sourceField, int $position): FeedFieldInterface
     {
         $field = new FeedField();
@@ -186,6 +232,7 @@ final class FeedGeneratorTest extends TestCase
         $formatRegistry = $this->prophesize(FormatRegistryInterface::class);
         $formatRegistry->get('google_rss')->willReturn(new GoogleRssFormat());
         $formatRegistry->get('csv')->willReturn(new CsvFormat());
+        $formatRegistry->get('partner_ads')->willReturn(new PartnerAdsFormat());
 
         $writerRegistry = $this->prophesize(FeedWriterRegistryInterface::class);
         $writerRegistry->get('xml')->willReturn(new XmlWriter());
@@ -200,7 +247,7 @@ final class FeedGeneratorTest extends TestCase
             $formatRegistry->reveal(),
             $writerRegistry->reveal(),
             new FieldMappingEvaluator(
-                new TransformationChain(new TransformationRegistry([new Truncate(), new StripTags(), new MoneyFormat()])),
+                new TransformationChain(new TransformationRegistry([new Truncate(), new StripTags(), new MoneyFormat(), new ValueMap()])),
                 new ReferenceResolver(),
                 new OperatorRegistry([new IsTrue()]),
                 new ExpressionEvaluator(new InMemoryLookup()),

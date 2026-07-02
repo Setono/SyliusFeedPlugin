@@ -9,6 +9,8 @@ use Setono\SyliusFeedPlugin\FeedType\ProductVariantFeedType;
 use Setono\SyliusFeedPlugin\Generator\FeedGenerator;
 use Setono\SyliusFeedPlugin\MappingPreset\GoogleShoppingMappingPreset;
 use Setono\SyliusFeedPlugin\MappingPreset\MappingPresetRegistry;
+use Setono\SyliusFeedPlugin\MappingPreset\MetaMappingPreset;
+use Setono\SyliusFeedPlugin\MappingPreset\PartnerAdsMappingPreset;
 
 /**
  * Proves the M1 generation services are wired: the product_variant feed type and Google Shopping
@@ -36,7 +38,12 @@ final class FeedTypeWiringTest extends FunctionalTestCase
 
         self::assertInstanceOf(MappingPresetRegistry::class, $registry);
         self::assertInstanceOf(GoogleShoppingMappingPreset::class, $registry->get('google_shopping'));
-        self::assertSame([GoogleShoppingMappingPreset::class], array_map(get_class(...), $registry->forFeedType('product_variant')));
+
+        // every product-target preset supports the product_variant feed type
+        $presetClasses = array_map(get_class(...), $registry->forFeedType('product_variant'));
+        self::assertContains(GoogleShoppingMappingPreset::class, $presetClasses);
+        self::assertContains(MetaMappingPreset::class, $presetClasses);
+        self::assertContains(PartnerAdsMappingPreset::class, $presetClasses);
     }
 
     /**

@@ -12,5 +12,20 @@
         <service id="Setono\SyliusFeedPlugin\MappingPreset\GoogleShoppingMappingPreset">
             <tag name="setono_sylius_feed.mapping_preset"/>
         </service>
+        <service id="Setono\SyliusFeedPlugin\MappingPreset\MetaMappingPreset">
+            <tag name="setono_sylius_feed.mapping_preset"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\MappingPreset\BingMappingPreset">
+            <tag name="setono_sylius_feed.mapping_preset"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\MappingPreset\PinterestMappingPreset">
+            <tag name="setono_sylius_feed.mapping_preset"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\MappingPreset\TikTokMappingPreset">
+            <tag name="setono_sylius_feed.mapping_preset"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\MappingPreset\PartnerAdsMappingPreset">
+            <tag name="setono_sylius_feed.mapping_preset"/>
+        </service>
     </services>
 </container>

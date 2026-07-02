@@ -38,3 +38,8 @@ setono_sylius_feed:
                 twig: Twig
     mapping_preset:
         google_shopping: Google Shopping
+        meta: Meta
+        bing: Bing
+        pinterest: Pinterest
+        tiktok: TikTok
+        partner_ads: Partner-ads
