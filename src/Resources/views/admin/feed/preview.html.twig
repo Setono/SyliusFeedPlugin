@@ -115,7 +115,8 @@
                     {% for bag in preview.included %}
                         <tr>
                             {% for column in columns %}
-                                <td>{{ bag[column] is iterable ? bag[column]|join(', ') : bag[column] }}</td>
+                                {% set value = bag[column] ?? null %}
+                                <td>{{ value is iterable ? value|join(', ') : value }}</td>
                             {% endfor %}
                         </tr>
                     {% else %}
