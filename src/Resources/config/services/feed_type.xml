@@ -25,5 +25,60 @@
             <argument type="service" id="Setono\SyliusFeedPlugin\ValueResolver\ValueResolverRegistryInterface"/>
             <tag name="setono_sylius_feed.feed_type"/>
         </service>
+
+        <service id="Setono\SyliusFeedPlugin\DataSource\OrderDataSource">
+            <argument type="service" id="doctrine"/>
+            <argument>%sylius.model.order.class%</argument>
+        </service>
+
+        <service id="Setono\SyliusFeedPlugin\FeedType\OrderFeedType">
+            <argument type="service" id="Setono\SyliusFeedPlugin\DataSource\OrderDataSource"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\ValueResolver\ValueResolverRegistryInterface"/>
+            <tag name="setono_sylius_feed.feed_type"/>
+        </service>
+
+        <service id="Setono\SyliusFeedPlugin\DataSource\CustomerDataSource">
+            <argument type="service" id="doctrine"/>
+            <argument>%sylius.model.customer.class%</argument>
+        </service>
+
+        <service id="Setono\SyliusFeedPlugin\FeedType\CustomerFeedType">
+            <argument type="service" id="Setono\SyliusFeedPlugin\DataSource\CustomerDataSource"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\ValueResolver\ValueResolverRegistryInterface"/>
+            <tag name="setono_sylius_feed.feed_type"/>
+        </service>
+
+        <service id="Setono\SyliusFeedPlugin\DataSource\TaxonDataSource">
+            <argument type="service" id="doctrine"/>
+            <argument>%sylius.model.taxon.class%</argument>
+        </service>
+
+        <service id="Setono\SyliusFeedPlugin\FeedType\TaxonFeedType">
+            <argument type="service" id="Setono\SyliusFeedPlugin\DataSource\TaxonDataSource"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\ValueResolver\ValueResolverRegistryInterface"/>
+            <tag name="setono_sylius_feed.feed_type"/>
+        </service>
+
+        <service id="Setono\SyliusFeedPlugin\DataSource\ProductReviewDataSource">
+            <argument type="service" id="doctrine"/>
+            <argument>%sylius.model.product_review.class%</argument>
+        </service>
+
+        <service id="Setono\SyliusFeedPlugin\FeedType\ProductReviewFeedType">
+            <argument type="service" id="Setono\SyliusFeedPlugin\DataSource\ProductReviewDataSource"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\ValueResolver\ValueResolverRegistryInterface"/>
+            <tag name="setono_sylius_feed.feed_type"/>
+        </service>
+
+        <service id="Setono\SyliusFeedPlugin\DataSource\PromotionDataSource">
+            <argument type="service" id="doctrine"/>
+            <argument>%sylius.model.promotion.class%</argument>
+        </service>
+
+        <service id="Setono\SyliusFeedPlugin\FeedType\PromotionFeedType">
+            <argument type="service" id="Setono\SyliusFeedPlugin\DataSource\PromotionDataSource"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\ValueResolver\ValueResolverRegistryInterface"/>
+            <tag name="setono_sylius_feed.feed_type"/>
+        </service>
     </services>
 </container>

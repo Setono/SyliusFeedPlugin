@@ -55,5 +55,97 @@
         <service id="Setono\SyliusFeedPlugin\ValueResolver\Product\ProductAvailabilityResolver">
             <tag name="setono_sylius_feed.value_resolver"/>
         </service>
+
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Order\OrderNumberResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Order\OrderTotalResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Order\OrderCurrencyCodeResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Order\OrderCustomerEmailResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Order\OrderStateResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Order\OrderCheckoutCompletedAtResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Customer\CustomerEmailResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Customer\CustomerFirstNameResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Customer\CustomerLastNameResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Customer\CustomerGroupResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Customer\CustomerSubscribedToNewsletterResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Customer\CustomerCreatedAtResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Taxon\TaxonCodeResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Taxon\TaxonNameResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Taxon\TaxonSlugResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Taxon\TaxonParentCodeResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Taxon\TaxonPositionResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\ProductReview\ReviewRatingResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\ProductReview\ReviewCommentResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\ProductReview\ReviewAuthorResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\ProductReview\ReviewProductIdResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\ProductReview\ReviewCreatedAtResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\ProductReview\ReviewStatusResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Promotion\PromotionCodeResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Promotion\PromotionNameResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Promotion\PromotionDescriptionResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Promotion\PromotionStartsAtResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Promotion\PromotionEndsAtResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\ValueResolver\Promotion\PromotionCouponBasedResolver">
+            <tag name="setono_sylius_feed.value_resolver"/>
+        </service>
     </services>
 </container>
