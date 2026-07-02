@@ -8,6 +8,8 @@ setono_sylius_feed_admin_feed:
         vars:
             all:
                 subheader: setono_sylius_feed.ui.manage_feeds
+                templates:
+                    form: "@SetonoSyliusFeedPlugin/admin/feed/_form.html.twig"
             index:
                 icon: rss
     type: sylius.resource

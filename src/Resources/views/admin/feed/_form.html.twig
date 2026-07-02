@@ -1,0 +1,47 @@
+{% from '@SyliusAdmin/Macro/translationForm.html.twig' import translationForm %}
+
+{{ form_errors(form) }}
+
+<div class="ui two column stackable grid">
+    <div class="column">
+        <div class="ui fluid segment">
+            <h4 class="ui dividing header">{{ 'setono_sylius_feed.ui.details'|trans }}</h4>
+
+            {{ form_row(form.code) }}
+            {{ form_row(form.enabled) }}
+
+            <h5 class="ui top attached header">{{ 'setono_sylius_feed.ui.translations'|trans }}</h5>
+            <div class="ui attached segment">
+                {{ translationForm(form.translations) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="column">
+        <div class="ui fluid segment">
+            <h4 class="ui dividing header">{{ 'setono_sylius_feed.ui.output'|trans }}</h4>
+
+            {{ form_row(form.target) }}
+            {{ form_row(form.format) }}
+            {{ form_row(form.channels) }}
+        </div>
+    </div>
+</div>
+
+<div class="ui segment">
+    <h4 class="ui dividing header">
+        {{ 'setono_sylius_feed.form.feed.sources'|trans }}
+        <div class="sub header">{{ 'setono_sylius_feed.ui.sources_help'|trans }}</div>
+    </h4>
+    {{ form_widget(form.sources) }}
+    {{ form_errors(form.sources) }}
+</div>
+
+<div class="ui segment">
+    <h4 class="ui dividing header">
+        {{ 'setono_sylius_feed.form.feed.delivery_targets'|trans }}
+        <div class="sub header">{{ 'setono_sylius_feed.ui.delivery_targets_help'|trans }}</div>
+    </h4>
+    {{ form_widget(form.deliveryTargets) }}
+    {{ form_errors(form.deliveryTargets) }}
+</div>

@@ -6,6 +6,11 @@ setono_sylius_feed:
         edit_lookup_table: Edit lookup table
         manage_feeds: Manage feeds
         manage_lookup_tables: Manage lookup tables
+        details: Details
+        output: Output
+        translations: Name & slug
+        sources_help: Where the feed's items come from, and how each output field is mapped, transformed and filtered.
+        delivery_targets_help: 'Optionally push each generated file to remote destinations (FTP/SFTP/S3) after it is published.'
         refresh: Refresh
         refreshed_at: Refreshed at
         new_feed: New feed
