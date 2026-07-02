@@ -7,6 +7,7 @@ namespace Setono\SyliusFeedPlugin\MessageHandler;
 use Doctrine\Persistence\ManagerRegistry;
 use Setono\Doctrine\ORMTrait;
 use Setono\SyliusFeedPlugin\Context\FeedContext;
+use Setono\SyliusFeedPlugin\Generator\FeedContextResultRecorderInterface;
 use Setono\SyliusFeedPlugin\Generator\FeedGeneratorInterface;
 use Setono\SyliusFeedPlugin\Message\Command\GenerateFeedContext;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
@@ -31,6 +32,7 @@ final class GenerateFeedContextHandler
         private readonly FeedRepositoryInterface $feedRepository,
         private readonly RepositoryInterface $channelRepository,
         private readonly FeedGeneratorInterface $feedGenerator,
+        private readonly FeedContextResultRecorderInterface $feedContextResultRecorder,
         private readonly Registry $workflowRegistry,
     ) {
         $this->managerRegistry = $managerRegistry;
@@ -43,8 +45,10 @@ final class GenerateFeedContextHandler
             return;
         }
 
+        $context = $this->buildContext($message);
+
         try {
-            $this->feedGenerator->generate($feed, $this->buildContext($message));
+            $result = $this->feedGenerator->generate($feed, $context);
         } catch (\Throwable $exception) {
             $this->fail($message->feed);
 
@@ -55,6 +59,10 @@ final class GenerateFeedContextHandler
         // was loaded moments ago, so it is guaranteed to still exist.
         $feed = $this->feedRepository->find($message->feed);
         Assert::isInstanceOf($feed, FeedInterface::class);
+
+        // Record the excluded-item report + size/count for this context now that generation
+        // finished, against the managed feed (§11).
+        $this->feedContextResultRecorder->record($feed, $context->key(), $result);
 
         $completed = $this->feedRepository->incrementCompletedContexts($feed);
         if (null !== $feed->getContextCount() && $completed >= $feed->getContextCount()) {

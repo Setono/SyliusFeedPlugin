@@ -38,4 +38,11 @@ final class GoogleRssFormat implements FormatInterface
     {
         return ['g:id', 'g:title', 'g:description', 'g:link', 'g:image_link', 'g:availability', 'g:price'];
     }
+
+    public function getItemValidationGroups(): array
+    {
+        // Run the GoogleShoppingItem constraint mapping (Default group), which encodes the Google
+        // Merchant product spec on the typed item this format's product_variant source produces.
+        return ['Default'];
+    }
 }

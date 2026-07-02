@@ -37,4 +37,15 @@ interface FormatInterface
      * @return list<string>
      */
     public function getRequiredFields(): array;
+
+    /**
+     * The Symfony validation groups to run the typed per-item constraints under for this format
+     * (§11). A format that carries typed-item constraints (e.g. Google Shopping) returns the group(s)
+     * that activate them; a format that only relies on the generic required-field check returns an
+     * empty list, so a typed item (like GoogleShoppingItem) rendered under a non-matching format is
+     * not spuriously rejected.
+     *
+     * @return list<string>
+     */
+    public function getItemValidationGroups(): array;
 }

@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\FeedType;
 
+use Setono\SyliusFeedPlugin\Context\FeedContext;
 use Setono\SyliusFeedPlugin\DataSource\DataSourceInterface;
+use Setono\SyliusFeedPlugin\Item\FeedItem;
+use Setono\SyliusFeedPlugin\Item\Google\GoogleShoppingItem;
 use Setono\SyliusFeedPlugin\Mapping\FieldDefinition;
 use Setono\SyliusFeedPlugin\Mapping\ScopeDimension;
 use Setono\SyliusFeedPlugin\ValueResolver\ValueResolverRegistryInterface;
@@ -54,6 +57,11 @@ final class ProductVariantFeedType implements FeedTypeInterface
     public function getDataSource(): DataSourceInterface
     {
         return $this->dataSource;
+    }
+
+    public function createItem(object $entity, FeedContext $context): FeedItem
+    {
+        return new GoogleShoppingItem($entity, $context);
     }
 
     public function getScopeDimensions(): array

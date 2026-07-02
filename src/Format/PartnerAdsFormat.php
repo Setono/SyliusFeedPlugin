@@ -32,4 +32,9 @@ final class PartnerAdsFormat implements FormatInterface
     {
         return [];
     }
+
+    public function getItemValidationGroups(): array
+    {
+        return [];
+    }
 }

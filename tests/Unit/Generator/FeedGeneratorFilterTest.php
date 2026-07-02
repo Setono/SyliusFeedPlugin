@@ -20,6 +20,7 @@ use Setono\SyliusFeedPlugin\Format\CsvFormat;
 use Setono\SyliusFeedPlugin\Format\FormatRegistryInterface;
 use Setono\SyliusFeedPlugin\Generator\FeedGenerator;
 use Setono\SyliusFeedPlugin\Generator\FieldMappingEvaluator;
+use Setono\SyliusFeedPlugin\Item\FeedItem;
 use Setono\SyliusFeedPlugin\Lookup\InMemoryLookup;
 use Setono\SyliusFeedPlugin\Mapping\FieldDefinition;
 use Setono\SyliusFeedPlugin\Mapping\FieldType;
@@ -40,6 +41,7 @@ use Setono\SyliusFeedPlugin\Scripting\FeedTemplateSecurityPolicy;
 use Setono\SyliusFeedPlugin\Scripting\SandboxedTwigRenderer;
 use Setono\SyliusFeedPlugin\Transformation\TransformationChain;
 use Setono\SyliusFeedPlugin\Transformation\TransformationRegistry;
+use Setono\SyliusFeedPlugin\Validator\FeedItemValidator;
 use Setono\SyliusFeedPlugin\Validator\RequiredFieldsValidator;
 use Setono\SyliusFeedPlugin\ValueResolver\ValueResolverInterface;
 use Setono\SyliusFeedPlugin\Writer\CsvWriter;
@@ -47,6 +49,7 @@ use Setono\SyliusFeedPlugin\Writer\FeedWriterRegistryInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RequestContext;
+use Symfony\Component\Validator\Validation;
 
 /**
  * The §11 acceptance for the FilterEvaluator wired into the generator: a source with an
@@ -81,6 +84,13 @@ final class FeedGeneratorFilterTest extends TestCase
 
         self::assertSame(1, $result->itemCount);
         self::assertSame(1, $result->excludedCount);
+
+        // the exclusion is recorded with the stage-qualified filter reason (§11); the item id is
+        // only resolvable once mapping has run, so it is present for a `post` filter but null for `pre`
+        self::assertCount(1, $result->errors);
+        self::assertSame(sprintf('filter:%s:availability', $stage), $result->errors[0]['reason']);
+        self::assertSame(FeedFilterInterface::STAGE_POST === $stage ? 'SKU-2' : null, $result->errors[0]['item']);
+        self::assertGreaterThan(0, $result->bytes, 'the produced file has a non-zero byte size');
 
         $rows = [...Reader::createFromString($this->filesystem->read($result->path))->getRecords()];
         self::assertCount(2, $rows, 'header + the single kept row');
@@ -128,7 +138,7 @@ final class FeedGeneratorFilterTest extends TestCase
             ),
             new FilterEvaluator(new ReferenceResolver(), new OperatorRegistry([new Equals()])),
             new NullLookupReferenceResolver(),
-            new RequiredFieldsValidator(),
+            new FeedItemValidator(Validation::createValidator(), new RequiredFieldsValidator()),
             new EventDispatcher(),
             $urlGenerator->reveal(),
             $this->filesystem,
@@ -183,6 +193,11 @@ final class FeedGeneratorFilterTest extends TestCase
             public function getDataSource(): DataSourceInterface
             {
                 return $this->dataSource;
+            }
+
+            public function createItem(object $entity, FeedContext $context): FeedItem
+            {
+                return new FeedItem($entity, $context);
             }
 
             public function getScopeDimensions(): array
