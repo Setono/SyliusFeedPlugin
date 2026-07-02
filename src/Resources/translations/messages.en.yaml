@@ -17,7 +17,11 @@ setono_sylius_feed:
             name: Name
             slug: Slug
             format: Format
+            format_placeholder: Choose a format
             sources: Sources
+            target: Target
+            target_placeholder: Start from a target…
+            target_help: 'Seeds the format and field mappings from a known target (e.g. Google Shopping). Leave empty to configure the feed manually.'
         feed_source:
             feed_type: Feed type
             fields: Field mappings
@@ -25,6 +29,12 @@ setono_sylius_feed:
             output_field: Output field
             source_type: Source type
             source_value: Source value
+            requires_input: Requires input
+            requires_input_help: 'This field could not be mapped automatically. Set its source, then clear this flag — the feed cannot be enabled while any field still requires input.'
             source:
                 field: Field
                 literal: Literal
+                expression: Expression
+                twig: Twig
+    mapping_preset:
+        google_shopping: Google Shopping

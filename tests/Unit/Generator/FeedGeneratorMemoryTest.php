@@ -191,6 +191,7 @@ final class FeedGeneratorMemoryTest extends TestCase
         $source->getFeedType()->willReturn('product_variant');
         $source->getPosition()->willReturn(0);
         $source->getFilters()->willReturn(new ArrayCollection());
+        $source->getFields()->willReturn(new ArrayCollection());
 
         $feed = $this->prophesize(FeedInterface::class);
         $feed->getCode()->willReturn('google');

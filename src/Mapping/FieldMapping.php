@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Mapping;
 
+use Setono\SyliusFeedPlugin\Model\FeedFieldInterface;
+use Webmozart\Assert\Assert;
+
 /**
  * The runtime form of a FeedField (§4.2): an output field mapped to a source, an ordered
  * transformation chain, an optional emit condition, and a `requiresInput` flag.
@@ -52,6 +55,46 @@ final class FieldMapping
     public static function twig(string $outputField, string $template): self
     {
         return new self($outputField, SourceType::TWIG, $template);
+    }
+
+    /**
+     * Hydrate the runtime mapping from a persisted FeedField (what the generator consumes).
+     */
+    public static function fromFeedField(FeedFieldInterface $field): self
+    {
+        $outputField = $field->getOutputField();
+        Assert::notNull($outputField, 'A FeedField must have an output field to be mapped');
+
+        $mapping = new self($outputField, SourceType::from($field->getSourceType()), $field->getSourceValue() ?? '');
+
+        foreach ($field->getTransformations() as $transformation) {
+            $mapping->transform(TransformationConfig::fromArray($transformation));
+        }
+
+        $condition = $field->getCondition();
+        if (null !== $condition) {
+            $mapping->condition = array_key_exists('value', $condition)
+                ? ['field' => $condition['field'], 'operator' => $condition['operator'], 'value' => $condition['value']]
+                : ['field' => $condition['field'], 'operator' => $condition['operator']];
+        }
+
+        return $mapping->requiresInput($field->getRequiresInput());
+    }
+
+    /**
+     * Write this mapping onto a FeedField (used when a preset seeds a source's rows).
+     */
+    public function writeTo(FeedFieldInterface $field): void
+    {
+        $field->setOutputField($this->outputField);
+        $field->setSourceType($this->sourceType->value);
+        $field->setSourceValue($this->sourceValue);
+        $field->setTransformations(array_map(
+            static fn (TransformationConfig $transformation): array => $transformation->toArray(),
+            $this->transformations,
+        ));
+        $field->setCondition($this->condition);
+        $field->setRequiresInput($this->requiresInput);
     }
 
     public function transform(TransformationConfig $transformation): self

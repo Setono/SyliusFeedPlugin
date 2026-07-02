@@ -8,6 +8,7 @@ use PHPUnit\Framework\TestCase;
 use Setono\SyliusFeedPlugin\Mapping\FieldMapping;
 use Setono\SyliusFeedPlugin\Mapping\SourceType;
 use Setono\SyliusFeedPlugin\Mapping\TransformationConfig;
+use Setono\SyliusFeedPlugin\Model\FeedField;
 
 final class FieldMappingTest extends TestCase
 {
@@ -68,5 +69,41 @@ final class FieldMappingTest extends TestCase
     {
         self::assertTrue(FieldMapping::field('g:brand', 'attribute:brand')->requiresInput()->getRequiresInput());
         self::assertFalse(FieldMapping::field('g:brand', 'attribute:brand')->requiresInput(false)->getRequiresInput());
+    }
+
+    /**
+     * @test
+     */
+    public function it_sets_an_emit_condition_via_when(): void
+    {
+        $mapping = FieldMapping::field('g:id', 'id')->when('a', 'equals', 'b');
+
+        self::assertSame(['field' => 'a', 'operator' => 'equals', 'value' => 'b'], $mapping->getCondition());
+    }
+
+    /**
+     * @test
+     */
+    public function it_round_trips_through_a_feed_field(): void
+    {
+        $mapping = FieldMapping::field('g:brand', 'attribute:brand')
+            ->transform(new TransformationConfig('truncate', ['max' => 5]))
+            ->when('a', 'equals', 'b')
+            ->requiresInput();
+
+        $field = new FeedField();
+        $mapping->writeTo($field);
+
+        $hydrated = FieldMapping::fromFeedField($field);
+
+        self::assertSame($mapping->getOutputField(), $hydrated->getOutputField());
+        self::assertSame($mapping->getSourceType(), $hydrated->getSourceType());
+        self::assertSame($mapping->getSourceValue(), $hydrated->getSourceValue());
+        self::assertSame(
+            array_map(static fn (TransformationConfig $transformation): array => $transformation->toArray(), $mapping->getTransformations()),
+            array_map(static fn (TransformationConfig $transformation): array => $transformation->toArray(), $hydrated->getTransformations()),
+        );
+        self::assertSame($mapping->getCondition(), $hydrated->getCondition());
+        self::assertSame($mapping->getRequiresInput(), $hydrated->getRequiresInput());
     }
 }

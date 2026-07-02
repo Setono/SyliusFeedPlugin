@@ -13,6 +13,7 @@ use Setono\SyliusFeedPlugin\Format\FormatRegistryInterface;
 use Setono\SyliusFeedPlugin\Item\FeedItem;
 use Setono\SyliusFeedPlugin\Mapping\FieldMapping;
 use Setono\SyliusFeedPlugin\MappingPreset\MappingPresetRegistryInterface;
+use Setono\SyliusFeedPlugin\Model\FeedFieldInterface;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Model\FeedSourceInterface;
 use Setono\SyliusFeedPlugin\Validator\RequiredFieldsValidatorInterface;
@@ -93,11 +94,26 @@ final class FeedGenerator implements FeedGeneratorInterface
     }
 
     /**
+     * The admin-editable FeedField rows are the source of truth once a source has any; the matching
+     * MappingPreset is only the fallback for a source that was never seeded/edited (§10).
+     *
      * @return list<FieldMapping>
      */
     private function resolveMappings(FeedInterface $feed, FeedSourceInterface $source): array
     {
-        // M1 derives the mapping from the matching preset; admin-editable FeedField rows land in M3.
+        $fields = $source->getFields()->toArray();
+        if ([] !== $fields) {
+            usort(
+                $fields,
+                static fn (FeedFieldInterface $a, FeedFieldInterface $b): int => ($a->getPosition() ?? 0) <=> ($b->getPosition() ?? 0),
+            );
+
+            return array_map(
+                static fn (FeedFieldInterface $field): FieldMapping => FieldMapping::fromFeedField($field),
+                $fields,
+            );
+        }
+
         foreach ($this->mappingPresetRegistry->forFeedType((string) $source->getFeedType()) as $preset) {
             if ($preset->getFormat() === $feed->getFormat()) {
                 return $preset->getMapping();

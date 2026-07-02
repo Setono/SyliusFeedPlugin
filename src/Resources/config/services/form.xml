@@ -7,6 +7,11 @@
         <service id="Setono\SyliusFeedPlugin\Form\Type\FeedType">
             <argument>%setono_sylius_feed.model.feed.class%</argument>
             <argument type="service" id="Setono\SyliusFeedPlugin\Format\FormatRegistryInterface"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\MappingPreset\MappingPresetRegistryInterface"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\MappingPreset\MappingPresetApplicatorInterface"/>
+            <argument type="collection">
+                <argument>sylius</argument>
+            </argument>
             <tag name="form.type"/>
         </service>
 

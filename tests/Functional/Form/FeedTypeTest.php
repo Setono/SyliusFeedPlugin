@@ -85,6 +85,46 @@ final class FeedTypeTest extends FunctionalTestCase
     /**
      * @test
      */
+    public function it_seeds_the_feed_from_a_target(): void
+    {
+        $factory = self::getContainer()->get('form.factory');
+        self::assertInstanceOf(FormFactoryInterface::class, $factory);
+
+        $form = $factory->create(FeedType::class, new Feed(), ['csrf_protection' => false]);
+        $form->submit([
+            'code' => 'google',
+            'target' => 'google_shopping',
+            'enabled' => false,
+        ]);
+
+        self::assertTrue($form->isSynchronized());
+
+        $feed = $form->getData();
+        self::assertInstanceOf(Feed::class, $feed);
+
+        self::assertSame('google_rss', $feed->getFormat());
+
+        $sources = $feed->getSources()->getValues();
+        self::assertCount(1, $sources);
+
+        $source = $sources[0];
+        self::assertSame('product_variant', $source->getFeedType());
+
+        $fields = $source->getFields()->getValues();
+        self::assertCount(13, $fields);
+
+        $byOutput = [];
+        foreach ($fields as $field) {
+            $byOutput[$field->getOutputField()] = $field;
+        }
+
+        self::assertArrayHasKey('g:brand', $byOutput);
+        self::assertTrue($byOutput['g:brand']->getRequiresInput());
+    }
+
+    /**
+     * @test
+     */
     public function it_builds_the_translation_form(): void
     {
         $factory = self::getContainer()->get('form.factory');

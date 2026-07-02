@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<constraint-mapping xmlns="http://symfony.com/schema/dic/constraint-mapping"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping http://symfony.com/schema/dic/constraint-mapping/constraint-mapping-1.0.xsd">
+
+    <class name="Setono\SyliusFeedPlugin\Model\Feed">
+        <constraint name="Setono\SyliusFeedPlugin\Validator\Constraints\FeedResolvable">
+            <option name="groups">
+                <value>Default</value>
+                <value>sylius</value>
+            </option>
+        </constraint>
+    </class>
+</constraint-mapping>

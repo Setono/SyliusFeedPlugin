@@ -51,9 +51,11 @@ final class GoogleShoppingMappingPreset implements MappingPresetInterface
             FieldMapping::field('g:availability', 'availability'),
             FieldMapping::field('g:price', 'channel_price')->transform(MoneyFormat::withCurrency()),
             FieldMapping::literal('g:condition', 'new'),
-            // Required by Google but not in core Sylius → flagged for the admin to complete:
+            // Required/expected by Google but not derivable from core Sylius → flagged for the
+            // admin to complete before the feed can be enabled:
             FieldMapping::field('g:brand', 'attribute:brand')->requiresInput(),
             FieldMapping::field('g:gtin', 'attribute:gtin')->requiresInput(),
+            FieldMapping::field('g:google_product_category', 'attribute:google_product_category')->requiresInput(),
         ];
     }
 }
