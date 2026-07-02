@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\Generator;
 
 use Setono\SyliusFeedPlugin\Item\FeedItem;
+use Setono\SyliusFeedPlugin\Lookup\LookupReferenceResolverInterface;
 use Setono\SyliusFeedPlugin\Mapping\FieldMapping;
 use Setono\SyliusFeedPlugin\Mapping\SourceType;
 use Setono\SyliusFeedPlugin\Operator\OperatorRegistryInterface;
@@ -25,6 +26,7 @@ final class FieldMappingEvaluator implements FieldMappingEvaluatorInterface
         private readonly OperatorRegistryInterface $operatorRegistry,
         private readonly ExpressionEvaluatorInterface $expressionEvaluator,
         private readonly TwigTemplateRendererInterface $twigRenderer,
+        private readonly LookupReferenceResolverInterface $lookupReferenceResolver,
     ) {
     }
 
@@ -32,9 +34,15 @@ final class FieldMappingEvaluator implements FieldMappingEvaluatorInterface
     {
         $entity = $item->getEntity();
         $context = $item->getContext();
-        $item->setSourceResolver(static fn (string $field): mixed => isset($availableFields[$field])
-            ? $availableFields[$field]->getResolver()->resolve($entity, $context)
-            : null);
+        $item->setSourceResolver(function (string $field) use ($entity, $context, $availableFields): mixed {
+            if ($this->lookupReferenceResolver->supports($field)) {
+                return $this->lookupReferenceResolver->resolve($field, $entity, $context, $availableFields);
+            }
+
+            return isset($availableFields[$field])
+                ? $availableFields[$field]->getResolver()->resolve($entity, $context)
+                : null;
+        });
 
         foreach ($mappings as $mapping) {
             if (!$this->conditionSatisfied($mapping, $item)) {

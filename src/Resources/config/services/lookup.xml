@@ -25,5 +25,10 @@
             <argument type="service" id="logger"/>
         </service>
         <service id="Setono\SyliusFeedPlugin\Lookup\LookupTableRefresherInterface" alias="Setono\SyliusFeedPlugin\Lookup\LookupTableRefresher"/>
+
+        <service id="Setono\SyliusFeedPlugin\Lookup\LookupReferenceResolver">
+            <argument type="service" id="setono_sylius_feed.repository.lookup_table"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Lookup\LookupReferenceResolverInterface" alias="Setono\SyliusFeedPlugin\Lookup\LookupReferenceResolver"/>
     </services>
 </container>

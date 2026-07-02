@@ -5,17 +5,22 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\Tests\Unit\Generator;
 
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Setono\SyliusFeedPlugin\Context\FeedContext;
 use Setono\SyliusFeedPlugin\Generator\FieldMappingEvaluator;
 use Setono\SyliusFeedPlugin\Item\FeedItem;
 use Setono\SyliusFeedPlugin\Lookup\InMemoryLookup;
+use Setono\SyliusFeedPlugin\Lookup\LookupReferenceResolver;
+use Setono\SyliusFeedPlugin\Lookup\LookupReferenceResolverInterface;
 use Setono\SyliusFeedPlugin\Mapping\FieldDefinition;
 use Setono\SyliusFeedPlugin\Mapping\FieldMapping;
 use Setono\SyliusFeedPlugin\Mapping\FieldType;
+use Setono\SyliusFeedPlugin\Model\LookupTable;
 use Setono\SyliusFeedPlugin\Operator\Equals;
 use Setono\SyliusFeedPlugin\Operator\IsTrue;
 use Setono\SyliusFeedPlugin\Operator\OperatorRegistry;
 use Setono\SyliusFeedPlugin\Reference\ReferenceResolver;
+use Setono\SyliusFeedPlugin\Repository\LookupTableRepositoryInterface;
 use Setono\SyliusFeedPlugin\Scripting\ExpressionEvaluator;
 use Setono\SyliusFeedPlugin\Scripting\FeedTemplateSecurityPolicy;
 use Setono\SyliusFeedPlugin\Scripting\SandboxedTwigRenderer;
@@ -30,6 +35,8 @@ use Setono\SyliusFeedPlugin\Transformation\TransformationRegistry;
  */
 final class FieldMappingEvaluatorTest extends TestCase
 {
+    use ProphecyTrait;
+
     /**
      * @test
      */
@@ -155,7 +162,32 @@ final class FieldMappingEvaluatorTest extends TestCase
         self::assertSame('Acme Shoe Bestseller', $item->get('g:title'));
     }
 
-    private function evaluator(?InMemoryLookup $lookup = null): FieldMappingEvaluator
+    /**
+     * The exact §10.1 case: a title joined with a per-item lookup value resolved via a
+     * `lookup:{code}:{column}` source reference, keyed off the table's joinField.
+     *
+     * @test
+     */
+    public function it_resolves_a_lookup_source_reference_via_the_join_field(): void
+    {
+        $table = new LookupTable();
+        $table->setCode('badges');
+        $table->setJoinField('code');
+        $table->setRows(['SKU-1' => ['badge' => 'Bestseller']]);
+
+        $repository = $this->prophesize(LookupTableRepositoryInterface::class);
+        $repository->findOneByCode('badges')->willReturn($table);
+
+        $item = $this->item();
+        $mapping = FieldMapping::field('g:title', 'title')->transform(Concat::of(['value', 'lookup:badges:badge'], ' '));
+
+        $this->evaluator(null, new LookupReferenceResolver($repository->reveal()))
+            ->apply($item, [$mapping], $this->fields(['title' => 'Acme Shoe', 'code' => 'SKU-1']));
+
+        self::assertSame('Acme Shoe Bestseller', $item->get('g:title'));
+    }
+
+    private function evaluator(?InMemoryLookup $lookup = null, ?LookupReferenceResolverInterface $lookupReferenceResolver = null): FieldMappingEvaluator
     {
         $lookup ??= new InMemoryLookup();
         $referenceResolver = new ReferenceResolver();
@@ -166,6 +198,7 @@ final class FieldMappingEvaluatorTest extends TestCase
             new OperatorRegistry([new IsTrue(), new Equals()]),
             new ExpressionEvaluator($lookup),
             new SandboxedTwigRenderer(new FeedTemplateSecurityPolicy(), $lookup),
+            $lookupReferenceResolver ?? new NullLookupReferenceResolver(),
         );
     }
 

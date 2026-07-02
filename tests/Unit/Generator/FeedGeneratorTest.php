@@ -252,6 +252,7 @@ final class FeedGeneratorTest extends TestCase
                 new OperatorRegistry([new IsTrue()]),
                 new ExpressionEvaluator(new InMemoryLookup()),
                 new SandboxedTwigRenderer(new FeedTemplateSecurityPolicy(), new InMemoryLookup()),
+                new NullLookupReferenceResolver(),
             ),
             new RequiredFieldsValidator(),
             new EventDispatcher(),
