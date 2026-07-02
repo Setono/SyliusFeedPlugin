@@ -108,10 +108,7 @@ final class FeedGenerator implements FeedGeneratorInterface
                 static fn (FeedFieldInterface $a, FeedFieldInterface $b): int => ($a->getPosition() ?? 0) <=> ($b->getPosition() ?? 0),
             );
 
-            return array_map(
-                static fn (FeedFieldInterface $field): FieldMapping => FieldMapping::fromFeedField($field),
-                $fields,
-            );
+            return array_map(FieldMapping::fromFeedField(...), $fields);
         }
 
         foreach ($this->mappingPresetRegistry->forFeedType((string) $source->getFeedType()) as $preset) {

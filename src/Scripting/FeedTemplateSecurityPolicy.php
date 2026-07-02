@@ -97,6 +97,6 @@ final class FeedTemplateSecurityPolicy implements SecurityPolicyInterface
             return [];
         }
 
-        return array_values(array_filter($values, 'is_string'));
+        return array_values(array_filter($values, is_string(...)));
     }
 }
