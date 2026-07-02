@@ -141,7 +141,7 @@ final class FeedGeneratorTest extends TestCase
         self::assertSame(2, $result->itemCount);
 
         $csv = $this->filesystem->read($result->path);
-        $rows = array_values(iterator_to_array(Reader::createFromString($csv)->getRecords()));
+        $rows = [...Reader::createFromString($csv)->getRecords()];
 
         self::assertCount(3, $rows, 'header + two item rows');
         self::assertSame(['id', 'title', 'availability'], $rows[0]);
@@ -178,7 +178,7 @@ final class FeedGeneratorTest extends TestCase
      */
     private function csvRecords(Reader $reader): array
     {
-        return array_values(array_filter(iterator_to_array($reader->getRecords()), is_array(...)));
+        return array_values(array_filter([...$reader->getRecords()], is_array(...)));
     }
 
     /**

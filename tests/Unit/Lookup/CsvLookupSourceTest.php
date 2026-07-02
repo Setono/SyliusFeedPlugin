@@ -27,7 +27,7 @@ final class CsvLookupSourceTest extends TestCase
         $filesystem->readStream('uploads/badges.csv')->willReturn($stream);
 
         $source = new CsvLookupSource($filesystem->reveal());
-        $rows = iterator_to_array($source->fetch(['path' => 'uploads/badges.csv']), false);
+        $rows = [...$source->fetch(['path' => 'uploads/badges.csv'])];
 
         self::assertSame('csv', $source->getType());
         self::assertSame([
@@ -43,6 +43,6 @@ final class CsvLookupSourceTest extends TestCase
     {
         $source = new CsvLookupSource($this->prophesize(FilesystemOperator::class)->reveal());
 
-        self::assertSame([], iterator_to_array($source->fetch([]), false));
+        self::assertSame([], [...$source->fetch([])]);
     }
 }

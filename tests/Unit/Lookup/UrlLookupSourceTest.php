@@ -17,7 +17,7 @@ final class UrlLookupSourceTest extends TestCase
         $url = 'data://text/csv;base64,' . base64_encode("product_code,gtin\nSKU-1,111\n");
 
         $source = new UrlLookupSource();
-        $rows = iterator_to_array($source->fetch(['url' => $url]), false);
+        $rows = [...$source->fetch(['url' => $url])];
 
         self::assertSame('url', $source->getType());
         self::assertSame([['product_code' => 'SKU-1', 'gtin' => '111']], $rows);
@@ -30,7 +30,7 @@ final class UrlLookupSourceTest extends TestCase
     {
         $this->expectException(\RuntimeException::class);
 
-        iterator_to_array((new UrlLookupSource())->fetch(['url' => 'file:///does/not/exist/lookup.csv']), false);
+        [...(new UrlLookupSource())->fetch(['url' => 'file:///does/not/exist/lookup.csv'])];
     }
 
     /**
@@ -38,6 +38,6 @@ final class UrlLookupSourceTest extends TestCase
      */
     public function it_yields_nothing_without_a_url(): void
     {
-        self::assertSame([], iterator_to_array((new UrlLookupSource())->fetch([]), false));
+        self::assertSame([], [...(new UrlLookupSource())->fetch([])]);
     }
 }

@@ -193,7 +193,7 @@ final class ProductFeedGenerationTest extends FunctionalTestCase
      */
     private function csvRecords(Reader $reader): array
     {
-        return array_values(array_filter(iterator_to_array($reader->getRecords()), is_array(...)));
+        return array_values(array_filter([...$reader->getRecords()], is_array(...)));
     }
 
     private function entityManager(): EntityManagerInterface
