@@ -161,7 +161,7 @@ These are enforced by `.github/workflows/build.yaml` and will fail the build if 
 - **PHP 8.1 is the floor**: the package supports PHP `>=8.1`, and CI runs against 8.1/8.2/8.3 with Symfony `~6.4`. Coding-standards run on **8.1** and Rector targets `LevelSetList::UP_TO_PHP_81`, so do **not** use syntax/features newer than 8.1.
 - **`lowest` and `highest` dependencies** are both tested — avoid relying on behavior only present in newer versions of a `^`-constrained dependency.
 - **`composer normalize --dry-run`** must pass — keep `composer.json` normalized (run `composer normalize`).
-- **Dependency analysis** (`shipmonk/composer-dependency-analyser`, config in `composer-dependency-analyser.php`) checks that every used package is a direct dependency.
+- **Dependency analysis** (`shipmonk/composer-dependency-analyser`, config in `composer-dependency-analyser.php`) must pass: every symbol used in `src/` maps to a declared `require`, and every `require` is used. **Gotcha:** the job runs `composer config --unset require-dev` and resolves **`require`-only**, so it never sees the `sylius/sylius` monorepo (a require-dev dependency) — it pulls the *split* component packages (`sylius/core`, `sylius/order`, …) instead. Two consequences: (a) `require` must directly declare every Sylius component the code uses (the split packages don't `replace` each other); (b) the split `sylius/core` caps `league/flysystem` at `^2.4`, so `require` keeps `league/flysystem: ^2.4 || ^3.0` and the 3.x floor + `league/flysystem-local` live in **require-dev** (the test app and the full install still resolve flysystem 3.15 + flysystem-local 3.15, matched so `ChecksumProvider` is present). Reproduce the exact job locally with: `cp composer.json /tmp/bak && composer config --unset require-dev && composer require --dev --no-install shipmonk/composer-dependency-analyser && composer update --prefer-lowest --ignore-platform-req=php+ && vendor/bin/composer-dependency-analyser` (then `cp /tmp/bak composer.json && composer update`).
 
 ### Test Application
 The plugin includes a test Symfony application in `tests/Application/` for development and testing:
@@ -194,74 +194,119 @@ Examples:
 
 ## Architecture
 
+The plugin is a **resource-agnostic transformation engine**: *iterate any Sylius resource → map each
+entity to named output fields → transform/filter → validate → stream to a format → gate → publish/
+deliver*. "Google Shopping product feed" is just the richest `FeedType` plugged into that engine. The
+authoritative design lives in `.notes/sylius-feed-plugin-spec.md` (gitignored).
+
 ### Feed Processing Flow
 
-The pipeline is a fan-out of async messages, and the *lifecycle* is driven by Symfony Workflow transition events — not by the handlers calling each other directly.
+Generation is an async Messenger fan-out; the *lifecycle* is driven by Symfony Workflow transitions,
+not by handlers calling each other.
 
-1. `ProcessFeedsCommand` (`setono:sylius-feed:process`) calls `FeedProcessor::process()`, which dispatches one `ProcessFeed` per enabled feed.
-2. `ProcessFeedHandler` validates the feed type's template, applies the `process` transition, and dispatches one `GenerateFeed` per channel/locale combination.
-3. `GenerateFeedHandler` asks the feed type's `DataProvider` for batches (`getBatches()`) and dispatches one `GenerateBatch` per batch.
-4. `GenerateBatchHandler` resolves the batch's items, runs each through the item context, validates every context, renders the Twig `item` block, writes a **partial file** per channel/locale, then dispatches `BatchGeneratedEvent`.
-5. `FinishGenerationHandler` concatenates the partials into the final feed (wrapping them with the feed start/end rendered from `@SetonoSyliusFeedPlugin/Feed/feed.txt.twig`, split on the `<!-- ITEM_BOUNDARY -->` marker), deletes the partials, and applies the `processed` transition.
+1. `ProcessFeedCommand` (`setono:feed:process [--feed=CODE] [--all]`) dispatches one `ProcessFeed` per
+   enabled feed.
+2. `ProcessFeedHandler` applies the `process` transition and, via `ContextFactory`, fans out one
+   `GenerateFeedContext` per **context** — the cartesian product of the feed's scope dimensions
+   (channel × locale × currency) — recording the expected context count on the feed.
+3. `GenerateFeedContextHandler` generates one context. Small feeds run **inline**
+   (`FeedGenerator::generate()`); a large single-source, non-split, non-gzip feed **fans out**:
+   `ChunkPartitioner` splits the source into id-ranges, one `GenerateFeedChunk` per range renders a
+   **body-only partial**, a per-context `FeedChunk` barrier table tracks completion with an atomic
+   idempotent counter, and the last chunk dispatches `FinalizeFeedContext`, which concatenates the
+   ordered partials into the context file (**byte-identical** to the inline path, and resumable after
+   a mid-run chunk failure).
+4. Either path finishes through the shared `FeedContextFinalizer`: record a `FeedContextResult`
+   (item/excluded counts, bytes, per-item exclusion reasons), run the **publish gate**, increment the
+   completed-context counter, and on the last context apply the `complete` transition.
+5. On `complete`, `MoveGeneratedFeedSubscriber` does the **per-context gated promotion** staging→
+   canonical (only `published` contexts move; `blocked` ones keep their prior live file), then runs
+   **delivery** per published context to any matching `DeliveryTarget`s.
 
-**Completion detection is counter-based, not "last handler wins".** The total batch count is set on the feed when the `process` transition fires (`StartProcessingSubscriber` → `Feed::setBatches()`). On each `BatchGeneratedEvent`, `IncrementFinishedBatchesSubscriber` (priority 100) increments the counter, then `SendFinishGenerationCommandSubscriber` dispatches `FinishGeneration` only once `FeedRepository::batchesGenerated()` is true. This is what makes the flow safe under out-of-order async batch processing.
+**Per-item pipeline** (`FeedGenerator` and `PreviewService` share it): per source entity — bind the
+on-demand source resolver (`SourceResolverBinder`) → `pre`-filters (`FilterEvaluator`) → apply field
+mappings (`FieldMappingEvaluator`, resolved by `MappingResolver`: `FeedField` rows first, else the
+`MappingPreset`) → `post`-filters → `FeedItemBuiltEvent` → validation (`FeedItemValidator`: typed
+Symfony constraints when the format declares validation groups, else the required-field fallback) →
+write. Excluded items are counted and reported with a reason; they never abort the run.
 
-**Workflow-transition subscribers** (`workflow.setono_sylius_feed.feed.transition.*`) handle side effects so handlers stay focused:
-- `process` → `StartProcessingSubscriber` resets and sets the batch count.
-- `processed` → `MoveGeneratedFeedSubscriber` moves the feed from the temporary filesystem to its final (public) location.
-- `errored` → `DeleteGeneratedFilesSubscriber` cleans up generated files.
+**Publish gate (spec §6.6):** generating and *publishing* are separate acts. Per context, before the
+canonical swap and delivery, the candidate `FeedContextResult` is compared against the last-good
+baseline via the feed's `publishConfig` guardrails (`min_items`, `max_drop_pct`, `non_empty`,
+`min_bytes`, `max_exclusion_pct`, `max_growth_pct`). A tripped `block` guardrail sets
+`publishState = blocked`, keeps the live file, and dispatches `FeedPublishBlockedEvent`; a `warn`
+publishes and still dispatches. A "publish anyway" admin action promotes a retained blocked candidate.
 
-**Validation/violation behavior:** each context is validated with the feed type's validation groups. A violation with severity `error` causes that item to be **skipped** (not written to the feed); other severities are recorded as `Violation`s on the feed but the item is still written. Any thrown error transitions the feed to `error`.
+### Workflow (`FeedGraph`, graph `setono_sylius_feed_feed`)
 
-### Key Components
+States `ready → processing → completed | failed`. Transitions: `process` (ready→processing),
+`complete` (processing→completed), `fail` (processing→failed), `reset` (completed|failed→ready).
+Marking store: `Feed::state`.
 
-- **FeedType** (`FeedTypeInterface`): Defines a feed format. Contains data provider, templates, feed context, and item context. Register with tag `setono_sylius_feed.feed_type`.
-- **DataProvider** (`DataProviderInterface`): Provides items to be included in the feed (e.g., products)
-- **FeedContext/ItemContext**: Transform raw data into context for Twig templates
-- **Workflow** (`FeedGraph`): States: unprocessed, processing, ready, error. Transitions: process, processed, errored
+### Extension points (tagged registries — no autowiring)
+
+Each is an interface collected into an FQCN registry via a tag (the extension calls
+`registerForAutoconfiguration` only as a DX aid for apps that add their own):
+
+- `FeedTypeInterface` — `setono_sylius_feed.feed_type` (product_variant, product, order, customer, taxon, product_review, promotion)
+- `ValueResolverInterface` — `setono_sylius_feed.value_resolver`
+- `TransformationInterface` — `setono_sylius_feed.transformation`
+- `OperatorInterface` — `setono_sylius_feed.operator` (shared by filters, `FeedField.condition`, and the `conditional` transform)
+- `MappingPresetInterface` — `setono_sylius_feed.mapping_preset` (Google Shopping, Meta, Bing, Pinterest, TikTok, Partner-ads)
+- `FormatInterface` — `setono_sylius_feed.format` (google_rss, csv, generic_xml, partner_ads)
+- `FeedWriterInterface` — `setono_sylius_feed.writer` (XmlWriter, CsvWriter)
+- `SplitManifestInterface` — `setono_sylius_feed.split_manifest` (none, supplemental)
+- `LookupSourceInterface` — `setono_sylius_feed.lookup_source` (csv, url) — powers `LookupTable` enrichment referenced as `lookup:{code}:{column}`
+- `DeliveryTransportInterface` — `setono_sylius_feed.delivery_transport` (local always available; ftp/sftp/s3 gated on `class_exists`, their Flysystem adapters are optional `suggest` installs)
+- `GuardrailInterface` — `setono_sylius_feed.guardrail`
+
+### Output: field mappings + writers (not Twig templates)
+
+A feed's output is defined by its sources' `FeedField` rows (output field, source picker,
+transformation sub-collection, condition), evaluated into a `FeedItem` bag and streamed by the
+format's `FeedWriterInterface`. Sandboxed Twig and expression scripting exist as *transformations*
+(`FeedTemplateSecurityPolicy`, `ScriptingVariables`), not as a per-feed render template.
 
 ### Message Commands
 
-All commands implement `CommandInterface` and can be routed to async transport:
-- `ProcessFeed` - Start processing a feed
-- `GenerateFeed` - Generate feed for a specific channel/locale
-- `GenerateBatch` - Process a batch of items
-- `FinishGeneration` - Finalize feed after all batches complete
+All implement `CommandInterface` and can be routed to an async transport: `ProcessFeed`,
+`GenerateFeedContext`, `GenerateFeedChunk`, `FinalizeFeedContext`.
 
-### Feed Templates
+### Diagnostics
 
-Templates in `src/Resources/views/Feed/` must define an `item` block. Example structure:
-```twig
-{% block item %}
-{# Render single feed item #}
-{% endblock %}
-```
+- **Preview** (`PreviewService`; admin `/feeds/{id}/preview` + `--preview[=N]`): runs the full pipeline
+  over the first N sampled items **without writing** — a funnel (source → after-pre → after-mapping/
+  validation → after-post → included), included/excluded samples annotated with reasons, and a
+  single-item tester.
+- **Audit** (`FeedAuditService`; `--audit`): per-field fill rates, soft warnings (title > 150,
+  HTML-in-description, price = 0) and value distributions — advisory only, excludes nothing.
 
-### Extension Points
+### Delivery, splitting, gzip
 
-- Implement `FeedTypeInterface` for custom feed formats
-- Use event listeners on `QueryBuilderEvent` to filter data
-- Filter listeners in `EventListener/Filter/` (channel, enabled, in-stock filters)
-- Subscribe to `GenerateBatchItemEvent` and `GenerateBatchViolationEvent` for item processing hooks
+Canonical Flysystem storage is always written and served at the public route. On top, a feed's
+`DeliveryTarget`s push the whole file set (parts + manifest) to the contexts they match
+(`{channel?,locale?,currency?}` matcher + a `pathTemplate`), best-effort and isolated. A context past
+its format's split limit is split into numbered parts plus a `SplitManifest` (`supplemental` for
+google_rss); `formatConfig.gzip` gzips each part.
 
-### Model Interfaces
+### Enrichment (`LookupTable`)
 
-Product models can implement optional interfaces for feed data:
-- `BrandAwareInterface`, `GtinAwareInterface`, `MpnAwareInterface`
-- `ColorAwareInterface`, `SizeAwareInterface`, `ConditionAwareInterface`
-- Localized variants: `LocalizedBrandAwareInterface`, etc.
+A separate Sylius resource (admin `/admin/lookup-tables`) importing rows from a `csv`/`url`
+`LookupSource` with keep-last-good refresh; feed mappings reference it by code as
+`lookup:{code}:{column}` (e.g. GTIN backfill).
 
 ### Translations
 
-The plugin provides multilingual support through translation files in `src/Resources/translations/`:
+Translation files live in `src/Resources/translations/`. The rewrite ships **English only** so far
+(`messages.en.yaml`, `flashes.en.yaml`, `validators.en.yaml`) — other locales are welcome additions.
 
-- **Translation Files**: Available in 10 languages (en, da, de, es, fr, it, nl, no, pl, sv)
 - **Translation Domains**:
   - `messages.*` - UI labels and general translations
   - `flashes.*` - Flash message translations (success/error messages)
   - `validators.*` - Validation error messages
 
 Key translation keys:
-- `setono_sylius_feed.ui.*` - UI labels (feeds, violations, states)
-- `setono_sylius_feed.form.*` - Form field labels
+- `setono_sylius_feed.ui.*` - UI labels (feeds, preview/funnel/audit, states)
+- `setono_sylius_feed.form.*` - Form field labels (feed, feed_source, feed_field, feed_filter, delivery_target, lookup_table)
 - `setono_sylius_feed.feed_type.*` - Feed type names
+- `setono_sylius_feed.mapping_preset.*` / `setono_sylius_feed.value_resolver.*` - preset + resolver labels
