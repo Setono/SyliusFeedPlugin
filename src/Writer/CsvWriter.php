@@ -22,8 +22,13 @@ final class CsvWriter implements FeedWriterInterface
 
     private ?Writer $writer = null;
 
+    /** @var resource|null */
+    private $stream;
+
     /** @var list<string> */
     private array $header = [];
+
+    private bool $bom = false;
 
     public function getFormat(): string
     {
@@ -34,22 +39,25 @@ final class CsvWriter implements FeedWriterInterface
     {
         Assert::isInstanceOf($config, CsvWriterConfig::class);
 
-        // league/csv only prepends the output BOM via its own output methods, not when streaming
-        // records to an external stream — so write it directly before handing the stream over.
-        if ($config->bom) {
-            fwrite($stream, ByteSequence::BOM_UTF8);
-        }
-
         $writer = Writer::createFromStream($stream);
         $writer->setDelimiter($config->delimiter);
         $writer->setEnclosure($config->enclosure);
 
         $this->writer = $writer;
+        $this->stream = $stream;
         $this->header = $config->header;
+        $this->bom = $config->bom;
     }
 
     public function writePreamble(): void
     {
+        // The BOM belongs to the preamble (start of the file), not to open(): a body-only chunk skips
+        // the preamble and so must not emit it. league/csv only prepends the BOM via its own output
+        // methods, not when streaming records to an external stream — so write it directly.
+        if ($this->bom && null !== $this->stream) {
+            fwrite($this->stream, ByteSequence::BOM_UTF8);
+        }
+
         if ([] !== $this->header) {
             $this->getWriter()->insertOne($this->header);
         }
@@ -72,8 +80,9 @@ final class CsvWriter implements FeedWriterInterface
 
     public function close(): void
     {
-        // The generator owns the underlying stream; just drop the writer reference.
+        // The generator owns the underlying stream; just drop the references.
         $this->writer = null;
+        $this->stream = null;
     }
 
     private function toCell(mixed $value): string

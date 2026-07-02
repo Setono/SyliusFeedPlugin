@@ -10,6 +10,7 @@ use Setono\Doctrine\ORMTrait;
 use Setono\SyliusFeedPlugin\Context\FeedContext;
 use Setono\SyliusFeedPlugin\Doctrine\BatchIterator;
 use Setono\SyliusFeedPlugin\Filter\FilterSet;
+use Setono\SyliusFeedPlugin\Generator\ChunkRange;
 use Sylius\Component\Core\Model\ChannelInterface;
 
 /**
@@ -22,6 +23,7 @@ use Sylius\Component\Core\Model\ChannelInterface;
 final class ProductVariantDataSource implements DataSourceInterface
 {
     use ORMTrait;
+    use IdRangePartitionTrait;
 
     private const BATCH_SIZE = 1000;
 
@@ -55,6 +57,20 @@ final class ProductVariantDataSource implements DataSourceInterface
             ->select('COUNT(variant.id)')
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    public function getIdRange(FeedContext $context, FilterSet $filters): ?ChunkRange
+    {
+        return $this->resolveIdRange($this->createQueryBuilder($context), 'variant');
+    }
+
+    public function getItemsInRange(FeedContext $context, FilterSet $filters, ChunkRange $range): iterable
+    {
+        return BatchIterator::iterate(
+            $this->constrainToRange($this->createQueryBuilder($context), 'variant', $range)->getQuery(),
+            $this->getManager($this->resourceClass),
+            self::BATCH_SIZE,
+        );
     }
 
     private function createQueryBuilder(FeedContext $context): QueryBuilder

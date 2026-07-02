@@ -17,8 +17,10 @@ use Setono\SyliusFeedPlugin\Filter\FilterEvaluator;
 use Setono\SyliusFeedPlugin\Filter\FilterSet;
 use Setono\SyliusFeedPlugin\Format\FormatRegistryInterface;
 use Setono\SyliusFeedPlugin\Format\GoogleRssFormat;
+use Setono\SyliusFeedPlugin\Generator\ChunkRange;
 use Setono\SyliusFeedPlugin\Generator\FeedGenerator;
 use Setono\SyliusFeedPlugin\Generator\FieldMappingEvaluator;
+use Setono\SyliusFeedPlugin\Generator\OutputWriter;
 use Setono\SyliusFeedPlugin\Item\FeedItem;
 use Setono\SyliusFeedPlugin\Lookup\InMemoryLookup;
 use Setono\SyliusFeedPlugin\Mapping\FieldDefinition;
@@ -43,6 +45,9 @@ use Setono\SyliusFeedPlugin\Transformation\Truncate;
 use Setono\SyliusFeedPlugin\Validator\FeedItemValidator;
 use Setono\SyliusFeedPlugin\Validator\RequiredFieldsValidator;
 use Setono\SyliusFeedPlugin\Writer\FeedWriterRegistryInterface;
+use Setono\SyliusFeedPlugin\Writer\NoneSplitManifest;
+use Setono\SyliusFeedPlugin\Writer\SplitManifestRegistry;
+use Setono\SyliusFeedPlugin\Writer\SupplementalSplitManifest;
 use Setono\SyliusFeedPlugin\Writer\XmlWriter;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -116,7 +121,8 @@ final class FeedGeneratorMemoryTest extends TestCase
             new FeedItemValidator(Validation::createValidator(), new RequiredFieldsValidator()),
             new EventDispatcher(),
             $urlGenerator->reveal(),
-            $filesystem,
+            new OutputWriter($filesystem),
+            new SplitManifestRegistry([new NoneSplitManifest(), new SupplementalSplitManifest()]),
         );
     }
 
@@ -148,6 +154,16 @@ final class FeedGeneratorMemoryTest extends TestCase
             public function count(FeedContext $context, FilterSet $filters): int
             {
                 return FeedGeneratorMemoryTest::ITEMS;
+            }
+
+            public function getIdRange(FeedContext $context, FilterSet $filters): ?ChunkRange
+            {
+                return null;
+            }
+
+            public function getItemsInRange(FeedContext $context, FilterSet $filters, ChunkRange $range): iterable
+            {
+                return $this->getItems($context, $filters);
             }
         };
 
@@ -209,6 +225,7 @@ final class FeedGeneratorMemoryTest extends TestCase
         $feed = $this->prophesize(FeedInterface::class);
         $feed->getCode()->willReturn('google');
         $feed->getFormat()->willReturn('google_rss');
+        $feed->getFormatConfig()->willReturn([]);
         $feed->getSources()->willReturn(new ArrayCollection([$source->reveal()]));
 
         return $feed->reveal();

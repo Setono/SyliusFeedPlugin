@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<doctrine-mapping xmlns="http://doctrine.apache.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine.apache.org/schemas/orm/doctrine-mapping
+                  http://doctrine.apache.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Setono\SyliusFeedPlugin\Model\DeliveryTarget" table="setono_sylius_feed__delivery_target">
+        <id name="id" type="integer">
+            <generator strategy="AUTO"/>
+        </id>
+
+        <field name="position" type="integer" nullable="true"/>
+        <field name="transport" type="string" nullable="true"/>
+        <field name="transportConfig" column="transport_config" type="json"/>
+        <field name="pathTemplate" column="path_template" type="string" nullable="true"/>
+        <field name="match" column="match_criteria" type="json"/>
+
+        <many-to-one field="feed" target-entity="Setono\SyliusFeedPlugin\Model\Feed" inversed-by="deliveryTargets">
+            <join-column name="feed_id" referenced-column-name="id" nullable="false" on-delete="CASCADE"/>
+        </many-to-one>
+    </entity>
+</doctrine-mapping>

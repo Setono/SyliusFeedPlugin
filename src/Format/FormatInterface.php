@@ -48,4 +48,22 @@ interface FormatInterface
      * @return list<string>
      */
     public function getItemValidationGroups(): array;
+
+    /**
+     * The type of {@see \Setono\SyliusFeedPlugin\Writer\SplitManifestInterface} strategy that ties a
+     * split context's parts together (§12). Returns `supplemental` for destinations that expect a
+     * primary feed referencing supplemental parts (e.g. Google), and `none` for formats whose parts
+     * are self-describing complete documents and need no manifest.
+     */
+    public function getSplitManifest(): string;
+
+    /**
+     * The default size limit above which a context's output is split into multiple parts (§12); an
+     * unset key means that dimension is not limited, and an empty array means the format never splits
+     * by default. The effective limit is this default with the feed's `formatConfig['split']`
+     * overrides merged over it, so an admin can lower it (e.g. to force splitting for testing).
+     *
+     * @return array{maxItems?: int, maxBytes?: int}
+     */
+    public function getSplitLimit(): array;
 }

@@ -39,4 +39,15 @@ final class CsvFormat implements FormatInterface
     {
         return [];
     }
+
+    public function getSplitManifest(): string
+    {
+        // Each CSV part carries its own header row, so the parts are self-describing.
+        return 'none';
+    }
+
+    public function getSplitLimit(): array
+    {
+        return [];
+    }
 }

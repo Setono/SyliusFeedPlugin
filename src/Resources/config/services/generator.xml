@@ -28,6 +28,11 @@
         </service>
         <service id="Setono\SyliusFeedPlugin\Generator\FieldMappingEvaluatorInterface" alias="Setono\SyliusFeedPlugin\Generator\FieldMappingEvaluator"/>
 
+        <service id="Setono\SyliusFeedPlugin\Generator\OutputWriter">
+            <argument type="service" id="setono_sylius_feed.storage.feed_tmp"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Generator\OutputWriterInterface" alias="Setono\SyliusFeedPlugin\Generator\OutputWriter"/>
+
         <service id="Setono\SyliusFeedPlugin\Generator\FeedGenerator">
             <argument type="service" id="Setono\SyliusFeedPlugin\FeedType\FeedTypeRegistryInterface"/>
             <argument type="service" id="Setono\SyliusFeedPlugin\Mapping\MappingResolverInterface"/>
@@ -39,7 +44,8 @@
             <argument type="service" id="Setono\SyliusFeedPlugin\Validator\FeedItemValidatorInterface"/>
             <argument type="service" id="event_dispatcher"/>
             <argument type="service" id="router"/>
-            <argument type="service" id="setono_sylius_feed.storage.feed_tmp"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Generator\OutputWriterInterface"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Writer\SplitManifestRegistryInterface"/>
         </service>
         <service id="Setono\SyliusFeedPlugin\Generator\FeedGeneratorInterface" alias="Setono\SyliusFeedPlugin\Generator\FeedGenerator"/>
 
@@ -48,5 +54,21 @@
             <argument type="service" id="setono_sylius_feed.factory.feed_context_result"/>
         </service>
         <service id="Setono\SyliusFeedPlugin\Generator\FeedContextResultRecorderInterface" alias="Setono\SyliusFeedPlugin\Generator\FeedContextResultRecorder"/>
+
+        <service id="Setono\SyliusFeedPlugin\Generator\ChunkPartitioner">
+            <argument type="service" id="Setono\SyliusFeedPlugin\FeedType\FeedTypeRegistryInterface"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Generator\ChunkPartitionerInterface" alias="Setono\SyliusFeedPlugin\Generator\ChunkPartitioner"/>
+
+        <service id="Setono\SyliusFeedPlugin\Generator\FeedContextFinalizer">
+            <argument type="service" id="doctrine"/>
+            <argument type="service" id="setono_sylius_feed.repository.feed"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Generator\FeedContextResultRecorderInterface"/>
+            <argument type="service" id="setono_sylius_feed.repository.feed_context_result"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Publish\PublishGateInterface"/>
+            <argument type="service" id="event_dispatcher"/>
+            <argument type="service" id="workflow.registry"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Generator\FeedContextFinalizerInterface" alias="Setono\SyliusFeedPlugin\Generator\FeedContextFinalizer"/>
     </services>
 </container>

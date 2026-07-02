@@ -40,6 +40,15 @@
             </order-by>
         </one-to-many>
 
+        <one-to-many field="deliveryTargets" target-entity="Setono\SyliusFeedPlugin\Model\DeliveryTarget" mapped-by="feed" orphan-removal="true">
+            <cascade>
+                <cascade-all/>
+            </cascade>
+            <order-by>
+                <order-by-field name="position" direction="ASC"/>
+            </order-by>
+        </one-to-many>
+
         <one-to-many field="translations" target-entity="Setono\SyliusFeedPlugin\Model\FeedTranslation" mapped-by="translatable" index-by="locale" orphan-removal="true">
             <cascade>
                 <cascade-all/>

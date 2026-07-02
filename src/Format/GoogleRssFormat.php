@@ -45,4 +45,18 @@ final class GoogleRssFormat implements FormatInterface
         // Merchant product spec on the typed item this format's product_variant source produces.
         return ['Default'];
     }
+
+    public function getSplitManifest(): string
+    {
+        // Google feeds larger than the item cap are delivered as a primary feed referencing
+        // supplemental parts, so a split emits a manifest tying the parts together.
+        return 'supplemental';
+    }
+
+    public function getSplitLimit(): array
+    {
+        // Google Merchant caps a single feed file well above this; splitting keeps parts comfortably
+        // under the limit. An admin may lower it via formatConfig['split'].
+        return ['maxItems' => 200000];
+    }
 }

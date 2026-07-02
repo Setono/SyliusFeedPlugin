@@ -18,8 +18,20 @@ class FeedContextResult implements FeedContextResultInterface
 
     protected int $bytes = 0;
 
+    protected ?string $channelCode = null;
+
+    protected ?string $localeCode = null;
+
+    protected ?string $currencyCode = null;
+
+    /** @var list<string> */
+    protected array $paths = [];
+
     /** @var list<array{item: ?string, reason: string}> */
     protected array $errors = [];
+
+    /** @var list<array{target: string, path: string, status: string, error?: string}> */
+    protected array $deliveries = [];
 
     protected string $publishState = FeedContextResultInterface::PUBLISH_STATE_PENDING;
 
@@ -88,6 +100,46 @@ class FeedContextResult implements FeedContextResultInterface
         $this->bytes = $bytes;
     }
 
+    public function getChannelCode(): ?string
+    {
+        return $this->channelCode;
+    }
+
+    public function setChannelCode(?string $channelCode): void
+    {
+        $this->channelCode = $channelCode;
+    }
+
+    public function getLocaleCode(): ?string
+    {
+        return $this->localeCode;
+    }
+
+    public function setLocaleCode(?string $localeCode): void
+    {
+        $this->localeCode = $localeCode;
+    }
+
+    public function getCurrencyCode(): ?string
+    {
+        return $this->currencyCode;
+    }
+
+    public function setCurrencyCode(?string $currencyCode): void
+    {
+        $this->currencyCode = $currencyCode;
+    }
+
+    public function getPaths(): array
+    {
+        return $this->paths;
+    }
+
+    public function setPaths(array $paths): void
+    {
+        $this->paths = $paths;
+    }
+
     public function getErrors(): array
     {
         return $this->errors;
@@ -101,6 +153,21 @@ class FeedContextResult implements FeedContextResultInterface
     public function addError(?string $item, string $reason): void
     {
         $this->errors[] = ['item' => $item, 'reason' => $reason];
+    }
+
+    public function getDeliveries(): array
+    {
+        return $this->deliveries;
+    }
+
+    public function setDeliveries(array $deliveries): void
+    {
+        $this->deliveries = $deliveries;
+    }
+
+    public function addDelivery(array $delivery): void
+    {
+        $this->deliveries[] = $delivery;
     }
 
     public function getPublishState(): string

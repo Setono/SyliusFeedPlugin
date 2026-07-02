@@ -37,6 +37,7 @@ final class FeedContextResultRecorder implements FeedContextResultRecorderInterf
         $feedContextResult->setItemCount($result->itemCount);
         $feedContextResult->setExcludedCount($result->excludedCount);
         $feedContextResult->setBytes($result->bytes);
+        $feedContextResult->setPaths($result->paths);
         $feedContextResult->setErrors($result->errors);
 
         $manager = $this->getManager($feedContextResult);

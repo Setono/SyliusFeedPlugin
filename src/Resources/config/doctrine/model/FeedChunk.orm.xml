@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<doctrine-mapping xmlns="http://doctrine.apache.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine.apache.org/schemas/orm/doctrine-mapping
+                  http://doctrine.apache.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Setono\SyliusFeedPlugin\Model\FeedChunk" table="setono_sylius_feed__feed_chunk">
+        <unique-constraints>
+            <unique-constraint name="setono_sylius_feed__feed_chunk_uniq" columns="feed_id,context_key,chunk_index"/>
+        </unique-constraints>
+
+        <id name="id" type="integer">
+            <generator strategy="AUTO"/>
+        </id>
+
+        <field name="contextKey" column="context_key" type="string"/>
+        <field name="chunkIndex" column="chunk_index" type="integer"/>
+        <field name="completed" column="completed" type="boolean"/>
+        <field name="itemCount" column="item_count" type="integer"/>
+        <field name="excludedCount" column="excluded_count" type="integer"/>
+        <field name="errors" column="errors" type="json"/>
+
+        <many-to-one field="feed" target-entity="Setono\SyliusFeedPlugin\Model\FeedInterface">
+            <join-column name="feed_id" referenced-column-name="id" nullable="false" on-delete="CASCADE"/>
+        </many-to-one>
+    </entity>
+</doctrine-mapping>

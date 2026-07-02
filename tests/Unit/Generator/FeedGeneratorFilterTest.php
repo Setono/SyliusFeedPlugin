@@ -18,8 +18,10 @@ use Setono\SyliusFeedPlugin\Filter\FilterEvaluator;
 use Setono\SyliusFeedPlugin\Filter\FilterSet;
 use Setono\SyliusFeedPlugin\Format\CsvFormat;
 use Setono\SyliusFeedPlugin\Format\FormatRegistryInterface;
+use Setono\SyliusFeedPlugin\Generator\ChunkRange;
 use Setono\SyliusFeedPlugin\Generator\FeedGenerator;
 use Setono\SyliusFeedPlugin\Generator\FieldMappingEvaluator;
+use Setono\SyliusFeedPlugin\Generator\OutputWriter;
 use Setono\SyliusFeedPlugin\Item\FeedItem;
 use Setono\SyliusFeedPlugin\Lookup\InMemoryLookup;
 use Setono\SyliusFeedPlugin\Mapping\FieldDefinition;
@@ -47,6 +49,9 @@ use Setono\SyliusFeedPlugin\Validator\RequiredFieldsValidator;
 use Setono\SyliusFeedPlugin\ValueResolver\ValueResolverInterface;
 use Setono\SyliusFeedPlugin\Writer\CsvWriter;
 use Setono\SyliusFeedPlugin\Writer\FeedWriterRegistryInterface;
+use Setono\SyliusFeedPlugin\Writer\NoneSplitManifest;
+use Setono\SyliusFeedPlugin\Writer\SplitManifestRegistry;
+use Setono\SyliusFeedPlugin\Writer\SupplementalSplitManifest;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RequestContext;
@@ -142,7 +147,8 @@ final class FeedGeneratorFilterTest extends TestCase
             new FeedItemValidator(Validation::createValidator(), new RequiredFieldsValidator()),
             new EventDispatcher(),
             $urlGenerator->reveal(),
-            $this->filesystem,
+            new OutputWriter($this->filesystem),
+            new SplitManifestRegistry([new NoneSplitManifest(), new SupplementalSplitManifest()]),
         );
     }
 
@@ -168,6 +174,16 @@ final class FeedGeneratorFilterTest extends TestCase
             public function count(FeedContext $context, FilterSet $filters): int
             {
                 return 2;
+            }
+
+            public function getIdRange(FeedContext $context, FilterSet $filters): ?ChunkRange
+            {
+                return null;
+            }
+
+            public function getItemsInRange(FeedContext $context, FilterSet $filters, ChunkRange $range): iterable
+            {
+                return $this->getItems($context, $filters);
             }
         };
 
@@ -274,6 +290,7 @@ final class FeedGeneratorFilterTest extends TestCase
         $feed = $this->prophesize(FeedInterface::class);
         $feed->getCode()->willReturn('shop');
         $feed->getFormat()->willReturn('csv');
+        $feed->getFormatConfig()->willReturn([]);
         $feed->getSources()->willReturn(new ArrayCollection([$source->reveal()]));
 
         return $feed->reveal();

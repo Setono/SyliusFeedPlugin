@@ -54,6 +54,15 @@ setono_sylius_feed:
             target: Target
             target_placeholder: Start from a target…
             target_help: 'Seeds the format and field mappings from a known target (e.g. Google Shopping). Leave empty to configure the feed manually.'
+            delivery_targets: Delivery targets
+        delivery_target:
+            transport: Transport
+            path_template: Path template
+            path_template_help: 'The remote path for each file. Placeholders: {channel}, {locale}, {currency}, {contextKey}, {ext}, {part}.'
+            transport_config: Transport config
+            transport_config_help: 'The connection config as a JSON object (host, credentials, root, …). Use env placeholders for secrets — never store them in clear text.'
+            match: Match
+            match_help: 'Limit this target to a subset of contexts as a JSON object, e.g. {"channel": "web", "locale": "en_US"}. Leave empty to deliver every context.'
         feed_source:
             feed_type: Feed type
             fields: Field mappings
@@ -109,7 +118,41 @@ setono_sylius_feed:
     feed_type:
         product_variant: Product variant
         product: Product
+        order: Order
+        customer: Customer
+        taxon: Taxon
+        product_review: Product review
+        promotion: Promotion
     value_resolver:
         variant_count: Number of variants
         from_price: From price
         product_availability: Availability
+        number: Number
+        total: Total
+        currency_code: Currency code
+        customer_email: Customer email
+        state: State
+        checkout_completed_at: Checkout completed at
+        email: Email
+        first_name: First name
+        last_name: Last name
+        group: Group
+        subscribed_to_newsletter: Subscribed to newsletter
+        created_at: Created at
+        code: Code
+        name: Name
+        slug: Slug
+        parent_code: Parent code
+        position: Position
+        rating: Rating
+        comment: Comment
+        author: Author
+        product_id: Product ID
+        review_created_at: Created at
+        status: Status
+        promotion_code: Code
+        promotion_name: Name
+        promotion_description: Description
+        starts_at: Starts at
+        ends_at: Ends at
+        coupon_based: Coupon based

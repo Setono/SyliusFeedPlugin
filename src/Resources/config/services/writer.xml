@@ -10,5 +10,12 @@
         <service id="Setono\SyliusFeedPlugin\Writer\CsvWriter">
             <tag name="setono_sylius_feed.writer"/>
         </service>
+
+        <service id="Setono\SyliusFeedPlugin\Writer\NoneSplitManifest">
+            <tag name="setono_sylius_feed.split_manifest"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Writer\SupplementalSplitManifest">
+            <tag name="setono_sylius_feed.split_manifest"/>
+        </service>
     </services>
 </container>

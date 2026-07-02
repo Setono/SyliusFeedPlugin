@@ -77,6 +77,19 @@ interface FeedInterface extends ResourceInterface, CodeAwareInterface, Toggleabl
 
     public function hasSource(FeedSourceInterface $source): bool;
 
+    /**
+     * The per-context delivery targets a completed feed is pushed to (§12).
+     *
+     * @return Collection<int, DeliveryTargetInterface>
+     */
+    public function getDeliveryTargets(): Collection;
+
+    public function addDeliveryTarget(DeliveryTargetInterface $deliveryTarget): void;
+
+    public function removeDeliveryTarget(DeliveryTargetInterface $deliveryTarget): void;
+
+    public function hasDeliveryTarget(DeliveryTargetInterface $deliveryTarget): bool;
+
     public function getLastGeneratedAt(): ?\DateTimeInterface;
 
     public function setLastGeneratedAt(?\DateTimeInterface $lastGeneratedAt): void;
