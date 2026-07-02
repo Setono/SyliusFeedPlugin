@@ -1,0 +1,25 @@
+setono_sylius_feed_admin_feed:
+    resource: |
+        alias: setono_sylius_feed.feed
+        section: admin
+        templates: "@SyliusAdmin/Crud"
+        redirect: update
+        grid: setono_sylius_feed_feed
+        vars:
+            all:
+                subheader: setono_sylius_feed.ui.manage_feeds
+            index:
+                icon: rss
+    type: sylius.resource
+
+setono_sylius_feed_admin_feed_generate:
+    path: /feeds/{id}/generate
+    methods: [GET]
+    defaults:
+        _controller: 'Setono\SyliusFeedPlugin\Controller\Admin\GenerateFeedAction'
+
+setono_sylius_feed_admin_feed_results:
+    path: /feeds/{id}/results
+    methods: [GET]
+    defaults:
+        _controller: 'Setono\SyliusFeedPlugin\Controller\Admin\FeedResultsAction'

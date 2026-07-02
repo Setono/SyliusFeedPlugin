@@ -9,5 +9,19 @@
             <argument type="service" id="setono_sylius_feed.storage.feed"/>
             <tag name="controller.service_arguments"/>
         </service>
+
+        <service id="Setono\SyliusFeedPlugin\Controller\Admin\GenerateFeedAction">
+            <argument type="service" id="setono_sylius_feed.repository.feed"/>
+            <argument type="service" id="setono_sylius_feed.command_bus"/>
+            <argument type="service" id="router"/>
+            <tag name="controller.service_arguments"/>
+        </service>
+
+        <service id="Setono\SyliusFeedPlugin\Controller\Admin\FeedResultsAction">
+            <argument type="service" id="setono_sylius_feed.repository.feed"/>
+            <argument type="service" id="setono_sylius_feed.storage.feed"/>
+            <argument type="service" id="twig"/>
+            <tag name="controller.service_arguments"/>
+        </service>
     </services>
 </container>

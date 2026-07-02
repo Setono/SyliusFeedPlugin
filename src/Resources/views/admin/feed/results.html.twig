@@ -1,0 +1,38 @@
+{% extends '@SyliusAdmin/layout.html.twig' %}
+
+{% block content %}
+    <div class="ui segment">
+        <h1 class="ui header">{{ 'setono_sylius_feed.ui.results'|trans }} — {{ feed.code }}</h1>
+
+        <table class="ui very basic table">
+            <thead>
+                <tr>
+                    <th>{{ 'setono_sylius_feed.ui.file'|trans }}</th>
+                    <th>{{ 'setono_sylius_feed.ui.size'|trans }}</th>
+                    <th>{{ 'setono_sylius_feed.ui.last_generated_at'|trans }}</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for file in files %}
+                    <tr>
+                        <td>{{ file.filename }}</td>
+                        <td>{{ file.size is null ? '—' : file.size ~ ' B' }}</td>
+                        <td>{{ file.lastModified is null ? '—' : file.lastModified|date('Y-m-d H:i') }}</td>
+                        <td class="right aligned">
+                            <a class="ui small button" href="{{ path('setono_sylius_feed_show', {code: feed.code, filename: file.filename}) }}" target="_blank">
+                                {{ 'setono_sylius_feed.ui.download'|trans }}
+                            </a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4">{{ 'setono_sylius_feed.ui.no_results'|trans }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <a class="ui button" href="{{ path('setono_sylius_feed_admin_feed_index') }}">{{ 'sylius.ui.back'|trans }}</a>
+    </div>
+{% endblock %}

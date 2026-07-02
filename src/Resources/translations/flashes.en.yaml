@@ -1,0 +1,3 @@
+setono_sylius_feed:
+    feed:
+        generation_dispatched: Feed generation has been dispatched

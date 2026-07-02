@@ -4,10 +4,24 @@
         "build": "encore dev",
         "build:prod": "encore production",
         "postinstall": "semantic-ui-css-patch",
-        "lint": "yarn lint:js",
         "watch": "encore dev --watch"
     },
     "devDependencies": {
-        "@sylius-ui/frontend": "^1.0.3"
+        "@babel/core": "^7.0.0",
+        "@babel/polyfill": "^7.0.0",
+        "@babel/preset-env": "^7.18.10",
+        "@semantic-ui-react/css-patch": "^1.1.2",
+        "@symfony/webpack-encore": "^3.1.0",
+        "chart.js": "^3.7.1",
+        "jquery": "^3.5.0",
+        "jquery.dirtyforms": "^2.0.0",
+        "lightbox2": "^2.9.0",
+        "sass": "1.77.8",
+        "sass-loader": "^13.0.0",
+        "semantic-ui-css": "^2.2.0",
+        "slick-carousel": "^1.8.1"
+    },
+    "resolutions": {
+        "jquery": "3.7.1"
     }
 }

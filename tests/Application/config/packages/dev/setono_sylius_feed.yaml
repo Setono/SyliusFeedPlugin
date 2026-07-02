@@ -1,0 +1,7 @@
+# Dev only: route the plugin's commands to an async transport so "Generate now" queues the run
+# instead of generating inline in the request; a worker (messenger:consume main) then processes it.
+# The functional test suite (test env) intentionally keeps these synchronous.
+framework:
+    messenger:
+        routing:
+            'Setono\SyliusFeedPlugin\Message\CommandInterface': main
