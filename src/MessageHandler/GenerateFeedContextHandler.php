@@ -75,6 +75,12 @@ final class GenerateFeedContextHandler
         $contextKey = $context->key();
         $candidate = $this->feedContextResultRecorder->record($feed, $contextKey, $result);
 
+        // Stamp the context's dimension codes so delivery targets can be matched during finalize (§12)
+        // without needing to reconstruct the channel entity.
+        $candidate->setChannelCode($context->getChannel()?->getCode());
+        $candidate->setLocaleCode($context->getLocale());
+        $candidate->setCurrencyCode($context->getCurrencyCode());
+
         $this->gate($feed, $contextKey, $candidate);
 
         $completed = $this->feedRepository->incrementCompletedContexts($feed);

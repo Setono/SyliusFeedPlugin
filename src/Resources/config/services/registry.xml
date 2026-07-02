@@ -53,5 +53,10 @@
             <argument type="tagged_iterator" tag="setono_sylius_feed.guardrail"/>
         </service>
         <service id="Setono\SyliusFeedPlugin\Publish\GuardrailRegistryInterface" alias="Setono\SyliusFeedPlugin\Publish\GuardrailRegistry"/>
+
+        <service id="Setono\SyliusFeedPlugin\Delivery\DeliveryTransportRegistry" public="true">
+            <argument type="tagged_iterator" tag="setono_sylius_feed.delivery_transport"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Delivery\DeliveryTransportRegistryInterface" alias="Setono\SyliusFeedPlugin\Delivery\DeliveryTransportRegistry"/>
     </services>
 </container>

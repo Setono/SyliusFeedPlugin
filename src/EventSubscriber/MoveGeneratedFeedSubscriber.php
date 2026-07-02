@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\EventSubscriber;
 
 use League\Flysystem\FilesystemOperator;
+use Setono\SyliusFeedPlugin\Delivery\DeliveryServiceInterface;
+use Setono\SyliusFeedPlugin\Model\FeedContextResultInterface;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Repository\FeedContextResultRepositoryInterface;
 use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
@@ -18,6 +20,9 @@ use Symfony\Component\Workflow\Event\CompletedEvent;
  * retained in staging for inspection (and a possible "publish anyway"); every other context is
  * copied across (overwriting) and its staging copy removed. The canonical directory is never wiped
  * wholesale, so a blocked context never loses its live file.
+ *
+ * Once every file is promoted, each *published* context's canonical file set is pushed to its
+ * matching delivery targets (§12). A blocked context is never delivered.
  */
 final class MoveGeneratedFeedSubscriber implements EventSubscriberInterface
 {
@@ -25,6 +30,7 @@ final class MoveGeneratedFeedSubscriber implements EventSubscriberInterface
         private readonly FilesystemOperator $feedTmpFilesystem,
         private readonly FilesystemOperator $feedFilesystem,
         private readonly FeedContextResultRepositoryInterface $feedContextResultRepository,
+        private readonly DeliveryServiceInterface $deliveryService,
     ) {
     }
 
@@ -44,6 +50,9 @@ final class MoveGeneratedFeedSubscriber implements EventSubscriberInterface
 
         $directory = (string) $feed->getCode();
 
+        /** @var array<string, FeedContextResultInterface> $publishedContexts */
+        $publishedContexts = [];
+
         foreach ($this->feedTmpFilesystem->listContents($directory, true) as $item) {
             if (!$item->isFile()) {
                 continue;
@@ -61,6 +70,16 @@ final class MoveGeneratedFeedSubscriber implements EventSubscriberInterface
             // Published (or no result / no gate): swap the candidate in and drop the staging copy.
             $this->feedFilesystem->writeStream($path, $this->feedTmpFilesystem->readStream($path));
             $this->feedTmpFilesystem->delete($path);
+
+            if (null !== $result && $result->isPublished()) {
+                $publishedContexts[$contextKey] = $result;
+            }
+        }
+
+        // All files are on canonical storage now; push each published context's file set to its
+        // matching delivery targets. Delivery is best-effort and never throws.
+        foreach ($publishedContexts as $result) {
+            $this->deliveryService->deliver($feed, $result, $result->getPaths());
         }
 
         $feed->setLastGeneratedAt(new \DateTimeImmutable());

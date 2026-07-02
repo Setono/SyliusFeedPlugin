@@ -11,6 +11,7 @@ use League\Flysystem\FilesystemOperator;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
+use Setono\SyliusFeedPlugin\Delivery\DeliveryServiceInterface;
 use Setono\SyliusFeedPlugin\EventSubscriber\MoveGeneratedFeedSubscriber;
 use Setono\SyliusFeedPlugin\Model\Feed;
 use Setono\SyliusFeedPlugin\Model\FeedContextResult;
@@ -48,9 +49,9 @@ final class MoveGeneratedFeedSubscriberTest extends TestCase
 
         $listing = (static function (): \Generator {
             yield new DirectoryAttributes('google/nested'); // not a file -> skipped
-            yield new FileAttributes('google/web_en_us_usd.xml'); // published -> promoted
-            yield new FileAttributes('google/web_da_dk_dkk.xml'); // blocked -> retained
-            yield new FileAttributes('google/web_sv_se_sek.xml'); // no result -> promoted (no gate)
+            yield new FileAttributes('google/web_en_us_usd.xml'); // published -> promoted + delivered
+            yield new FileAttributes('google/web_da_dk_dkk.xml'); // blocked -> retained + not delivered
+            yield new FileAttributes('google/web_sv_se_sek.xml'); // no result -> promoted (no gate), not delivered
         })();
 
         $temporary = $this->prophesize(FilesystemOperator::class);
@@ -71,18 +72,56 @@ final class MoveGeneratedFeedSubscriberTest extends TestCase
         $feed = new Feed();
         $feed->setCode('google');
 
+        $published = $this->result(FeedContextResultInterface::PUBLISH_STATE_PUBLISHED);
+
         $repository = $this->prophesize(FeedContextResultRepositoryInterface::class);
-        $repository->findLatestForContext($feed, 'web_en_us_usd')->willReturn($this->result(FeedContextResultInterface::PUBLISH_STATE_PUBLISHED));
+        $repository->findLatestForContext($feed, 'web_en_us_usd')->willReturn($published);
         $repository->findLatestForContext($feed, 'web_da_dk_dkk')->willReturn($this->result(FeedContextResultInterface::PUBLISH_STATE_BLOCKED));
         $repository->findLatestForContext($feed, 'web_sv_se_sek')->willReturn(null);
 
-        (new MoveGeneratedFeedSubscriber($temporary->reveal(), $canonical->reveal(), $repository->reveal()))
+        $deliveryService = $this->prophesize(DeliveryServiceInterface::class);
+        // Only the published context is delivered; the blocked and the ungated ones are not.
+        $deliveryService->deliver($feed, $published, $published->getPaths())->shouldBeCalledOnce();
+
+        (new MoveGeneratedFeedSubscriber($temporary->reveal(), $canonical->reveal(), $repository->reveal(), $deliveryService->reveal()))
             ->onCompleted($this->event($feed));
 
         self::assertNotNull($feed->getLastGeneratedAt());
 
         fclose($publishedStream);
         fclose($ungatedStream);
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_deliver_a_blocked_context(): void
+    {
+        $listing = (static function (): \Generator {
+            yield new FileAttributes('google/web_da_dk_dkk.xml'); // blocked
+        })();
+
+        $temporary = $this->prophesize(FilesystemOperator::class);
+        $temporary->listContents('google', true)->willReturn(new DirectoryListing($listing));
+        $temporary->readStream(Argument::any())->shouldNotBeCalled();
+        $temporary->delete(Argument::any())->shouldNotBeCalled();
+
+        $canonical = $this->prophesize(FilesystemOperator::class);
+        $canonical->writeStream(Argument::cetera())->shouldNotBeCalled();
+
+        $feed = new Feed();
+        $feed->setCode('google');
+
+        $repository = $this->prophesize(FeedContextResultRepositoryInterface::class);
+        $repository->findLatestForContext($feed, 'web_da_dk_dkk')->willReturn($this->result(FeedContextResultInterface::PUBLISH_STATE_BLOCKED));
+
+        $deliveryService = $this->prophesize(DeliveryServiceInterface::class);
+        $deliveryService->deliver(Argument::cetera())->shouldNotBeCalled();
+
+        (new MoveGeneratedFeedSubscriber($temporary->reveal(), $canonical->reveal(), $repository->reveal(), $deliveryService->reveal()))
+            ->onCompleted($this->event($feed));
+
+        self::addToAssertionCount(1);
     }
 
     /**
@@ -97,6 +136,7 @@ final class MoveGeneratedFeedSubscriberTest extends TestCase
             $temporary->reveal(),
             $this->prophesize(FilesystemOperator::class)->reveal(),
             $this->prophesize(FeedContextResultRepositoryInterface::class)->reveal(),
+            $this->prophesize(DeliveryServiceInterface::class)->reveal(),
         ))->onCompleted($this->event(new \stdClass()));
 
         self::addToAssertionCount(1);

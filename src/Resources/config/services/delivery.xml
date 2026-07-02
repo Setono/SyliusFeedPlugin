@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<container xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://symfony.com/schema/dic/services"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Setono\SyliusFeedPlugin\Delivery\LocalDeliveryTransport">
+            <tag name="setono_sylius_feed.delivery_transport"/>
+        </service>
+
+        <service id="Setono\SyliusFeedPlugin\Delivery\FtpDeliveryTransport">
+            <tag name="setono_sylius_feed.delivery_transport"/>
+        </service>
+
+        <service id="Setono\SyliusFeedPlugin\Delivery\SftpDeliveryTransport">
+            <tag name="setono_sylius_feed.delivery_transport"/>
+        </service>
+
+        <service id="Setono\SyliusFeedPlugin\Delivery\S3DeliveryTransport">
+            <tag name="setono_sylius_feed.delivery_transport"/>
+        </service>
+
+        <service id="Setono\SyliusFeedPlugin\Delivery\DeliveryMatcher"/>
+        <service id="Setono\SyliusFeedPlugin\Delivery\DeliveryMatcherInterface" alias="Setono\SyliusFeedPlugin\Delivery\DeliveryMatcher"/>
+
+        <service id="Setono\SyliusFeedPlugin\Delivery\PathTemplateRenderer"/>
+        <service id="Setono\SyliusFeedPlugin\Delivery\PathTemplateRendererInterface" alias="Setono\SyliusFeedPlugin\Delivery\PathTemplateRenderer"/>
+
+        <service id="Setono\SyliusFeedPlugin\Delivery\DeliveryService">
+            <argument type="service" id="doctrine"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Delivery\DeliveryTransportRegistryInterface"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Delivery\DeliveryMatcherInterface"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Delivery\PathTemplateRendererInterface"/>
+            <argument type="service" id="setono_sylius_feed.storage.feed"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Delivery\DeliveryServiceInterface" alias="Setono\SyliusFeedPlugin\Delivery\DeliveryService"/>
+    </services>
+</container>

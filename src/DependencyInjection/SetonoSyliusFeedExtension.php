@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\DependencyInjection;
 
+use Setono\SyliusFeedPlugin\Delivery\DeliveryTransportInterface;
 use Setono\SyliusFeedPlugin\FeedType\FeedTypeInterface;
 use Setono\SyliusFeedPlugin\Format\FormatInterface;
 use Setono\SyliusFeedPlugin\Lookup\LookupSourceInterface;
@@ -41,6 +42,7 @@ final class SetonoSyliusFeedExtension extends AbstractResourceExtension implemen
         SplitManifestInterface::class => 'setono_sylius_feed.split_manifest',
         FormatInterface::class => 'setono_sylius_feed.format',
         GuardrailInterface::class => 'setono_sylius_feed.guardrail',
+        DeliveryTransportInterface::class => 'setono_sylius_feed.delivery_transport',
     ];
 
     public function load(array $configs, ContainerBuilder $container): void

@@ -58,6 +58,35 @@ interface FeedContextResultInterface extends ResourceInterface
     public function setBytes(int $bytes): void;
 
     /**
+     * The channel code of the context this run produced, or null when the feed type declares no
+     * channel dimension. Recorded so delivery targets can be matched without the channel entity.
+     */
+    public function getChannelCode(): ?string;
+
+    public function setChannelCode(?string $channelCode): void;
+
+    public function getLocaleCode(): ?string;
+
+    public function setLocaleCode(?string $localeCode): void;
+
+    public function getCurrencyCode(): ?string;
+
+    public function setCurrencyCode(?string $currencyCode): void;
+
+    /**
+     * Every file written for this context (§12): a single file, or the split parts plus an optional
+     * manifest. Delivery pushes the whole set.
+     *
+     * @return list<string>
+     */
+    public function getPaths(): array;
+
+    /**
+     * @param list<string> $paths
+     */
+    public function setPaths(array $paths): void;
+
+    /**
      * A bounded sample of per-item exclusion reasons collected during generation.
      *
      * @return list<array{item: ?string, reason: string}>
@@ -70,6 +99,25 @@ interface FeedContextResultInterface extends ResourceInterface
     public function setErrors(array $errors): void;
 
     public function addError(?string $item, string $reason): void;
+
+    /**
+     * The outcome of pushing this context's files to its matching delivery targets (§12). Each entry
+     * records the target (transport/id), the rendered remote path, a `delivered`/`error` status and,
+     * on failure, the error message.
+     *
+     * @return list<array{target: string, path: string, status: string, error?: string}>
+     */
+    public function getDeliveries(): array;
+
+    /**
+     * @param list<array{target: string, path: string, status: string, error?: string}> $deliveries
+     */
+    public function setDeliveries(array $deliveries): void;
+
+    /**
+     * @param array{target: string, path: string, status: string, error?: string} $delivery
+     */
+    public function addDelivery(array $delivery): void;
 
     /**
      * The publish-gate outcome for this candidate (§6.6): one of the PUBLISH_STATE_* constants.

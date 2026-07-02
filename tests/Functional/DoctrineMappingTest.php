@@ -6,6 +6,7 @@ namespace Setono\SyliusFeedPlugin\Tests\Functional;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use Setono\SyliusFeedPlugin\Model\DeliveryTarget;
 use Setono\SyliusFeedPlugin\Model\Feed;
 use Setono\SyliusFeedPlugin\Model\FeedField;
 use Setono\SyliusFeedPlugin\Model\FeedFilter;
@@ -39,6 +40,7 @@ final class DoctrineMappingTest extends FunctionalTestCase
         yield 'feed field' => [FeedField::class, 'setono_sylius_feed__feed_field'];
         yield 'feed filter' => [FeedFilter::class, 'setono_sylius_feed__feed_filter'];
         yield 'feed translation' => [FeedTranslation::class, 'setono_sylius_feed__feed_translation'];
+        yield 'delivery target' => [DeliveryTarget::class, 'setono_sylius_feed__delivery_target'];
     }
 
     /**
@@ -62,6 +64,7 @@ final class DoctrineMappingTest extends FunctionalTestCase
 
         self::assertTrue($metadata->hasAssociation('channels'));
         self::assertTrue($metadata->hasAssociation('sources'));
+        self::assertTrue($metadata->hasAssociation('deliveryTargets'));
         self::assertTrue($metadata->hasAssociation('translations'));
     }
 }

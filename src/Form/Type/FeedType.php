@@ -74,6 +74,13 @@ final class FeedType extends AbstractResourceType
                 'allow_delete' => true,
                 'by_reference' => false,
             ])
+            ->add('deliveryTargets', CollectionType::class, [
+                'label' => 'setono_sylius_feed.form.feed.delivery_targets',
+                'entry_type' => DeliveryTargetType::class,
+                'allow_add' => true,
+                'allow_delete' => true,
+                'by_reference' => false,
+            ])
         ;
 
         // Seed the feed from the chosen target before positions are reindexed (higher priority).
@@ -98,6 +105,12 @@ final class FeedType extends AbstractResourceType
             $position = 0;
             foreach ($feed->getSources() as $source) {
                 $source->setPosition($position);
+                ++$position;
+            }
+
+            $position = 0;
+            foreach ($feed->getDeliveryTargets() as $deliveryTarget) {
+                $deliveryTarget->setPosition($position);
                 ++$position;
             }
         });

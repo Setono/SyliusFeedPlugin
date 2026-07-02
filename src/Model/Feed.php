@@ -36,6 +36,9 @@ class Feed implements FeedInterface
     /** @var Collection<int, FeedSourceInterface> */
     protected Collection $sources;
 
+    /** @var Collection<int, DeliveryTargetInterface> */
+    protected Collection $deliveryTargets;
+
     protected ?\DateTimeInterface $lastGeneratedAt = null;
 
     protected ?int $contextCount = null;
@@ -55,6 +58,10 @@ class Feed implements FeedInterface
         /** @var ArrayCollection<int, FeedSourceInterface> $sources */
         $sources = new ArrayCollection();
         $this->sources = $sources;
+
+        /** @var ArrayCollection<int, DeliveryTargetInterface> $deliveryTargets */
+        $deliveryTargets = new ArrayCollection();
+        $this->deliveryTargets = $deliveryTargets;
     }
 
     public function getId(): ?int
@@ -180,6 +187,32 @@ class Feed implements FeedInterface
     public function hasSource(FeedSourceInterface $source): bool
     {
         return $this->sources->contains($source);
+    }
+
+    public function getDeliveryTargets(): Collection
+    {
+        return $this->deliveryTargets;
+    }
+
+    public function addDeliveryTarget(DeliveryTargetInterface $deliveryTarget): void
+    {
+        if (!$this->hasDeliveryTarget($deliveryTarget)) {
+            $deliveryTarget->setFeed($this);
+            $this->deliveryTargets->add($deliveryTarget);
+        }
+    }
+
+    public function removeDeliveryTarget(DeliveryTargetInterface $deliveryTarget): void
+    {
+        if ($this->hasDeliveryTarget($deliveryTarget)) {
+            $deliveryTarget->setFeed(null);
+            $this->deliveryTargets->removeElement($deliveryTarget);
+        }
+    }
+
+    public function hasDeliveryTarget(DeliveryTargetInterface $deliveryTarget): bool
+    {
+        return $this->deliveryTargets->contains($deliveryTarget);
     }
 
     public function getLastGeneratedAt(): ?\DateTimeInterface

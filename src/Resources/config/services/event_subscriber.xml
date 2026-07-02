@@ -8,6 +8,7 @@
             <argument type="service" id="setono_sylius_feed.storage.feed_tmp"/>
             <argument type="service" id="setono_sylius_feed.storage.feed"/>
             <argument type="service" id="setono_sylius_feed.repository.feed_context_result"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Delivery\DeliveryServiceInterface"/>
             <tag name="kernel.event_subscriber"/>
         </service>
 

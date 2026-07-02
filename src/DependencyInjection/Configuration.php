@@ -6,6 +6,8 @@ namespace Setono\SyliusFeedPlugin\DependencyInjection;
 
 use Setono\SyliusFeedPlugin\Form\Type\FeedType;
 use Setono\SyliusFeedPlugin\Form\Type\LookupTableType;
+use Setono\SyliusFeedPlugin\Model\DeliveryTarget;
+use Setono\SyliusFeedPlugin\Model\DeliveryTargetInterface;
 use Setono\SyliusFeedPlugin\Model\Feed;
 use Setono\SyliusFeedPlugin\Model\FeedContextResult;
 use Setono\SyliusFeedPlugin\Model\FeedContextResultInterface;
@@ -109,6 +111,23 @@ final class Configuration implements ConfigurationInterface
                                     ->children()
                                         ->scalarNode('model')->defaultValue(FeedSource::class)->cannotBeEmpty()->end()
                                         ->scalarNode('interface')->defaultValue(FeedSource::class)->cannotBeEmpty()->end()
+                                        ->scalarNode('controller')->defaultValue(ResourceController::class)->cannotBeEmpty()->end()
+                                        ->scalarNode('repository')->defaultValue(EntityRepository::class)->cannotBeEmpty()->end()
+                                        ->scalarNode('factory')->defaultValue(Factory::class)->end()
+                                        ->scalarNode('form')->defaultValue(DefaultResourceType::class)->cannotBeEmpty()->end()
+                                    ->end()
+                                ->end()
+                            ->end()
+                        ->end()
+                        ->arrayNode('delivery_target')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->variableNode('options')->end()
+                                ->arrayNode('classes')
+                                    ->addDefaultsIfNotSet()
+                                    ->children()
+                                        ->scalarNode('model')->defaultValue(DeliveryTarget::class)->cannotBeEmpty()->end()
+                                        ->scalarNode('interface')->defaultValue(DeliveryTargetInterface::class)->cannotBeEmpty()->end()
                                         ->scalarNode('controller')->defaultValue(ResourceController::class)->cannotBeEmpty()->end()
                                         ->scalarNode('repository')->defaultValue(EntityRepository::class)->cannotBeEmpty()->end()
                                         ->scalarNode('factory')->defaultValue(Factory::class)->end()
