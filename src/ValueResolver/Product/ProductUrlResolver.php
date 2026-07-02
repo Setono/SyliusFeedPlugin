@@ -7,15 +7,16 @@ namespace Setono\SyliusFeedPlugin\ValueResolver\Product;
 use Setono\SyliusFeedPlugin\Context\FeedContext;
 use Setono\SyliusFeedPlugin\Mapping\FieldType;
 use Setono\SyliusFeedPlugin\ValueResolver\ValueResolverInterface;
-use Sylius\Component\Core\Model\ProductVariantInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
- * The absolute product page URL for the context locale (§8.1, §9.3). The router context host is
- * set per channel by the generator so the URL is channel-correct.
+ * The absolute product page URL for the context locale (§8.1, §8.7, §9.3). The router context host
+ * is set per channel by the generator so the URL is channel-correct.
  */
 final class ProductUrlResolver implements ValueResolverInterface
 {
+    use ProductAwareTrait;
+
     public function __construct(private readonly UrlGeneratorInterface $urlGenerator)
     {
     }
@@ -35,19 +36,14 @@ final class ProductUrlResolver implements ValueResolverInterface
         return FieldType::URL;
     }
 
-    public function supports(string $resourceClass): bool
-    {
-        return is_a($resourceClass, ProductVariantInterface::class, true);
-    }
-
     public function resolve(object $entity, FeedContext $context): mixed
     {
         $locale = $context->getLocale();
-        if (!$entity instanceof ProductVariantInterface || null === $locale) {
+        if (null === $locale) {
             return null;
         }
 
-        $product = $entity->getProduct();
+        $product = $this->resolveProduct($entity);
         if (null === $product) {
             return null;
         }

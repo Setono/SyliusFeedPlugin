@@ -14,5 +14,16 @@
             <argument type="service" id="Setono\SyliusFeedPlugin\ValueResolver\ValueResolverRegistryInterface"/>
             <tag name="setono_sylius_feed.feed_type"/>
         </service>
+
+        <service id="Setono\SyliusFeedPlugin\DataSource\ProductDataSource">
+            <argument type="service" id="doctrine"/>
+            <argument>%sylius.model.product.class%</argument>
+        </service>
+
+        <service id="Setono\SyliusFeedPlugin\FeedType\ProductFeedType">
+            <argument type="service" id="Setono\SyliusFeedPlugin\DataSource\ProductDataSource"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\ValueResolver\ValueResolverRegistryInterface"/>
+            <tag name="setono_sylius_feed.feed_type"/>
+        </service>
     </services>
 </container>

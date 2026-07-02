@@ -4,30 +4,40 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Tests\Functional\Scripting;
 
-use Setono\SyliusFeedPlugin\Lookup\InMemoryLookup;
-use Setono\SyliusFeedPlugin\Lookup\LookupInterface;
+use Doctrine\Persistence\ManagerRegistry;
+use Setono\SyliusFeedPlugin\Model\LookupTable;
 use Setono\SyliusFeedPlugin\Scripting\ExpressionEvaluatorInterface;
 use Setono\SyliusFeedPlugin\Scripting\TwigTemplateRendererInterface;
 use Setono\SyliusFeedPlugin\Tests\Functional\FunctionalTestCase;
 
 /**
- * Proves the M4 scripting services (§10) are wired together correctly: the expression evaluator and
- * the sandboxed Twig renderer both resolve `lookup(...)` calls through the very same lookup instance
- * the container hands out elsewhere (the {@see LookupInterface} alias is a singleton). Does not touch
- * the database.
+ * Proves the M4 scripting services (§10) are wired together and resolve `lookup(...)` through the
+ * DB-backed {@see \Setono\SyliusFeedPlugin\Lookup\DatabaseLookup}: a persisted LookupTable enriches
+ * both the expression evaluator and the sandboxed Twig renderer.
  */
 final class ScriptingTest extends FunctionalTestCase
 {
+    private function persistBadges(): void
+    {
+        $table = new LookupTable();
+        $table->setCode('badges');
+        $table->setSourceType(LookupTable::SOURCE_TYPE_CSV);
+        $table->setRows(['SKU-1' => ['suffix' => 'Bestseller']]);
+
+        $registry = self::getContainer()->get('doctrine');
+        self::assertInstanceOf(ManagerRegistry::class, $registry);
+        $manager = $registry->getManagerForClass(LookupTable::class);
+        self::assertNotNull($manager);
+        $manager->persist($table);
+        $manager->flush();
+    }
+
     /**
      * @test
      */
-    public function it_shares_a_single_lookup_instance_across_the_scripting_services(): void
+    public function it_resolves_a_lookup_in_an_expression_through_the_database(): void
     {
-        $lookup = self::getContainer()->get(LookupInterface::class);
-
-        self::assertInstanceOf(InMemoryLookup::class, $lookup);
-
-        $lookup->addTable('badges', ['SKU-1' => ['suffix' => 'Bestseller']]);
+        $this->persistBadges();
 
         $evaluator = self::getContainer()->get(ExpressionEvaluatorInterface::class);
         self::assertInstanceOf(ExpressionEvaluatorInterface::class, $evaluator);
@@ -41,12 +51,9 @@ final class ScriptingTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function it_renders_a_template_that_looks_up_a_shared_table(): void
+    public function it_resolves_a_lookup_in_a_sandboxed_twig_template_through_the_database(): void
     {
-        $lookup = self::getContainer()->get(LookupInterface::class);
-        self::assertInstanceOf(InMemoryLookup::class, $lookup);
-
-        $lookup->addTable('badges', ['SKU-1' => ['suffix' => 'Bestseller']]);
+        $this->persistBadges();
 
         $renderer = self::getContainer()->get(TwigTemplateRendererInterface::class);
         self::assertInstanceOf(TwigTemplateRendererInterface::class, $renderer);

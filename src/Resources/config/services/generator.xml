@@ -13,6 +13,7 @@
             <argument type="service" id="Setono\SyliusFeedPlugin\Operator\OperatorRegistryInterface"/>
             <argument type="service" id="Setono\SyliusFeedPlugin\Scripting\ExpressionEvaluatorInterface"/>
             <argument type="service" id="Setono\SyliusFeedPlugin\Scripting\TwigTemplateRendererInterface"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Lookup\LookupReferenceResolverInterface"/>
         </service>
         <service id="Setono\SyliusFeedPlugin\Generator\FieldMappingEvaluatorInterface" alias="Setono\SyliusFeedPlugin\Generator\FieldMappingEvaluator"/>
 

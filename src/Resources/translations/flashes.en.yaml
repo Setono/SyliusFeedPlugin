@@ -1,3 +1,5 @@
 setono_sylius_feed:
     feed:
         generation_dispatched: Feed generation has been dispatched
+    lookup_table:
+        refreshed: Lookup table has been refreshed

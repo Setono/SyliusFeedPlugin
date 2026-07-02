@@ -8,15 +8,15 @@ use Liip\ImagineBundle\Imagine\Cache\CacheManager;
 use Setono\SyliusFeedPlugin\Context\FeedContext;
 use Setono\SyliusFeedPlugin\Mapping\FieldType;
 use Setono\SyliusFeedPlugin\ValueResolver\ValueResolverInterface;
-use Sylius\Component\Core\Model\ProductInterface;
-use Sylius\Component\Core\Model\ProductVariantInterface;
 
 /**
  * The product's additional images (all but the first) as absolute, filtered URLs, capped at 10
- * per Google's limit (§8.1).
+ * per Google's limit (§8.1, §8.7).
  */
 final class AdditionalImagesResolver implements ValueResolverInterface
 {
+    use ProductAwareTrait;
+
     private const LIMIT = 10;
 
     public function __construct(
@@ -40,19 +40,10 @@ final class AdditionalImagesResolver implements ValueResolverInterface
         return FieldType::IMAGE;
     }
 
-    public function supports(string $resourceClass): bool
-    {
-        return is_a($resourceClass, ProductVariantInterface::class, true);
-    }
-
     public function resolve(object $entity, FeedContext $context): mixed
     {
-        if (!$entity instanceof ProductVariantInterface) {
-            return [];
-        }
-
-        $product = $entity->getProduct();
-        if (!$product instanceof ProductInterface) {
+        $product = $this->resolveProduct($entity);
+        if (null === $product) {
             return [];
         }
 

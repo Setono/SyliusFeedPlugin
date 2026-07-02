@@ -17,6 +17,13 @@
             <tag name="controller.service_arguments"/>
         </service>
 
+        <service id="Setono\SyliusFeedPlugin\Controller\Admin\RefreshLookupTableAction">
+            <argument type="service" id="setono_sylius_feed.repository.lookup_table"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Lookup\LookupTableRefresherInterface"/>
+            <argument type="service" id="router"/>
+            <tag name="controller.service_arguments"/>
+        </service>
+
         <service id="Setono\SyliusFeedPlugin\Controller\Admin\FeedResultsAction">
             <argument type="service" id="setono_sylius_feed.repository.feed"/>
             <argument type="service" id="setono_sylius_feed.storage.feed"/>

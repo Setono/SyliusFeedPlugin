@@ -5,10 +5,14 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\DependencyInjection;
 
 use Setono\SyliusFeedPlugin\Form\Type\FeedType;
+use Setono\SyliusFeedPlugin\Form\Type\LookupTableType;
 use Setono\SyliusFeedPlugin\Model\Feed;
 use Setono\SyliusFeedPlugin\Model\FeedSource;
 use Setono\SyliusFeedPlugin\Model\FeedTranslation;
+use Setono\SyliusFeedPlugin\Model\LookupTable;
+use Setono\SyliusFeedPlugin\Model\LookupTableInterface;
 use Setono\SyliusFeedPlugin\Repository\FeedRepository;
+use Setono\SyliusFeedPlugin\Repository\LookupTableRepository;
 use Sylius\Bundle\ResourceBundle\Controller\ResourceController;
 use Sylius\Bundle\ResourceBundle\Doctrine\ORM\EntityRepository;
 use Sylius\Bundle\ResourceBundle\Form\Type\DefaultResourceType;
@@ -106,6 +110,23 @@ final class Configuration implements ConfigurationInterface
                                         ->scalarNode('repository')->defaultValue(EntityRepository::class)->cannotBeEmpty()->end()
                                         ->scalarNode('factory')->defaultValue(Factory::class)->end()
                                         ->scalarNode('form')->defaultValue(DefaultResourceType::class)->cannotBeEmpty()->end()
+                                    ->end()
+                                ->end()
+                            ->end()
+                        ->end()
+                        ->arrayNode('lookup_table')
+                            ->addDefaultsIfNotSet()
+                            ->children()
+                                ->variableNode('options')->end()
+                                ->arrayNode('classes')
+                                    ->addDefaultsIfNotSet()
+                                    ->children()
+                                        ->scalarNode('model')->defaultValue(LookupTable::class)->cannotBeEmpty()->end()
+                                        ->scalarNode('interface')->defaultValue(LookupTableInterface::class)->cannotBeEmpty()->end()
+                                        ->scalarNode('controller')->defaultValue(ResourceController::class)->cannotBeEmpty()->end()
+                                        ->scalarNode('repository')->defaultValue(LookupTableRepository::class)->cannotBeEmpty()->end()
+                                        ->scalarNode('factory')->defaultValue(Factory::class)->end()
+                                        ->scalarNode('form')->defaultValue(LookupTableType::class)->cannotBeEmpty()->end()
                                     ->end()
                                 ->end()
                             ->end()

@@ -24,13 +24,18 @@ final class IsConfigurableResolverTest extends TestCase
         $this->resolver = new IsConfigurableResolver();
     }
 
+    private function productWithVariantCount(int $count): ProductInterface
+    {
+        $product = $this->prophesize(ProductInterface::class);
+        $product->getVariants()->willReturn(new ArrayCollection(array_fill(0, $count, $this->prophesize(ProductVariantInterface::class)->reveal())));
+
+        return $product->reveal();
+    }
+
     private function variantWithVariantCount(int $count): ProductVariantInterface
     {
         $variant = $this->prophesize(ProductVariantInterface::class);
-
-        $product = $this->prophesize(ProductInterface::class);
-        $product->getVariants()->willReturn(new ArrayCollection(array_fill(0, $count, $variant->reveal())));
-        $variant->getProduct()->willReturn($product->reveal());
+        $variant->getProduct()->willReturn($this->productWithVariantCount($count));
 
         return $variant->reveal();
     }
@@ -44,13 +49,14 @@ final class IsConfigurableResolverTest extends TestCase
         self::assertSame('setono_sylius_feed.value_resolver.is_configurable', $this->resolver->getLabel());
         self::assertSame(FieldType::BOOL, $this->resolver->getType());
         self::assertTrue($this->resolver->supports(ProductVariantInterface::class));
+        self::assertTrue($this->resolver->supports(ProductInterface::class));
         self::assertFalse($this->resolver->supports(\stdClass::class));
     }
 
     /**
      * @test
      */
-    public function it_is_true_for_a_multi_variant_product(): void
+    public function it_is_true_for_a_multi_variant_product_via_a_variant(): void
     {
         self::assertTrue($this->resolver->resolve($this->variantWithVariantCount(2), new FeedContext()));
     }
@@ -58,9 +64,25 @@ final class IsConfigurableResolverTest extends TestCase
     /**
      * @test
      */
-    public function it_is_false_for_a_single_variant_product(): void
+    public function it_is_false_for_a_single_variant_product_via_a_variant(): void
     {
         self::assertFalse($this->resolver->resolve($this->variantWithVariantCount(1), new FeedContext()));
+    }
+
+    /**
+     * @test
+     */
+    public function it_is_true_for_a_multi_variant_product_entity(): void
+    {
+        self::assertTrue($this->resolver->resolve($this->productWithVariantCount(2), new FeedContext()));
+    }
+
+    /**
+     * @test
+     */
+    public function it_is_false_for_a_single_variant_product_entity(): void
+    {
+        self::assertFalse($this->resolver->resolve($this->productWithVariantCount(1), new FeedContext()));
     }
 
     /**

@@ -7,5 +7,14 @@
         <service id="Setono\SyliusFeedPlugin\Format\GoogleRssFormat">
             <tag name="setono_sylius_feed.format"/>
         </service>
+        <service id="Setono\SyliusFeedPlugin\Format\CsvFormat">
+            <tag name="setono_sylius_feed.format"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Format\GenericXmlFormat">
+            <tag name="setono_sylius_feed.format"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Format\PartnerAdsFormat">
+            <tag name="setono_sylius_feed.format"/>
+        </service>
     </services>
 </container>

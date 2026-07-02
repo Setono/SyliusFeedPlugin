@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<doctrine-mapping xmlns="http://doctrine.apache.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine.apache.org/schemas/orm/doctrine-mapping
+                  http://doctrine.apache.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="Setono\SyliusFeedPlugin\Model\LookupTable" table="setono_sylius_feed__lookup_table">
+        <id name="id" type="integer">
+            <generator strategy="AUTO"/>
+        </id>
+
+        <field name="code" type="string" unique="true"/>
+        <field name="name" type="string" nullable="true"/>
+        <field name="sourceType" column="source_type" type="string" nullable="true"/>
+        <field name="sourceConfig" column="source_config" type="json"/>
+        <field name="keyColumn" column="key_column" type="string" nullable="true"/>
+        <field name="joinField" column="join_field" type="string" nullable="true"/>
+        <field name="refreshPolicy" column="refresh_policy" type="string"/>
+        <field name="refreshedAt" column="refreshed_at" type="datetime_immutable" nullable="true"/>
+        <field name="rows" column="lookup_rows" type="json"/>
+    </entity>
+</doctrine-mapping>
