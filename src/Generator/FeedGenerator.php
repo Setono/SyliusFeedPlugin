@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Setono\SyliusFeedPlugin\Generator;
 
-use League\Flysystem\FilesystemOperator;
 use Setono\SyliusFeedPlugin\Context\FeedContext;
 use Setono\SyliusFeedPlugin\Event\FeedItemBuiltEvent;
 use Setono\SyliusFeedPlugin\FeedType\FeedTypeRegistryInterface;
 use Setono\SyliusFeedPlugin\Filter\FilterEvaluatorInterface;
 use Setono\SyliusFeedPlugin\Filter\FilterSet;
+use Setono\SyliusFeedPlugin\Format\FormatInterface;
 use Setono\SyliusFeedPlugin\Format\FormatRegistryInterface;
 use Setono\SyliusFeedPlugin\Item\FeedItem;
 use Setono\SyliusFeedPlugin\Lookup\LookupReferenceResolverInterface;
@@ -19,13 +19,14 @@ use Setono\SyliusFeedPlugin\Model\FeedSourceInterface;
 use Setono\SyliusFeedPlugin\Validator\FeedItemValidatorInterface;
 use Setono\SyliusFeedPlugin\Writer\CsvWriterConfig;
 use Setono\SyliusFeedPlugin\Writer\FeedWriterRegistryInterface;
+use Setono\SyliusFeedPlugin\Writer\SplitManifestRegistryInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Orchestrates the per-context generation pipeline (§6): resolve → transform → event → validate →
- * write, streaming each item to storage. M1 is synchronous and single-chunk; partitioning,
- * fan-out and the publish gate land in later milestones.
+ * write. The item stream is handed to the {@see OutputWriterInterface}, which streams it to storage
+ * and, when a size limit is reached, splits it into parts and optionally gzips each file (§12).
  */
 final class FeedGenerator implements FeedGeneratorInterface
 {
@@ -40,7 +41,8 @@ final class FeedGenerator implements FeedGeneratorInterface
         private readonly FeedItemValidatorInterface $feedItemValidator,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly UrlGeneratorInterface $urlGenerator,
-        private readonly FilesystemOperator $feedFilesystem,
+        private readonly OutputWriterInterface $outputWriter,
+        private readonly SplitManifestRegistryInterface $splitManifestRegistry,
     ) {
     }
 
@@ -55,17 +57,45 @@ final class FeedGenerator implements FeedGeneratorInterface
             // heterogeneous multi-source rows line up under one header.
             $config = $config->withHeader($this->unionHeader($feed));
         }
-        $requiredFields = $format->getRequiredFields();
-        $itemValidationGroups = $format->getItemValidationGroups();
 
         $this->applyRequestContext($context);
 
-        $stream = $this->openStream();
-        $writer->open($stream, $context, $config);
-        $writer->writePreamble();
-
-        $itemCount = 0;
         $exclusions = new ExclusionCollector();
+
+        $output = $this->outputWriter->write(
+            $this->items($feed, $context, $format, $exclusions),
+            $writer,
+            $config,
+            $context,
+            (string) $feed->getCode(),
+            $context->key(),
+            $format->getWriter(),
+            $this->resolveSplitLimit($format, $feed),
+            $this->resolveGzip($feed),
+            $this->splitManifestRegistry->get($format->getSplitManifest()),
+        );
+
+        return new GenerationResult(
+            $output->primaryPath,
+            $output->itemCount,
+            $exclusions->count(),
+            $output->bytes,
+            $exclusions->errors(),
+            $output->paths,
+        );
+    }
+
+    /**
+     * The pipeline for one context: resolve each source's items, run them through binding, filters,
+     * the build event, skip and validation, recording every exclusion and yielding the items that
+     * survive to the writer.
+     *
+     * @return iterable<FeedItem>
+     */
+    private function items(FeedInterface $feed, FeedContext $context, FormatInterface $format, ExclusionCollector $exclusions): iterable
+    {
+        $requiredFields = $format->getRequiredFields();
+        $itemValidationGroups = $format->getItemValidationGroups();
 
         foreach ($this->sortedSources($feed) as $source) {
             $feedType = $this->feedTypeRegistry->get((string) $source->getFeedType());
@@ -112,23 +142,37 @@ final class FeedGenerator implements FeedGeneratorInterface
                     continue;
                 }
 
-                $writer->writeItem($item);
-                ++$itemCount;
+                yield $item;
+            }
+        }
+    }
+
+    /**
+     * The effective split limit (§12): the format default with the feed's `formatConfig['split']`
+     * overrides merged over it, so an admin can lower it (e.g. to force splitting for testing).
+     *
+     * @return array{maxItems?: int, maxBytes?: int}
+     */
+    private function resolveSplitLimit(FormatInterface $format, FeedInterface $feed): array
+    {
+        $limit = $format->getSplitLimit();
+
+        $override = $feed->getFormatConfig()['split'] ?? [];
+        if (is_array($override)) {
+            foreach (['maxItems', 'maxBytes'] as $key) {
+                $value = $override[$key] ?? null;
+                if (is_numeric($value)) {
+                    $limit[$key] = (int) $value;
+                }
             }
         }
 
-        $writer->writeEpilogue();
-        $writer->close();
+        return $limit;
+    }
 
-        $path = sprintf('%s/%s.%s', (string) $feed->getCode(), $context->key(), $format->getWriter());
-
-        rewind($stream);
-        $this->feedFilesystem->writeStream($path, $stream);
-        $stat = fstat($stream);
-        $bytes = false === $stat ? 0 : $stat['size'];
-        fclose($stream);
-
-        return new GenerationResult($path, $itemCount, $exclusions->count(), $bytes, $exclusions->errors());
+    private function resolveGzip(FeedInterface $feed): bool
+    {
+        return (bool) ($feed->getFormatConfig()['gzip'] ?? false);
     }
 
     /**
@@ -206,22 +250,5 @@ final class FeedGenerator implements FeedGeneratorInterface
         if (null !== $channel && null !== $channel->getHostname()) {
             $this->urlGenerator->getContext()->setHost($channel->getHostname())->setScheme('https');
         }
-    }
-
-    /**
-     * @return resource
-     */
-    private function openStream()
-    {
-        $stream = fopen('php://temp', 'w+b');
-
-        // Defensive: an in-memory stream cannot be made to fail on demand, so this is uncoverable.
-        // @codeCoverageIgnoreStart
-        if (!is_resource($stream)) {
-            throw new \RuntimeException('Could not open a temporary stream');
-        }
-        // @codeCoverageIgnoreEnd
-
-        return $stream;
     }
 }

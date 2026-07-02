@@ -329,6 +329,16 @@ final class PreviewServiceTest extends TestCase
             {
                 return [];
             }
+
+            public function getSplitManifest(): string
+            {
+                return 'none';
+            }
+
+            public function getSplitLimit(): array
+            {
+                return [];
+            }
         };
     }
 

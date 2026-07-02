@@ -38,4 +38,15 @@ final class GenericXmlFormat implements FormatInterface
     {
         return [];
     }
+
+    public function getSplitManifest(): string
+    {
+        // Each part is a complete, self-describing XML document.
+        return 'none';
+    }
+
+    public function getSplitLimit(): array
+    {
+        return [];
+    }
 }

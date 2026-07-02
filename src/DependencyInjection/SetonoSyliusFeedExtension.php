@@ -15,6 +15,7 @@ use Setono\SyliusFeedPlugin\Transformation\TransformationInterface;
 use Setono\SyliusFeedPlugin\ValueResolver\ValueResolverInterface;
 use Setono\SyliusFeedPlugin\Workflow\FeedGraph;
 use Setono\SyliusFeedPlugin\Writer\FeedWriterInterface;
+use Setono\SyliusFeedPlugin\Writer\SplitManifestInterface;
 use Sylius\Bundle\ResourceBundle\DependencyInjection\Extension\AbstractResourceExtension;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -37,6 +38,7 @@ final class SetonoSyliusFeedExtension extends AbstractResourceExtension implemen
         TransformationInterface::class => 'setono_sylius_feed.transformation',
         OperatorInterface::class => 'setono_sylius_feed.operator',
         FeedWriterInterface::class => 'setono_sylius_feed.writer',
+        SplitManifestInterface::class => 'setono_sylius_feed.split_manifest',
         FormatInterface::class => 'setono_sylius_feed.format',
         GuardrailInterface::class => 'setono_sylius_feed.guardrail',
     ];

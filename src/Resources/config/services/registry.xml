@@ -39,6 +39,11 @@
         </service>
         <service id="Setono\SyliusFeedPlugin\Writer\FeedWriterRegistryInterface" alias="Setono\SyliusFeedPlugin\Writer\FeedWriterRegistry"/>
 
+        <service id="Setono\SyliusFeedPlugin\Writer\SplitManifestRegistry" public="true">
+            <argument type="tagged_iterator" tag="setono_sylius_feed.split_manifest"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Writer\SplitManifestRegistryInterface" alias="Setono\SyliusFeedPlugin\Writer\SplitManifestRegistry"/>
+
         <service id="Setono\SyliusFeedPlugin\Format\FormatRegistry" public="true">
             <argument type="tagged_iterator" tag="setono_sylius_feed.format"/>
         </service>

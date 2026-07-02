@@ -22,6 +22,7 @@ use Setono\SyliusFeedPlugin\Format\GoogleRssFormat;
 use Setono\SyliusFeedPlugin\Format\PartnerAdsFormat;
 use Setono\SyliusFeedPlugin\Generator\FeedGenerator;
 use Setono\SyliusFeedPlugin\Generator\FieldMappingEvaluator;
+use Setono\SyliusFeedPlugin\Generator\OutputWriter;
 use Setono\SyliusFeedPlugin\Item\FeedItem;
 use Setono\SyliusFeedPlugin\Lookup\InMemoryLookup;
 use Setono\SyliusFeedPlugin\Mapping\FieldDefinition;
@@ -53,6 +54,9 @@ use Setono\SyliusFeedPlugin\Validator\FeedItemValidator;
 use Setono\SyliusFeedPlugin\Validator\RequiredFieldsValidator;
 use Setono\SyliusFeedPlugin\Writer\CsvWriter;
 use Setono\SyliusFeedPlugin\Writer\FeedWriterRegistryInterface;
+use Setono\SyliusFeedPlugin\Writer\NoneSplitManifest;
+use Setono\SyliusFeedPlugin\Writer\SplitManifestRegistry;
+use Setono\SyliusFeedPlugin\Writer\SupplementalSplitManifest;
 use Setono\SyliusFeedPlugin\Writer\XmlWriter;
 use Sylius\Component\Core\Model\ChannelInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -118,6 +122,128 @@ final class FeedGeneratorTest extends TestCase
     }
 
     /**
+     * When the context does not exceed the split limit exactly one un-suffixed file is written and
+     * no numbered part is produced — the single-file output is unchanged by the split machinery.
+     *
+     * @test
+     */
+    public function it_writes_a_single_unsuffixed_file_when_the_context_does_not_split(): void
+    {
+        $result = $this->createGenerator()->generate($this->feed(), new FeedContext($this->channel(), 'en_US', 'USD'));
+
+        self::assertSame('google/web_en_us_usd.xml', $result->path);
+        self::assertSame(['google/web_en_us_usd.xml'], $result->paths);
+        self::assertTrue($this->filesystem->fileExists('google/web_en_us_usd.xml'));
+        self::assertFalse($this->filesystem->fileExists('google/web_en_us_usd-1.xml'));
+    }
+
+    /**
+     * A google_rss context lowered to maxItems=1 splits three items into three complete numbered
+     * parts and emits a supplemental manifest at the canonical path naming every part.
+     *
+     * @test
+     */
+    public function it_splits_a_google_rss_context_into_parts_with_a_supplemental_manifest(): void
+    {
+        $result = $this->createGenerator(items: 3)->generate(
+            $this->feed('google_rss', ['split' => ['maxItems' => 1]]),
+            new FeedContext($this->channel(), 'en_US', 'USD'),
+        );
+
+        self::assertSame(3, $result->itemCount);
+        // The supplemental manifest is the canonical entry point and leads the written set.
+        self::assertSame('google/web_en_us_usd.xml', $result->path);
+        self::assertSame([
+            'google/web_en_us_usd.xml',
+            'google/web_en_us_usd-1.xml',
+            'google/web_en_us_usd-2.xml',
+            'google/web_en_us_usd-3.xml',
+        ], $result->paths);
+
+        foreach (['google/web_en_us_usd-1.xml', 'google/web_en_us_usd-2.xml', 'google/web_en_us_usd-3.xml'] as $part) {
+            self::assertTrue($this->filesystem->fileExists($part));
+            $partXml = $this->filesystem->read($part);
+            self::assertTrue((new \DOMDocument())->loadXML($partXml), 'each part is a complete XML document');
+            self::assertSame(1, substr_count($partXml, '<item>'), 'each part carries exactly one item');
+        }
+
+        $manifest = $this->filesystem->read('google/web_en_us_usd.xml');
+        self::assertStringContainsString('<manifest', $manifest);
+        self::assertStringContainsString('<part>web_en_us_usd-1.xml</part>', $manifest);
+        self::assertStringContainsString('<part>web_en_us_usd-2.xml</part>', $manifest);
+        self::assertStringContainsString('<part>web_en_us_usd-3.xml</part>', $manifest);
+    }
+
+    /**
+     * A csv context lowered to maxItems=1 splits into self-describing numbered parts — each with its
+     * own header row — and, because the format's manifest strategy is `none`, writes no manifest.
+     *
+     * @test
+     */
+    public function it_splits_a_csv_context_into_self_describing_parts(): void
+    {
+        $source = $this->prophesize(FeedSourceInterface::class);
+        $source->getFeedType()->willReturn('product_variant');
+        $source->getPosition()->willReturn(0);
+        $source->getFilters()->willReturn(new ArrayCollection());
+        $source->getFields()->willReturn(new ArrayCollection([
+            $this->feedField('id', 'id', 0),
+            $this->feedField('title', 'title', 1),
+            $this->feedField('availability', 'availability', 2),
+        ]));
+
+        $feed = $this->prophesize(FeedInterface::class);
+        $feed->getCode()->willReturn('google');
+        $feed->getFormat()->willReturn('csv');
+        $feed->getFormatConfig()->willReturn(['split' => ['maxItems' => 1]]);
+        $feed->getSources()->willReturn(new ArrayCollection([$source->reveal()]));
+
+        $result = $this->createGenerator(items: 3)->generate($feed->reveal(), new FeedContext($this->channel(), 'en_US', 'USD'));
+
+        self::assertSame(3, $result->itemCount);
+        // No manifest for `none`: the first part is the canonical entry point.
+        self::assertSame('google/web_en_us_usd-1.csv', $result->path);
+        self::assertSame([
+            'google/web_en_us_usd-1.csv',
+            'google/web_en_us_usd-2.csv',
+            'google/web_en_us_usd-3.csv',
+        ], $result->paths);
+        self::assertFalse($this->filesystem->fileExists('google/web_en_us_usd.csv'), 'the `none` strategy writes no manifest');
+
+        foreach ($result->paths as $part) {
+            $rows = [...Reader::createFromString($this->filesystem->read($part))->getRecords()];
+            self::assertCount(2, $rows, 'header row + one item row per part');
+            self::assertSame(['id', 'title', 'availability'], $rows[0], 'each part re-emits the header row');
+            self::assertSame(['SKU-1', 'Acme Shoe', 'in_stock'], $rows[1]);
+        }
+    }
+
+    /**
+     * With formatConfig.gzip=true the written file carries a `.gz` extension and gzdecode() of its
+     * bytes is the expected feed document.
+     *
+     * @test
+     */
+    public function it_gzips_the_written_file_when_enabled(): void
+    {
+        $result = $this->createGenerator()->generate(
+            $this->feed('google_rss', ['gzip' => true]),
+            new FeedContext($this->channel(), 'en_US', 'USD'),
+        );
+
+        self::assertSame('google/web_en_us_usd.xml.gz', $result->path);
+        self::assertSame(['google/web_en_us_usd.xml.gz'], $result->paths);
+        self::assertTrue($this->filesystem->fileExists('google/web_en_us_usd.xml.gz'));
+        self::assertFalse($this->filesystem->fileExists('google/web_en_us_usd.xml'));
+
+        $xml = gzdecode($this->filesystem->read('google/web_en_us_usd.xml.gz'));
+        self::assertIsString($xml);
+        self::assertTrue((new \DOMDocument())->loadXML($xml), 'the gunzipped payload is well-formed XML');
+        self::assertStringContainsString('<g:id>SKU-1</g:id>', $xml);
+        self::assertSame(2, substr_count($xml, '<item>'));
+    }
+
+    /**
      * A CSV feed whose mapping comes from admin-configured FeedField rows: one header row that is
      * the union of the output fields (in row order) followed by one row per item, cells keyed by
      * the header.
@@ -139,6 +265,7 @@ final class FeedGeneratorTest extends TestCase
         $feed = $this->prophesize(FeedInterface::class);
         $feed->getCode()->willReturn('google');
         $feed->getFormat()->willReturn('csv');
+        $feed->getFormatConfig()->willReturn([]);
         $feed->getSources()->willReturn(new ArrayCollection([$source->reveal()]));
 
         $result = $this->createGenerator()->generate($feed->reveal(), new FeedContext($this->channel(), 'en_US', 'USD'));
@@ -238,10 +365,10 @@ final class FeedGeneratorTest extends TestCase
     /**
      * @param list<\Setono\SyliusFeedPlugin\MappingPreset\MappingPresetInterface>|null $presets
      */
-    private function createGenerator(?array $presets = null): FeedGenerator
+    private function createGenerator(?array $presets = null, int $items = 2): FeedGenerator
     {
         $feedTypeRegistry = $this->prophesize(FeedTypeRegistryInterface::class);
-        $feedTypeRegistry->get('product_variant')->willReturn($this->feedType());
+        $feedTypeRegistry->get('product_variant')->willReturn($this->feedType($items));
 
         $presetRegistry = $this->prophesize(MappingPresetRegistryInterface::class);
         $presetRegistry->forFeedType('product_variant')->willReturn($presets ?? [new GoogleShoppingMappingPreset()]);
@@ -276,11 +403,12 @@ final class FeedGeneratorTest extends TestCase
             new FeedItemValidator(Validation::createValidator(), new RequiredFieldsValidator()),
             new EventDispatcher(),
             $urlGenerator->reveal(),
-            $this->filesystem,
+            new OutputWriter($this->filesystem),
+            new SplitManifestRegistry([new NoneSplitManifest(), new SupplementalSplitManifest()]),
         );
     }
 
-    private function feedType(): FeedTypeInterface
+    private function feedType(int $items = 2): FeedTypeInterface
     {
         $fields = [
             'id' => $this->field('id', FieldType::STRING, 'SKU-1'),
@@ -297,7 +425,11 @@ final class FeedGeneratorTest extends TestCase
             'on_sale' => $this->field('on_sale', FieldType::BOOL, false),
         ];
 
-        $dataSource = new class() implements DataSourceInterface {
+        $dataSource = new class($items) implements DataSourceInterface {
+            public function __construct(private readonly int $items)
+            {
+            }
+
             public function getResourceClass(): string
             {
                 return \stdClass::class;
@@ -305,13 +437,14 @@ final class FeedGeneratorTest extends TestCase
 
             public function getItems(FeedContext $context, FilterSet $filters): iterable
             {
-                yield new \stdClass();
-                yield new \stdClass();
+                for ($i = 0; $i < $this->items; ++$i) {
+                    yield new \stdClass();
+                }
             }
 
             public function count(FeedContext $context, FilterSet $filters): int
             {
-                return 2;
+                return $this->items;
             }
         };
 
@@ -373,7 +506,10 @@ final class FeedGeneratorTest extends TestCase
         return $channel->reveal();
     }
 
-    private function feed(string $format = 'google_rss'): FeedInterface
+    /**
+     * @param array<string, mixed> $formatConfig
+     */
+    private function feed(string $format = 'google_rss', array $formatConfig = []): FeedInterface
     {
         $source = $this->prophesize(FeedSourceInterface::class);
         $source->getFeedType()->willReturn('product_variant');
@@ -384,6 +520,7 @@ final class FeedGeneratorTest extends TestCase
         $feed = $this->prophesize(FeedInterface::class);
         $feed->getCode()->willReturn('google');
         $feed->getFormat()->willReturn($format);
+        $feed->getFormatConfig()->willReturn($formatConfig);
         $feed->getSources()->willReturn(new ArrayCollection([$source->reveal()]));
 
         return $feed->reveal();
