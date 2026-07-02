@@ -2,12 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Setono\SyliusFeedPlugin\Tests\Unit\Generator;
+namespace Setono\SyliusFeedPlugin\Tests\Unit\Preview;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use League\Csv\Reader;
-use League\Flysystem\Filesystem;
-use League\Flysystem\Local\LocalFilesystemAdapter;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Setono\SyliusFeedPlugin\Context\FeedContext;
@@ -16,16 +13,14 @@ use Setono\SyliusFeedPlugin\FeedType\FeedTypeInterface;
 use Setono\SyliusFeedPlugin\FeedType\FeedTypeRegistryInterface;
 use Setono\SyliusFeedPlugin\Filter\FilterEvaluator;
 use Setono\SyliusFeedPlugin\Filter\FilterSet;
-use Setono\SyliusFeedPlugin\Format\CsvFormat;
+use Setono\SyliusFeedPlugin\Format\FormatInterface;
 use Setono\SyliusFeedPlugin\Format\FormatRegistryInterface;
-use Setono\SyliusFeedPlugin\Generator\FeedGenerator;
 use Setono\SyliusFeedPlugin\Generator\FieldMappingEvaluator;
 use Setono\SyliusFeedPlugin\Item\FeedItem;
 use Setono\SyliusFeedPlugin\Lookup\InMemoryLookup;
 use Setono\SyliusFeedPlugin\Mapping\FieldDefinition;
 use Setono\SyliusFeedPlugin\Mapping\FieldType;
 use Setono\SyliusFeedPlugin\Mapping\MappingResolver;
-use Setono\SyliusFeedPlugin\Mapping\ScopeDimension;
 use Setono\SyliusFeedPlugin\MappingPreset\MappingPresetRegistryInterface;
 use Setono\SyliusFeedPlugin\Model\FeedField;
 use Setono\SyliusFeedPlugin\Model\FeedFieldInterface;
@@ -36,103 +31,149 @@ use Setono\SyliusFeedPlugin\Model\FeedSourceInterface;
 use Setono\SyliusFeedPlugin\Operator\Equals;
 use Setono\SyliusFeedPlugin\Operator\IsTrue;
 use Setono\SyliusFeedPlugin\Operator\OperatorRegistry;
+use Setono\SyliusFeedPlugin\Preview\PreviewService;
 use Setono\SyliusFeedPlugin\Reference\ReferenceResolver;
 use Setono\SyliusFeedPlugin\Scripting\ExpressionEvaluator;
 use Setono\SyliusFeedPlugin\Scripting\FeedTemplateSecurityPolicy;
 use Setono\SyliusFeedPlugin\Scripting\SandboxedTwigRenderer;
+use Setono\SyliusFeedPlugin\Tests\Unit\Generator\NullLookupReferenceResolver;
 use Setono\SyliusFeedPlugin\Transformation\TransformationChain;
 use Setono\SyliusFeedPlugin\Transformation\TransformationRegistry;
 use Setono\SyliusFeedPlugin\Validator\FeedItemValidator;
 use Setono\SyliusFeedPlugin\Validator\RequiredFieldsValidator;
 use Setono\SyliusFeedPlugin\ValueResolver\ValueResolverInterface;
-use Setono\SyliusFeedPlugin\Writer\CsvWriter;
-use Setono\SyliusFeedPlugin\Writer\FeedWriterRegistryInterface;
+use Setono\SyliusFeedPlugin\Writer\CsvWriterConfig;
+use Setono\SyliusFeedPlugin\Writer\WriterConfigInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Validator\Validation;
 
 /**
- * The §11 acceptance for the FilterEvaluator wired into the generator: a source with an
- * exclude-out-of-stock filter drops the out-of-stock item from the output while keeping the
- * in-stock one — proving the filter is selective (not just "drops everything"). The same filter is
- * exercised at both the `pre` and `post` stage.
+ * Runs the preview over a stub feed type + data source (mirroring the generator tests) to prove the
+ * dry-run pipeline reports the same include/exclude decisions the generator makes — the funnel
+ * counts, the mapped output of included items, and the reason each excluded item was dropped —
+ * without writing anything.
  */
-final class FeedGeneratorFilterTest extends TestCase
+final class PreviewServiceTest extends TestCase
 {
     use ProphecyTrait;
 
-    private Filesystem $filesystem;
-
-    protected function setUp(): void
-    {
-        $this->filesystem = new Filesystem(new LocalFilesystemAdapter(sys_get_temp_dir() . '/setono-feed-' . bin2hex(random_bytes(6))));
-    }
-
-    protected function tearDown(): void
-    {
-        $this->filesystem->deleteDirectory('shop');
-    }
-
     /**
-     * @dataProvider stages
-     *
      * @test
      */
-    public function it_excludes_the_out_of_stock_item(string $stage): void
+    public function it_reports_the_funnel_and_the_included_sample(): void
     {
-        $result = $this->createGenerator()->generate($this->feed($stage), new FeedContext(null, 'en_US', 'USD'));
+        $service = $this->createPreviewService($this->catalog());
 
-        self::assertSame(1, $result->itemCount);
-        self::assertSame(1, $result->excludedCount);
+        $result = $service->preview($this->feed(), new FeedContext(null, 'en_US', 'USD'));
 
-        // the exclusion is recorded with the stage-qualified filter reason (§11); the item id is
-        // only resolvable once mapping has run, so it is present for a `post` filter but null for `pre`
-        self::assertCount(1, $result->errors);
-        self::assertSame(sprintf('filter:%s:availability', $stage), $result->errors[0]['reason']);
-        self::assertSame(FeedFilterInterface::STAGE_POST === $stage ? 'SKU-2' : null, $result->errors[0]['item']);
-        self::assertGreaterThan(0, $result->bytes, 'the produced file has a non-zero byte size');
+        // three sampled → one dropped by the pre-filter, one dropped by validation (empty id) → one kept
+        self::assertSame(3, $result->funnel->source);
+        self::assertSame(2, $result->funnel->afterPreFilters);
+        self::assertSame(1, $result->funnel->afterMappingValidation);
+        self::assertSame(1, $result->funnel->afterPostFilters);
+        self::assertSame(1, $result->funnel->included);
 
-        $rows = [...Reader::createFromString($this->filesystem->read($result->path))->getRecords()];
-        self::assertCount(2, $rows, 'header + the single kept row');
-        self::assertSame(['id', 'availability'], $rows[0]);
-        self::assertSame(['SKU-1', 'in_stock'], $rows[1]);
+        self::assertCount(1, $result->included);
+        self::assertSame(['id' => 'SKU-1', 'title' => 'Shoe', 'availability' => 'in_stock'], $result->included[0]);
+
+        $reasons = array_column($result->excluded, 'reason');
+        self::assertContains('filter:pre:availability', $reasons);
+        self::assertNotEmpty(array_filter($reasons, static fn (string $reason): bool => str_starts_with($reason, 'validation:')));
     }
 
     /**
-     * @return iterable<string, array{string}>
+     * @test
      */
-    public function stages(): iterable
+    public function it_bounds_the_sample_to_the_limit(): void
     {
-        yield 'pre' => [FeedFilterInterface::STAGE_PRE];
-        yield 'post' => [FeedFilterInterface::STAGE_POST];
+        $entities = [];
+        for ($i = 1; $i <= 5; ++$i) {
+            $entities[] = (object) ['id' => 'SKU-' . $i, 'title' => 'Product ' . $i, 'availability' => 'in_stock'];
+        }
+
+        $service = $this->createPreviewService($entities);
+
+        $result = $service->preview($this->feed(), new FeedContext(null, 'en_US', 'USD'), 2);
+
+        self::assertSame(2, $result->funnel->source, 'only the first $limit items per source are sampled');
+        self::assertSame(2, $result->funnel->included);
+        self::assertCount(2, $result->included);
     }
 
-    private function createGenerator(): FeedGenerator
+    /**
+     * @test
+     */
+    public function it_previews_a_single_included_item_by_id(): void
+    {
+        $service = $this->createPreviewService($this->catalog());
+
+        $verdict = $service->previewItem($this->feed(), new FeedContext(null, 'en_US', 'USD'), 'SKU-1');
+
+        self::assertTrue($verdict['included']);
+        self::assertNull($verdict['reason']);
+        self::assertSame('SKU-1', $verdict['output']['id']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_reports_the_rule_that_drops_a_single_item(): void
+    {
+        $service = $this->createPreviewService($this->catalog());
+
+        $verdict = $service->previewItem($this->feed(), new FeedContext(null, 'en_US', 'USD'), 'SKU-2');
+
+        self::assertFalse($verdict['included']);
+        self::assertSame('filter:pre:availability', $verdict['reason']);
+    }
+
+    /**
+     * @test
+     */
+    public function it_reports_not_found_for_an_unknown_id(): void
+    {
+        $service = $this->createPreviewService($this->catalog());
+
+        $verdict = $service->previewItem($this->feed(), new FeedContext(null, 'en_US', 'USD'), 'DOES-NOT-EXIST');
+
+        self::assertFalse($verdict['included']);
+        self::assertSame('not_found', $verdict['reason']);
+        self::assertSame([], $verdict['output']);
+    }
+
+    /**
+     * @return list<object>
+     */
+    private function catalog(): array
+    {
+        return [
+            (object) ['id' => 'SKU-1', 'title' => 'Shoe', 'availability' => 'in_stock'],
+            (object) ['id' => 'SKU-2', 'title' => 'Boot', 'availability' => 'out_of_stock'],
+            (object) ['id' => '', 'title' => 'Ghost', 'availability' => 'in_stock'],
+        ];
+    }
+
+    /**
+     * @param list<object> $entities
+     */
+    private function createPreviewService(array $entities): PreviewService
     {
         $feedTypeRegistry = $this->prophesize(FeedTypeRegistryInterface::class);
-        $feedTypeRegistry->get('product_variant')->willReturn($this->feedType());
+        $feedTypeRegistry->get('product_variant')->willReturn($this->feedType($entities));
 
         $presetRegistry = $this->prophesize(MappingPresetRegistryInterface::class);
 
         $formatRegistry = $this->prophesize(FormatRegistryInterface::class);
-        $formatRegistry->get('csv')->willReturn(new CsvFormat());
+        $formatRegistry->get('test_format')->willReturn($this->format());
 
-        $writerRegistry = $this->prophesize(FeedWriterRegistryInterface::class);
-        $writerRegistry->get('csv')->willReturn(new CsvWriter());
-
-        $urlGenerator = $this->prophesize(UrlGeneratorInterface::class);
-        $urlGenerator->getContext()->willReturn(new RequestContext());
-
-        return new FeedGenerator(
+        return new PreviewService(
             $feedTypeRegistry->reveal(),
             new MappingResolver($presetRegistry->reveal()),
             $formatRegistry->reveal(),
-            $writerRegistry->reveal(),
             new FieldMappingEvaluator(
                 new TransformationChain(new TransformationRegistry([])),
                 new ReferenceResolver(),
-                new OperatorRegistry([new IsTrue()]),
+                new OperatorRegistry([new Equals(), new IsTrue()]),
                 new ExpressionEvaluator(new InMemoryLookup()),
                 new SandboxedTwigRenderer(new FeedTemplateSecurityPolicy(), new InMemoryLookup()),
                 new NullLookupReferenceResolver(),
@@ -141,19 +182,28 @@ final class FeedGeneratorFilterTest extends TestCase
             new NullLookupReferenceResolver(),
             new FeedItemValidator(Validation::createValidator(), new RequiredFieldsValidator()),
             new EventDispatcher(),
-            $urlGenerator->reveal(),
-            $this->filesystem,
         );
     }
 
-    private function feedType(): FeedTypeInterface
+    /**
+     * @param list<object> $entities
+     */
+    private function feedType(array $entities): FeedTypeInterface
     {
         $fields = [
             'id' => $this->field('id'),
+            'title' => $this->field('title'),
             'availability' => $this->field('availability'),
         ];
 
-        $dataSource = new class() implements DataSourceInterface {
+        $dataSource = new class($entities) implements DataSourceInterface {
+            /**
+             * @param list<object> $entities
+             */
+            public function __construct(private readonly array $entities)
+            {
+            }
+
             public function getResourceClass(): string
             {
                 return \stdClass::class;
@@ -161,13 +211,12 @@ final class FeedGeneratorFilterTest extends TestCase
 
             public function getItems(FeedContext $context, FilterSet $filters): iterable
             {
-                yield (object) ['id' => 'SKU-1', 'availability' => 'in_stock'];
-                yield (object) ['id' => 'SKU-2', 'availability' => 'out_of_stock'];
+                yield from $this->entities;
             }
 
             public function count(FeedContext $context, FilterSet $filters): int
             {
-                return 2;
+                return count($this->entities);
             }
         };
 
@@ -203,7 +252,7 @@ final class FeedGeneratorFilterTest extends TestCase
 
             public function getScopeDimensions(): array
             {
-                return [ScopeDimension::CHANNEL, ScopeDimension::LOCALE, ScopeDimension::CURRENCY];
+                return [];
             }
 
             public function getAvailableFields(): array
@@ -214,8 +263,8 @@ final class FeedGeneratorFilterTest extends TestCase
     }
 
     /**
-     * A field whose resolver reads the same-named property off the entity, so the two stub entities
-     * resolve to different availability values.
+     * A field whose resolver reads the same-named property off the entity, so each stub entity
+     * resolves to its own values.
      */
     private function field(string $name): FieldDefinition
     {
@@ -253,7 +302,37 @@ final class FeedGeneratorFilterTest extends TestCase
         return new FieldDefinition($name, $resolver->getLabel(), FieldType::STRING, $resolver);
     }
 
-    private function feed(string $stage): FeedInterface
+    private function format(): FormatInterface
+    {
+        return new class() implements FormatInterface {
+            public function getCode(): string
+            {
+                return 'test_format';
+            }
+
+            public function getWriter(): string
+            {
+                return 'csv';
+            }
+
+            public function getConfig(): WriterConfigInterface
+            {
+                return new CsvWriterConfig();
+            }
+
+            public function getRequiredFields(): array
+            {
+                return ['id'];
+            }
+
+            public function getItemValidationGroups(): array
+            {
+                return [];
+            }
+        };
+    }
+
+    private function feed(string $stage = FeedFilterInterface::STAGE_PRE): FeedInterface
     {
         $filter = new FeedFilter();
         $filter->setField('availability');
@@ -268,12 +347,13 @@ final class FeedGeneratorFilterTest extends TestCase
         $source->getFilters()->willReturn(new ArrayCollection([$filter]));
         $source->getFields()->willReturn(new ArrayCollection([
             $this->feedField('id', 'id', 0),
-            $this->feedField('availability', 'availability', 1),
+            $this->feedField('title', 'title', 1),
+            $this->feedField('availability', 'availability', 2),
         ]));
 
         $feed = $this->prophesize(FeedInterface::class);
         $feed->getCode()->willReturn('shop');
-        $feed->getFormat()->willReturn('csv');
+        $feed->getFormat()->willReturn('test_format');
         $feed->getSources()->willReturn(new ArrayCollection([$source->reveal()]));
 
         return $feed->reveal();

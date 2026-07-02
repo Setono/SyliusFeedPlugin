@@ -4,6 +4,11 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <service id="Setono\SyliusFeedPlugin\Mapping\MappingResolver">
+            <argument type="service" id="Setono\SyliusFeedPlugin\MappingPreset\MappingPresetRegistryInterface"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Mapping\MappingResolverInterface" alias="Setono\SyliusFeedPlugin\Mapping\MappingResolver"/>
+
         <service id="Setono\SyliusFeedPlugin\Validator\RequiredFieldsValidator"/>
         <service id="Setono\SyliusFeedPlugin\Validator\RequiredFieldsValidatorInterface" alias="Setono\SyliusFeedPlugin\Validator\RequiredFieldsValidator"/>
 
@@ -25,7 +30,7 @@
 
         <service id="Setono\SyliusFeedPlugin\Generator\FeedGenerator">
             <argument type="service" id="Setono\SyliusFeedPlugin\FeedType\FeedTypeRegistryInterface"/>
-            <argument type="service" id="Setono\SyliusFeedPlugin\MappingPreset\MappingPresetRegistryInterface"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Mapping\MappingResolverInterface"/>
             <argument type="service" id="Setono\SyliusFeedPlugin\Format\FormatRegistryInterface"/>
             <argument type="service" id="Setono\SyliusFeedPlugin\Writer\FeedWriterRegistryInterface"/>
             <argument type="service" id="Setono\SyliusFeedPlugin\Generator\FieldMappingEvaluatorInterface"/>

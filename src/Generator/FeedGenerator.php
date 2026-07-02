@@ -13,9 +13,7 @@ use Setono\SyliusFeedPlugin\Filter\FilterSet;
 use Setono\SyliusFeedPlugin\Format\FormatRegistryInterface;
 use Setono\SyliusFeedPlugin\Item\FeedItem;
 use Setono\SyliusFeedPlugin\Lookup\LookupReferenceResolverInterface;
-use Setono\SyliusFeedPlugin\Mapping\FieldMapping;
-use Setono\SyliusFeedPlugin\MappingPreset\MappingPresetRegistryInterface;
-use Setono\SyliusFeedPlugin\Model\FeedFieldInterface;
+use Setono\SyliusFeedPlugin\Mapping\MappingResolverInterface;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Model\FeedSourceInterface;
 use Setono\SyliusFeedPlugin\Validator\FeedItemValidatorInterface;
@@ -33,7 +31,7 @@ final class FeedGenerator implements FeedGeneratorInterface
 {
     public function __construct(
         private readonly FeedTypeRegistryInterface $feedTypeRegistry,
-        private readonly MappingPresetRegistryInterface $mappingPresetRegistry,
+        private readonly MappingResolverInterface $mappingResolver,
         private readonly FormatRegistryInterface $formatRegistry,
         private readonly FeedWriterRegistryInterface $writerRegistry,
         private readonly FieldMappingEvaluatorInterface $fieldMappingEvaluator,
@@ -72,7 +70,7 @@ final class FeedGenerator implements FeedGeneratorInterface
         foreach ($this->sortedSources($feed) as $source) {
             $feedType = $this->feedTypeRegistry->get((string) $source->getFeedType());
             $availableFields = $feedType->getAvailableFields();
-            $mappings = $this->resolveMappings($feed, $source);
+            $mappings = $this->mappingResolver->resolve($feed, $source);
             $filterSet = new FilterSet($source->getFilters());
 
             foreach ($feedType->getDataSource()->getItems($context, $filterSet) as $entity) {
@@ -150,33 +148,6 @@ final class FeedGenerator implements FeedGeneratorInterface
     }
 
     /**
-     * The admin-editable FeedField rows are the source of truth once a source has any; the matching
-     * MappingPreset is only the fallback for a source that was never seeded/edited (§10).
-     *
-     * @return list<FieldMapping>
-     */
-    private function resolveMappings(FeedInterface $feed, FeedSourceInterface $source): array
-    {
-        $fields = $source->getFields()->toArray();
-        if ([] !== $fields) {
-            usort(
-                $fields,
-                static fn (FeedFieldInterface $a, FeedFieldInterface $b): int => ($a->getPosition() ?? 0) <=> ($b->getPosition() ?? 0),
-            );
-
-            return array_map(FieldMapping::fromFeedField(...), $fields);
-        }
-
-        foreach ($this->mappingPresetRegistry->forFeedType((string) $source->getFeedType()) as $preset) {
-            if ($preset->getFormat() === $feed->getFormat()) {
-                return $preset->getMapping();
-            }
-        }
-
-        return [];
-    }
-
-    /**
      * The union of every source's output fields, in first-seen order — the CSV header.
      *
      * @return list<string>
@@ -185,7 +156,7 @@ final class FeedGenerator implements FeedGeneratorInterface
     {
         $header = [];
         foreach ($this->sortedSources($feed) as $source) {
-            foreach ($this->resolveMappings($feed, $source) as $mapping) {
+            foreach ($this->mappingResolver->resolve($feed, $source) as $mapping) {
                 $outputField = $mapping->getOutputField();
                 if (!in_array($outputField, $header, true)) {
                     $header[] = $outputField;

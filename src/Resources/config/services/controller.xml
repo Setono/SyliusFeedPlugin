@@ -31,6 +31,15 @@
             <tag name="controller.service_arguments"/>
         </service>
 
+        <service id="Setono\SyliusFeedPlugin\Controller\Admin\PreviewFeedAction">
+            <argument type="service" id="setono_sylius_feed.repository.feed"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Context\ContextFactoryInterface"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Preview\PreviewServiceInterface"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Audit\FeedAuditServiceInterface"/>
+            <argument type="service" id="twig"/>
+            <tag name="controller.service_arguments"/>
+        </service>
+
         <service id="Setono\SyliusFeedPlugin\Controller\Admin\PublishContextAnywayAction">
             <argument type="service" id="doctrine"/>
             <argument type="service" id="setono_sylius_feed.repository.feed"/>

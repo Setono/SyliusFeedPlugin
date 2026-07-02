@@ -20,6 +20,7 @@
         <import resource="services/validator.xml"/>
         <import resource="services/publish.xml"/>
         <import resource="services/generator.xml"/>
+        <import resource="services/preview.xml"/>
         <import resource="services/messenger.xml"/>
         <import resource="services/event_subscriber.xml"/>
         <import resource="services/command.xml"/>

@@ -26,6 +26,7 @@ use Setono\SyliusFeedPlugin\Item\FeedItem;
 use Setono\SyliusFeedPlugin\Lookup\InMemoryLookup;
 use Setono\SyliusFeedPlugin\Mapping\FieldDefinition;
 use Setono\SyliusFeedPlugin\Mapping\FieldType;
+use Setono\SyliusFeedPlugin\Mapping\MappingResolver;
 use Setono\SyliusFeedPlugin\Mapping\ScopeDimension;
 use Setono\SyliusFeedPlugin\MappingPreset\GoogleShoppingMappingPreset;
 use Setono\SyliusFeedPlugin\MappingPreset\MappingPresetRegistryInterface;
@@ -259,7 +260,7 @@ final class FeedGeneratorTest extends TestCase
 
         return new FeedGenerator(
             $feedTypeRegistry->reveal(),
-            $presetRegistry->reveal(),
+            new MappingResolver($presetRegistry->reveal()),
             $formatRegistry->reveal(),
             $writerRegistry->reveal(),
             new FieldMappingEvaluator(

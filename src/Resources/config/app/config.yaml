@@ -69,6 +69,15 @@ sylius_grid:
                                 route: setono_sylius_feed_admin_feed_results
                                 parameters:
                                     id: resource.id
+                    preview:
+                        type: default
+                        label: setono_sylius_feed.ui.preview
+                        icon: search
+                        options:
+                            link:
+                                route: setono_sylius_feed_admin_feed_preview
+                                parameters:
+                                    id: resource.id
                     update:
                         type: update
                     delete:
