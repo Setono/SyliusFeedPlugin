@@ -38,21 +38,29 @@ final class FeedTemplateSecurityPolicy implements SecurityPolicyInterface
     }
 
     /**
-     * @param string[] $tags
-     * @param string[] $filters
-     * @param string[] $functions
+     * Params are typed `mixed` to stay contravariant with every supported Twig version — older
+     * releases declare the SecurityPolicyInterface parameters without types.
+     *
+     * @param mixed $tags
+     * @param mixed $filters
+     * @param mixed $functions
      */
     public function checkSecurity($tags, $filters, $functions): void
     {
-        $this->delegate->checkSecurity($tags, $filters, $functions);
+        $this->delegate->checkSecurity(
+            $this->onlyStrings($tags),
+            $this->onlyStrings($filters),
+            $this->onlyStrings($functions),
+        );
     }
 
     /**
-     * @param object $obj
-     * @param string $method
+     * @param mixed $obj
+     * @param mixed $method
      */
     public function checkMethodAllowed($obj, $method): void
     {
+        $method = is_string($method) ? $method : '';
         $normalized = strtolower($method);
         if (str_starts_with($normalized, 'get') ||
             str_starts_with($normalized, 'is') ||
@@ -62,19 +70,33 @@ final class FeedTemplateSecurityPolicy implements SecurityPolicyInterface
             return;
         }
 
+        $class = is_object($obj) ? $obj::class : 'object';
+
         throw new SecurityNotAllowedMethodError(
-            sprintf('Calling "%s" method on a "%s" object is not allowed in a feed template.', $method, $obj::class),
-            $obj::class,
+            sprintf('Calling "%s" method on a "%s" object is not allowed in a feed template.', $method, $class),
+            $class,
             $method,
         );
     }
 
     /**
-     * @param object $obj
-     * @param string $property
+     * @param mixed $obj
+     * @param mixed $property
      */
     public function checkPropertyAllowed($obj, $property): void
     {
         // Reading a public property off the provided objects is permitted; templates cannot write.
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function onlyStrings(mixed $values): array
+    {
+        if (!is_array($values)) {
+            return [];
+        }
+
+        return array_values(array_filter($values, 'is_string'));
     }
 }
