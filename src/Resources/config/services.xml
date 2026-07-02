@@ -6,6 +6,8 @@
         <import resource="services/registry.xml"/>
         <import resource="services/reference.xml"/>
         <import resource="services/operator.xml"/>
+        <import resource="services/lookup.xml"/>
+        <import resource="services/scripting.xml"/>
         <import resource="services/transformation.xml"/>
         <import resource="services/value_resolver.xml"/>
         <import resource="services/currency.xml"/>

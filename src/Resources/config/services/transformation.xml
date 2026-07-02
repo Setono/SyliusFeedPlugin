@@ -53,6 +53,14 @@
             <argument type="service" id="Setono\SyliusFeedPlugin\Operator\OperatorRegistryInterface"/>
             <tag name="setono_sylius_feed.transformation"/>
         </service>
+        <service id="Setono\SyliusFeedPlugin\Transformation\Expression">
+            <argument type="service" id="Setono\SyliusFeedPlugin\Scripting\ExpressionEvaluatorInterface"/>
+            <tag name="setono_sylius_feed.transformation"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Transformation\TwigTransformation">
+            <argument type="service" id="Setono\SyliusFeedPlugin\Scripting\TwigTemplateRendererInterface"/>
+            <tag name="setono_sylius_feed.transformation"/>
+        </service>
 
         <service id="Setono\SyliusFeedPlugin\Transformation\TransformationChain">
             <argument type="service" id="Setono\SyliusFeedPlugin\Transformation\TransformationRegistryInterface"/>
