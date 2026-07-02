@@ -43,6 +43,7 @@ final class ProcessFeedCommand extends Command
     {
         $this
             ->addOption('feed', null, InputOption::VALUE_REQUIRED, 'Process only the feed with this code')
+            ->addOption('all', null, InputOption::VALUE_NONE, 'Process every enabled feed (the default when --feed is omitted); the explicit form to use from cron')
             ->addOption('preview', null, InputOption::VALUE_OPTIONAL, 'Dry-run: print the funnel + a few sample rows instead of generating (optionally set the sample size, default ' . self::DEFAULT_PREVIEW_LIMIT . ')', false)
             ->addOption('audit', null, InputOption::VALUE_NONE, 'Dry-run: also print fill rates and soft warnings (implies --preview)')
         ;

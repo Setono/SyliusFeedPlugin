@@ -59,6 +59,25 @@ final class ProcessFeedCommandTest extends TestCase
     /**
      * @test
      */
+    public function it_dispatches_a_process_message_for_each_enabled_feed_with_the_all_option(): void
+    {
+        $feed = $this->feed();
+
+        $repository = $this->prophesize(RepositoryInterface::class);
+        $repository->findBy(['enabled' => true])->willReturn([$feed]);
+
+        $commandBus = $this->prophesize(MessageBusInterface::class);
+        $commandBus->dispatch(Argument::type(ProcessFeed::class))->willReturn(new Envelope(new \stdClass()))->shouldBeCalledOnce();
+
+        $tester = new CommandTester($this->command($repository->reveal(), $commandBus->reveal()));
+
+        self::assertSame(Command::SUCCESS, $tester->execute(['--all' => true]));
+        self::assertStringContainsString('google', $tester->getDisplay());
+    }
+
+    /**
+     * @test
+     */
     public function it_dispatches_only_the_requested_feed(): void
     {
         $feed = $this->feed();

@@ -93,10 +93,27 @@ one or more channels.
 After that go to your console and run this command:
 
 ```bash
-$ php bin/console setono:sylius-feed:process
+$ php bin/console setono:feed:process --all
 ```
 
+`setono:feed:process` dispatches feed generation. Without options (or with `--all`) it processes
+every **enabled** feed; pass `--feed=CODE` to process a single feed. Add `--preview[=N]` for a
+dry-run that prints the include funnel and a few sample rows without writing a file, and `--audit`
+to also print per-attribute fill rates and soft warnings.
+
 If you haven't changed any configuration, there should be a feed with your products inside the `/var/storage/setono_sylius_feed/feed` directory.
+
+### Scheduling (cron)
+
+There is no bundled scheduler — run the process command from your own crontab. For example, to
+regenerate every enabled feed hourly:
+
+```cron
+0 * * * * cd /path/to/your/project && php bin/console setono:feed:process --all >> var/log/feed.log 2>&1
+```
+
+When the plugin's messages are routed to an async transport (recommended, see Step 6), this command
+only *dispatches* the work; make sure a worker is consuming the transport (e.g. `messenger:consume`).
 
 
 [ico-version]: https://poser.pugx.org/setono/sylius-feed-plugin/v/stable
