@@ -51,7 +51,7 @@ final class ShowFeedActionTest extends TestCase
 
         ob_start();
         $response->sendContent();
-        self::assertSame('<rss version="2.0"></rss>', (string) ob_get_clean());
+        self::assertSame('<rss version="2.0"></rss>', ob_get_clean());
     }
 
     /**
