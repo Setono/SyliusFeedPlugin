@@ -13,6 +13,54 @@
         <service id="Setono\SyliusFeedPlugin\Transformation\MoneyFormat">
             <tag name="setono_sylius_feed.transformation"/>
         </service>
+        <service id="Setono\SyliusFeedPlugin\Transformation\FindReplace">
+            <tag name="setono_sylius_feed.transformation"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Transformation\RegexReplace">
+            <tag name="setono_sylius_feed.transformation"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Transformation\ValueMap">
+            <tag name="setono_sylius_feed.transformation"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Transformation\Prefix">
+            <tag name="setono_sylius_feed.transformation"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Transformation\Suffix">
+            <tag name="setono_sylius_feed.transformation"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Transformation\ChangeCase">
+            <tag name="setono_sylius_feed.transformation"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Transformation\NumberFormat">
+            <tag name="setono_sylius_feed.transformation"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Transformation\DateFormat">
+            <tag name="setono_sylius_feed.transformation"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Transformation\LiteralTransformation">
+            <tag name="setono_sylius_feed.transformation"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Transformation\Concat">
+            <argument type="service" id="Setono\SyliusFeedPlugin\Reference\ReferenceResolverInterface"/>
+            <tag name="setono_sylius_feed.transformation"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Transformation\DefaultIfEmpty">
+            <argument type="service" id="Setono\SyliusFeedPlugin\Reference\ReferenceResolverInterface"/>
+            <tag name="setono_sylius_feed.transformation"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Transformation\Conditional">
+            <argument type="service" id="Setono\SyliusFeedPlugin\Reference\ReferenceResolverInterface"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Operator\OperatorRegistryInterface"/>
+            <tag name="setono_sylius_feed.transformation"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Transformation\Expression">
+            <argument type="service" id="Setono\SyliusFeedPlugin\Scripting\ExpressionEvaluatorInterface"/>
+            <tag name="setono_sylius_feed.transformation"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Transformation\TwigTransformation">
+            <argument type="service" id="Setono\SyliusFeedPlugin\Scripting\TwigTemplateRendererInterface"/>
+            <tag name="setono_sylius_feed.transformation"/>
+        </service>
 
         <service id="Setono\SyliusFeedPlugin\Transformation\TransformationChain">
             <argument type="service" id="Setono\SyliusFeedPlugin\Transformation\TransformationRegistryInterface"/>

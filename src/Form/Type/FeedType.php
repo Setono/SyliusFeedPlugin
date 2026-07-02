@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\Form\Type;
 
 use Setono\SyliusFeedPlugin\Format\FormatRegistryInterface;
+use Setono\SyliusFeedPlugin\MappingPreset\MappingPresetApplicatorInterface;
+use Setono\SyliusFeedPlugin\MappingPreset\MappingPresetRegistryInterface;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Sylius\Bundle\ChannelBundle\Form\Type\ChannelChoiceType;
 use Sylius\Bundle\ResourceBundle\Form\Type\AbstractResourceType;
@@ -26,6 +28,8 @@ final class FeedType extends AbstractResourceType
     public function __construct(
         string $dataClass,
         private readonly FormatRegistryInterface $formatRegistry,
+        private readonly MappingPresetRegistryInterface $mappingPresetRegistry,
+        private readonly MappingPresetApplicatorInterface $mappingPresetApplicator,
         array $validationGroups = [],
     ) {
         parent::__construct($dataClass, $validationGroups);
@@ -45,9 +49,19 @@ final class FeedType extends AbstractResourceType
                 'multiple' => true,
                 'label' => 'sylius.ui.channels',
             ])
+            ->add('target', ChoiceType::class, [
+                'label' => 'setono_sylius_feed.form.feed.target',
+                'help' => 'setono_sylius_feed.form.feed.target_help',
+                'required' => false,
+                'mapped' => false,
+                'placeholder' => 'setono_sylius_feed.form.feed.target_placeholder',
+                'choices' => $this->targetChoices(),
+            ])
             ->add('format', ChoiceType::class, [
                 'choices' => $this->formatChoices(),
                 'label' => 'setono_sylius_feed.form.feed.format',
+                'required' => false,
+                'placeholder' => 'setono_sylius_feed.form.feed.format_placeholder',
             ])
             ->add('enabled', CheckboxType::class, [
                 'required' => false,
@@ -61,6 +75,21 @@ final class FeedType extends AbstractResourceType
                 'by_reference' => false,
             ])
         ;
+
+        // Seed the feed from the chosen target before positions are reindexed (higher priority).
+        $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event): void {
+            $feed = $event->getData();
+            Assert::isInstanceOf($feed, FeedInterface::class);
+
+            $target = $event->getForm()->get('target')->getData();
+            if (!is_string($target) || '' === $target || !$feed->getSources()->isEmpty()) {
+                return;
+            }
+
+            if ($this->mappingPresetRegistry->has($target)) {
+                $this->mappingPresetApplicator->apply($feed, $this->mappingPresetRegistry->get($target));
+            }
+        }, 10);
 
         $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event): void {
             $feed = $event->getData();
@@ -87,6 +116,21 @@ final class FeedType extends AbstractResourceType
         $choices = [];
         foreach (array_keys($this->formatRegistry->all()) as $code) {
             $choices[$code] = $code;
+        }
+
+        return $choices;
+    }
+
+    /**
+     * The mapping presets the admin can seed a feed from (§7 "target" picker).
+     *
+     * @return array<string, string>
+     */
+    private function targetChoices(): array
+    {
+        $choices = [];
+        foreach ($this->mappingPresetRegistry->all() as $preset) {
+            $choices[$preset->getLabel()] = $preset->getCode();
         }
 
         return $choices;

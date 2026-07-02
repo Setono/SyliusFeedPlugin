@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<container xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://symfony.com/schema/dic/services"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Setono\SyliusFeedPlugin\Operator\Equals">
+            <tag name="setono_sylius_feed.operator"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Operator\NotEquals">
+            <tag name="setono_sylius_feed.operator"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Operator\In">
+            <tag name="setono_sylius_feed.operator"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Operator\NotIn">
+            <tag name="setono_sylius_feed.operator"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Operator\GreaterThan">
+            <tag name="setono_sylius_feed.operator"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Operator\GreaterThanOrEqual">
+            <tag name="setono_sylius_feed.operator"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Operator\LessThan">
+            <tag name="setono_sylius_feed.operator"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Operator\LessThanOrEqual">
+            <tag name="setono_sylius_feed.operator"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Operator\IsEmpty">
+            <tag name="setono_sylius_feed.operator"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Operator\IsNotEmpty">
+            <tag name="setono_sylius_feed.operator"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Operator\Contains">
+            <tag name="setono_sylius_feed.operator"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Operator\Between">
+            <tag name="setono_sylius_feed.operator"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Operator\StartsWith">
+            <tag name="setono_sylius_feed.operator"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Operator\EndsWith">
+            <tag name="setono_sylius_feed.operator"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Operator\Matches">
+            <tag name="setono_sylius_feed.operator"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Operator\IsTrue">
+            <tag name="setono_sylius_feed.operator"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Operator\IsFalse">
+            <tag name="setono_sylius_feed.operator"/>
+        </service>
+    </services>
+</container>

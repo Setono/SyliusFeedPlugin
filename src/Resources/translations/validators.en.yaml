@@ -1,0 +1,3 @@
+setono_sylius_feed:
+    feed:
+        resolve_required_fields_before_enabling: 'Resolve every field that requires input (set its source and clear the "requires input" flag) before enabling this feed.'
