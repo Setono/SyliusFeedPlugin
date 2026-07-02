@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\Tests\Unit\Generator;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use League\Csv\Reader;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 use PHPUnit\Framework\TestCase;
@@ -14,6 +15,7 @@ use Setono\SyliusFeedPlugin\DataSource\DataSourceInterface;
 use Setono\SyliusFeedPlugin\FeedType\FeedTypeInterface;
 use Setono\SyliusFeedPlugin\FeedType\FeedTypeRegistryInterface;
 use Setono\SyliusFeedPlugin\Filter\FilterSet;
+use Setono\SyliusFeedPlugin\Format\CsvFormat;
 use Setono\SyliusFeedPlugin\Format\FormatRegistryInterface;
 use Setono\SyliusFeedPlugin\Format\GoogleRssFormat;
 use Setono\SyliusFeedPlugin\Generator\FeedGenerator;
@@ -24,6 +26,8 @@ use Setono\SyliusFeedPlugin\Mapping\FieldType;
 use Setono\SyliusFeedPlugin\Mapping\ScopeDimension;
 use Setono\SyliusFeedPlugin\MappingPreset\GoogleShoppingMappingPreset;
 use Setono\SyliusFeedPlugin\MappingPreset\MappingPresetRegistryInterface;
+use Setono\SyliusFeedPlugin\Model\FeedField;
+use Setono\SyliusFeedPlugin\Model\FeedFieldInterface;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Model\FeedSourceInterface;
 use Setono\SyliusFeedPlugin\Operator\IsTrue;
@@ -38,6 +42,7 @@ use Setono\SyliusFeedPlugin\Transformation\TransformationChain;
 use Setono\SyliusFeedPlugin\Transformation\TransformationRegistry;
 use Setono\SyliusFeedPlugin\Transformation\Truncate;
 use Setono\SyliusFeedPlugin\Validator\RequiredFieldsValidator;
+use Setono\SyliusFeedPlugin\Writer\CsvWriter;
 use Setono\SyliusFeedPlugin\Writer\FeedWriterRegistryInterface;
 use Setono\SyliusFeedPlugin\Writer\XmlWriter;
 use Sylius\Component\Core\Model\ChannelInterface;
@@ -103,6 +108,54 @@ final class FeedGeneratorTest extends TestCase
     }
 
     /**
+     * A CSV feed whose mapping comes from admin-configured FeedField rows: one header row that is
+     * the union of the output fields (in row order) followed by one row per item, cells keyed by
+     * the header.
+     *
+     * @test
+     */
+    public function it_generates_a_csv_feed_with_a_union_header(): void
+    {
+        $source = $this->prophesize(FeedSourceInterface::class);
+        $source->getFeedType()->willReturn('product_variant');
+        $source->getPosition()->willReturn(0);
+        $source->getFilters()->willReturn(new ArrayCollection());
+        $source->getFields()->willReturn(new ArrayCollection([
+            $this->feedField('id', 'id', 0),
+            $this->feedField('title', 'title', 1),
+            $this->feedField('availability', 'availability', 2),
+        ]));
+
+        $feed = $this->prophesize(FeedInterface::class);
+        $feed->getCode()->willReturn('google');
+        $feed->getFormat()->willReturn('csv');
+        $feed->getSources()->willReturn(new ArrayCollection([$source->reveal()]));
+
+        $result = $this->createGenerator()->generate($feed->reveal(), new FeedContext($this->channel(), 'en_US', 'USD'));
+
+        self::assertSame('google/web_en_us_usd.csv', $result->path);
+        self::assertSame(2, $result->itemCount);
+
+        $csv = $this->filesystem->read($result->path);
+        $rows = array_values(iterator_to_array(Reader::createFromString($csv)->getRecords()));
+
+        self::assertCount(3, $rows, 'header + two item rows');
+        self::assertSame(['id', 'title', 'availability'], $rows[0]);
+        self::assertSame(['SKU-1', 'Acme Shoe', 'in_stock'], $rows[1]);
+    }
+
+    private function feedField(string $outputField, string $sourceField, int $position): FeedFieldInterface
+    {
+        $field = new FeedField();
+        $field->setOutputField($outputField);
+        $field->setSourceType('field');
+        $field->setSourceValue($sourceField);
+        $field->setPosition($position);
+
+        return $field;
+    }
+
+    /**
      * With no matching preset there are no field mappings, so every item lacks the required output
      * fields and is excluded — the feed is still written, just empty.
      *
@@ -132,9 +185,11 @@ final class FeedGeneratorTest extends TestCase
 
         $formatRegistry = $this->prophesize(FormatRegistryInterface::class);
         $formatRegistry->get('google_rss')->willReturn(new GoogleRssFormat());
+        $formatRegistry->get('csv')->willReturn(new CsvFormat());
 
         $writerRegistry = $this->prophesize(FeedWriterRegistryInterface::class);
         $writerRegistry->get('xml')->willReturn(new XmlWriter());
+        $writerRegistry->get('csv')->willReturn(new CsvWriter());
 
         $urlGenerator = $this->prophesize(UrlGeneratorInterface::class);
         $urlGenerator->getContext()->willReturn(new RequestContext());
@@ -246,7 +301,7 @@ final class FeedGeneratorTest extends TestCase
         return $channel->reveal();
     }
 
-    private function feed(): FeedInterface
+    private function feed(string $format = 'google_rss'): FeedInterface
     {
         $source = $this->prophesize(FeedSourceInterface::class);
         $source->getFeedType()->willReturn('product_variant');
@@ -256,7 +311,7 @@ final class FeedGeneratorTest extends TestCase
 
         $feed = $this->prophesize(FeedInterface::class);
         $feed->getCode()->willReturn('google');
-        $feed->getFormat()->willReturn('google_rss');
+        $feed->getFormat()->willReturn($format);
         $feed->getSources()->willReturn(new ArrayCollection([$source->reveal()]));
 
         return $feed->reveal();

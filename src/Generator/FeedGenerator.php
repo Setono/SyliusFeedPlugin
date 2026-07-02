@@ -17,6 +17,7 @@ use Setono\SyliusFeedPlugin\Model\FeedFieldInterface;
 use Setono\SyliusFeedPlugin\Model\FeedInterface;
 use Setono\SyliusFeedPlugin\Model\FeedSourceInterface;
 use Setono\SyliusFeedPlugin\Validator\RequiredFieldsValidatorInterface;
+use Setono\SyliusFeedPlugin\Writer\CsvWriterConfig;
 use Setono\SyliusFeedPlugin\Writer\FeedWriterRegistryInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -47,6 +48,11 @@ final class FeedGenerator implements FeedGeneratorInterface
         $writer = $this->writerRegistry->get($format->getWriter());
 
         $config = $format->getConfig()->withFeedMetadata($this->buildFeedMetadata($feed, $context));
+        if ($config instanceof CsvWriterConfig) {
+            // CSV needs a single header up front — the union of every source's output fields, so
+            // heterogeneous multi-source rows line up under one header.
+            $config = $config->withHeader($this->unionHeader($feed));
+        }
         $requiredFields = $format->getRequiredFields();
 
         $this->applyRequestContext($context);
@@ -118,6 +124,26 @@ final class FeedGenerator implements FeedGeneratorInterface
         }
 
         return [];
+    }
+
+    /**
+     * The union of every source's output fields, in first-seen order — the CSV header.
+     *
+     * @return list<string>
+     */
+    private function unionHeader(FeedInterface $feed): array
+    {
+        $header = [];
+        foreach ($this->sortedSources($feed) as $source) {
+            foreach ($this->resolveMappings($feed, $source) as $mapping) {
+                $outputField = $mapping->getOutputField();
+                if (!in_array($outputField, $header, true)) {
+                    $header[] = $outputField;
+                }
+            }
+        }
+
+        return $header;
     }
 
     /**
