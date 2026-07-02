@@ -5,6 +5,10 @@
 
     <services>
         <service id="Setono\SyliusFeedPlugin\Lookup\InMemoryLookup"/>
-        <service id="Setono\SyliusFeedPlugin\Lookup\LookupInterface" alias="Setono\SyliusFeedPlugin\Lookup\InMemoryLookup"/>
+
+        <service id="Setono\SyliusFeedPlugin\Lookup\DatabaseLookup">
+            <argument type="service" id="setono_sylius_feed.repository.lookup_table"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Lookup\LookupInterface" alias="Setono\SyliusFeedPlugin\Lookup\DatabaseLookup"/>
     </services>
 </container>
