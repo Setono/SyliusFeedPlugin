@@ -10,5 +10,20 @@
             <argument type="service" id="setono_sylius_feed.repository.lookup_table"/>
         </service>
         <service id="Setono\SyliusFeedPlugin\Lookup\LookupInterface" alias="Setono\SyliusFeedPlugin\Lookup\DatabaseLookup"/>
+
+        <service id="Setono\SyliusFeedPlugin\Lookup\CsvLookupSource">
+            <argument type="service" id="setono_sylius_feed.storage.feed"/>
+            <tag name="setono_sylius_feed.lookup_source"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Lookup\UrlLookupSource">
+            <tag name="setono_sylius_feed.lookup_source"/>
+        </service>
+
+        <service id="Setono\SyliusFeedPlugin\Lookup\LookupTableRefresher">
+            <argument type="service" id="doctrine"/>
+            <argument type="service" id="Setono\SyliusFeedPlugin\Lookup\LookupSourceRegistryInterface"/>
+            <argument type="service" id="logger"/>
+        </service>
+        <service id="Setono\SyliusFeedPlugin\Lookup\LookupTableRefresherInterface" alias="Setono\SyliusFeedPlugin\Lookup\LookupTableRefresher"/>
     </services>
 </container>
