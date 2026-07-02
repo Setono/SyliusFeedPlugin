@@ -4,8 +4,18 @@
 [![Software License][ico-license]](LICENSE)
 [![Build Status][ico-github-actions]][link-github-actions]
 
-A plugin for creating all kinds of feeds to any given service. Do you want to create product feeds for
-your Google Merchant center? Then this is the right plugin for you.
+A **resource-agnostic feed-generation engine** for Sylius. It maps any Sylius resource — product
+variants, products, orders, customers, taxons, product reviews, promotions — to named output fields,
+transforms and filters them, validates against a channel spec, and streams the result to a format
+(Google RSS, CSV, generic XML, Partner-ads). Google Shopping is the richest built-in target, but the
+same engine ships presets for Meta, Bing, Pinterest, TikTok and Partner-ads, plus fully custom feeds.
+
+Highlights: a target-first admin create flow with a field-mapping editor; a shared transformation +
+filter vocabulary; `LookupTable` enrichment (e.g. GTIN backfill from a CSV/URL); channel × locale ×
+currency fan-out; a dry-run **preview** (funnel + included/excluded samples) and a **feed audit**;
+a **publish gate** that refuses to replace a good feed with a broken one; gzip, file splitting with a
+supplemental manifest, multi-chunk fan-out for large catalogs; and per-context **delivery** to
+FTP/SFTP/S3 targets — all on top of a canonical, always-served public feed URL.
 
 ## Installation
 
@@ -48,10 +58,14 @@ return [
 ```yaml
 # config/routes/setono_sylius_feed.yaml
 setono_sylius_feed:
-    resource: "@SetonoSyliusFeedPlugin/Resources/config/routing.yaml"
+    resource: "@SetonoSyliusFeedPlugin/Resources/config/routes.yaml"
+
+setono_sylius_feed_admin:
+    resource: "@SetonoSyliusFeedPlugin/Resources/config/routes/admin.yaml"
 ```
 
-If you don't use localized URLs, use this routing file instead: `@SetonoSyliusFeedPlugin/Resources/config/routing_non_localized.yaml`
+`routes.yaml` exposes the public feed at `/feed/{code}/{filename}`; `routes/admin.yaml` adds the admin
+screens (feed CRUD, generate, preview, results, publish) under `/admin`.
 
 ### Step 4: Configure plugin
 
