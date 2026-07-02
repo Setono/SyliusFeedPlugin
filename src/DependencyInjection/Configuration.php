@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Setono\SyliusFeedPlugin\DependencyInjection;
 
 use Setono\SyliusFeedPlugin\Form\Type\FeedType;
+use Setono\SyliusFeedPlugin\Form\Type\LookupTableType;
 use Setono\SyliusFeedPlugin\Model\Feed;
 use Setono\SyliusFeedPlugin\Model\FeedSource;
 use Setono\SyliusFeedPlugin\Model\FeedTranslation;
@@ -125,7 +126,7 @@ final class Configuration implements ConfigurationInterface
                                         ->scalarNode('controller')->defaultValue(ResourceController::class)->cannotBeEmpty()->end()
                                         ->scalarNode('repository')->defaultValue(LookupTableRepository::class)->cannotBeEmpty()->end()
                                         ->scalarNode('factory')->defaultValue(Factory::class)->end()
-                                        ->scalarNode('form')->defaultValue(DefaultResourceType::class)->cannotBeEmpty()->end()
+                                        ->scalarNode('form')->defaultValue(LookupTableType::class)->cannotBeEmpty()->end()
                                     ->end()
                                 ->end()
                             ->end()

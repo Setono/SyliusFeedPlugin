@@ -1,7 +1,13 @@
 setono_sylius_feed:
     ui:
         feeds: Feeds
+        lookup_tables: Lookup tables
+        new_lookup_table: New lookup table
+        edit_lookup_table: Edit lookup table
         manage_feeds: Manage feeds
+        manage_lookup_tables: Manage lookup tables
+        refresh: Refresh
+        refreshed_at: Refreshed at
         new_feed: New feed
         edit_feed: Edit feed
         state: State
@@ -36,6 +42,23 @@ setono_sylius_feed:
                 literal: Literal
                 expression: Expression
                 twig: Twig
+        lookup_table:
+            name: Name
+            source_type: Source type
+            location: Source location
+            location_help: 'The uploaded CSV path (csv source) or the CSV/TSV URL — e.g. a published Google Sheet …/export?format=csv (url source).'
+            key_column: Key column
+            join_field: Join field
+            refresh_policy: Refresh policy
+            source:
+                csv: CSV file
+                url: URL
+            policy:
+                manual: Manual
+                before_generate: Before generate
+                scheduled: Scheduled
+    lookup_table:
+        refreshed: Lookup table has been refreshed
     mapping_preset:
         google_shopping: Google Shopping
         meta: Meta

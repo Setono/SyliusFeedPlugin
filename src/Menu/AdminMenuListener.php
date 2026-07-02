@@ -28,5 +28,11 @@ final class AdminMenuListener
             ->setLabel('setono_sylius_feed.ui.feeds')
             ->setLabelAttribute('icon', 'rss')
         ;
+
+        $catalog
+            ->addChild('setono_sylius_feed_lookup_tables', ['route' => 'setono_sylius_feed_admin_lookup_table_index'])
+            ->setLabel('setono_sylius_feed.ui.lookup_tables')
+            ->setLabelAttribute('icon', 'database')
+        ;
     }
 }

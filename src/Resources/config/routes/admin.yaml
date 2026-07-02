@@ -23,3 +23,23 @@ setono_sylius_feed_admin_feed_results:
     methods: [GET]
     defaults:
         _controller: 'Setono\SyliusFeedPlugin\Controller\Admin\FeedResultsAction'
+
+setono_sylius_feed_admin_lookup_table:
+    resource: |
+        alias: setono_sylius_feed.lookup_table
+        section: admin
+        templates: "@SyliusAdmin/Crud"
+        redirect: update
+        grid: setono_sylius_feed_lookup_table
+        vars:
+            all:
+                subheader: setono_sylius_feed.ui.manage_lookup_tables
+            index:
+                icon: database
+    type: sylius.resource
+
+setono_sylius_feed_admin_lookup_table_refresh:
+    path: /lookup-tables/{id}/refresh
+    methods: [GET]
+    defaults:
+        _controller: 'Setono\SyliusFeedPlugin\Controller\Admin\RefreshLookupTableAction'

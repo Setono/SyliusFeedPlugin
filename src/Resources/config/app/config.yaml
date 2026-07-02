@@ -73,3 +73,40 @@ sylius_grid:
                         type: update
                     delete:
                         type: delete
+        setono_sylius_feed_lookup_table:
+            driver:
+                name: doctrine/orm
+                options:
+                    class: '%setono_sylius_feed.model.lookup_table.class%'
+            fields:
+                code:
+                    type: string
+                    label: sylius.ui.code
+                    sortable: ~
+                sourceType:
+                    type: string
+                    label: setono_sylius_feed.form.lookup_table.source_type
+                refreshedAt:
+                    type: datetime
+                    label: setono_sylius_feed.ui.refreshed_at
+                    sortable: ~
+                    options:
+                        format: 'Y-m-d H:i'
+            actions:
+                main:
+                    create:
+                        type: create
+                item:
+                    refresh:
+                        type: default
+                        label: setono_sylius_feed.ui.refresh
+                        icon: sync
+                        options:
+                            link:
+                                route: setono_sylius_feed_admin_lookup_table_refresh
+                                parameters:
+                                    id: resource.id
+                    update:
+                        type: update
+                    delete:
+                        type: delete
